@@ -96,7 +96,7 @@ Cada participante resolverá os quatro katas:
 - um trial por kata;
 - no máximo 35 minutos por trial.
 
-A distribuição e a ordem final serão definidas na Issue 3. A matriz inicial planejada é:
+A distribuição e a ordem final estão documentadas em `docs/distribuicao_trials.md` e foram preparadas na Issue 22. A matriz deverá ser confirmada pelos integrantes antes da Sprint 2:
 
 | Participante | K1     | K2     | K3     | K4     |
 | ------------ | ------ | ------ | ------ | ------ |
@@ -104,7 +104,7 @@ A distribuição e a ordem final serão definidas na Issue 3. A matriz inicial p
 | P2           | MANUAL | MANUAL | IA     | IA     |
 | P3           | IA     | MANUAL | IA     | MANUAL |
 
-`P1`, `P2` e `P3` são identificadores provisórios e serão substituídos pelos integrantes reais do grupo. A ordem será contrabalanceada para reduzir o efeito de aprendizado entre os katas.
+`P1` representa Pedro, `P2` representa Enrico e `P3` representa Pericles. A ordem será contrabalanceada para reduzir o efeito de aprendizado entre os katas.
 
 ## 8. Quantidade de medições
 

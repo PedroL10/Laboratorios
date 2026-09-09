@@ -9,7 +9,7 @@ Cada participante resolvera os mesmos quatro katas em dois tratamentos:
 - `IA`: o assistente de IA pode ser usado;
 - `MANUAL`: nenhum assistente de IA pode ser consultado ou utilizado.
 
-Cada participante fara quatro trials no total: dois com IA e dois sem IA. Cada kata sera resolvido uma unica vez por participante, de acordo com a distribuicao definida na Issue 3.
+Cada participante fara quatro trials no total: dois com IA e dois sem IA. Cada kata sera resolvido uma unica vez por participante, de acordo com a distribuicao definida na Issue 22.
 
 O limite de cada trial e de 35 minutos, ou 2100 segundos. O trial termina quando todos os testes passam ou quando o tempo se esgota.
 
