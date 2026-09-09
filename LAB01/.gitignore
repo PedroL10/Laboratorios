@@ -1,5 +1,9 @@
 # Segredos
-.env
+.env*
+!.env.example
+
+# Ferramentas locais
+.claude/
 
 # Python
 __pycache__/

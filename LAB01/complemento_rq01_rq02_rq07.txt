@@ -1,0 +1,85 @@
+COMPLEMENTO PARA O RELATÓRIO — RQ01, RQ02 e RQ07
+(faltavam no Relatorio_LaboratorioV1.docx; só tinha RQ03-RQ06)
+
+
+PARA A SEÇÃO "1. INTRODUÇÃO" — adicionar à lista de RQs, depois de RQ06:
+
+RQ07 — Sistemas escritos em linguagens mais populares recebem mais contribuição, lançam mais releases e são atualizados com mais frequência?
+
+E, na linha "RQs/métricas de inovação propostas pelo grupo (30%)", adicionar:
+
+RQ08 (inovação do grupo) — Repositórios sem linguagem primária detectável têm indicadores de manutenção piores que a média? (detalhes na seção 3.6)
+
+
+PARA A SEÇÃO "3.5 TABELA DE MÉTRICAS" — adicionar as duas linhas abaixo (RQ07 e RQ08):
+
+RQ07
+RQ02/RQ03/RQ04 segmentadas por linguagem
+Agrupamento das métricas de RQ02 (PRs aceitas), RQ03 (releases) e RQ04 (dias sem atualização) por primaryLanguage, usando a mediana de cada grupo
+Comparativo (mediana por linguagem)
+Análise sobre os dados já coletados (analyze_metrics.py)
+
+RQ08 (inovação)
+Indicadores de manutenção com e sem linguagem primária
+Mediana de RQ02/RQ03/RQ04 no grupo primaryLanguage = null ("Não informado") comparada à mediana geral da amostra
+Comparativo (mediana, com/sem linguagem)
+Análise sobre os dados já coletados (analyze_metrics.py, campo RQ07_por_linguagem["Nao informado"])
+
+
+PARA A SEÇÃO "4.1 COLETA DE DADOS" — adicionar parágrafo:
+
+Para RQ01 e RQ02, os 1.000 repositórios têm created_at e pull_requests_merged_total completos, sem valores ausentes. Para RQ07, a segmentação por linguagem resultou em 44 linguagens distintas; para evitar medianas pouco confiáveis por amostra pequena, o gráfico comparativo (seção 4.2) considera apenas linguagens com pelo menos 10 repositórios na amostra.
+
+
+PARA A SEÇÃO "4.2 VISUALIZAÇÃO GRÁFICA" — adicionar, na ordem (antes de RQ03, já que a numeração é RQ01→RQ07):
+
+RQ01 — Sistemas populares são maduros/antigos?
+[inserir imagem: rq01_idade.png]
+Amostra de 1.000 repositórios: idade mediana de 7,8 anos (média de 7,7 anos), variando de 11 dias a 18,4 anos. A distribuição não é concentrada num único período — há repositórios populares de praticamente todas as idades, com leve predominância entre 3 e 13 anos.
+
+RQ02 — Sistemas populares recebem muita contribuição externa?
+[inserir imagem: rq02_prs_aceitas.png]
+Amostra de 1.000: mediana de 768 pull requests aceitas, média de 4.243 (bem acima da mediana, puxada por poucos projetos com dezenas de milhares de PRs). 20 repositórios (2%) têm 0 PRs aceitas, apesar de populares — o outlier mais notável é o torvalds/linux, mirror read-only cujo desenvolvimento real acontece fora do GitHub.
+
+RQ07 — Sistemas em linguagens populares recebem mais contribuição, lançam mais releases e são atualizados com mais frequência?
+[inserir imagem: rq07_releases_vs_prs.png]
+Considerando linguagens com pelo menos 10 repositórios na amostra: TypeScript e Go se destacam com medianas altas tanto em releases (133 e 142) quanto em PRs aceitas (1.979 e 1.958). Ruby é um caso à parte — mediana de 6.269 PRs aceitas com apenas 28 releases, mas é o grupo mais pequeno (13 repositórios), então esse valor deve ser lido com cautela. Python, apesar de ser a linguagem mais frequente na amostra (227 repositórios), tem medianas comparativamente baixas (20 releases, 560 PRs) — ou seja, ser a linguagem mais comum entre os populares não implica ter o maior volume de contribuição por repositório.
+
+
+PARA A SEÇÃO "4.3 DISCUSSÃO" — adicionar, antes da discussão de RQ03:
+
+RQ01 — hipótese informal (Issue #10): esperávamos que sistemas populares fossem majoritariamente maduros/antigos, por efeito de acumulação orgânica de estrelas ao longo do tempo. Resultado: parcialmente confirmada. A mediana de 7,8 anos indica maturidade predominante, mas a distribuição é ampla — repositórios com poucos meses de existência também aparecem entre os mais populares, sugerindo que maturidade ajuda mas não é pré-requisito para popularidade no GitHub.
+
+RQ02 — hipótese informal (Issue #10): esperávamos que sistemas populares recebessem, em geral, muita contribuição externa. Resultado: confirmada, com uma exceção relevante. A mediana de 768 PRs aceitas sustenta a hipótese, mas 2% dos repositórios (incluindo o próprio kernel Linux) têm zero PRs aceitas no GitHub — nesses casos, popularidade não se traduz em contribuição via Pull Request porque o desenvolvimento real acontece fora da plataforma.
+
+RQ07 — hipótese informal: esperávamos que repositórios em linguagens mais populares (ex.: as do topo do GitHub Octoverse) também recebessem mais contribuição, lançassem mais releases e fossem atualizados com mais frequência que a média. Resultado: parcialmente confirmada. TypeScript e Go, linguagens bem posicionadas no Octoverse, de fato têm medianas altas nos três indicadores. Mas Python — a linguagem mais popular tanto no Octoverse quanto nesta amostra — tem medianas comparativamente modestas de releases e PRs aceitas, e Ruby aparece com mediana de PRs muito alta apesar de não estar entre as linguagens mais populares do mercado. Ou seja, popularidade da linguagem no ecossistema geral não é um preditor direto e linear do nível de contribuição externa recebida pelos repositórios individuais.
+
+
+PARA O FINAL DA SEÇÃO "4.3 DISCUSSÃO" — adicionar (ameaças à validade, pedidas pela orientação do template e ainda ausentes):
+
+Ameaças à validade: (i) os dados refletem um instante único (snapshot) da coleta — número de estrelas, PRs e issues mudam continuamente, então os 1.000 repositórios "mais populares" de hoje não são exatamente os mesmos de amanhã; (ii) a API de busca do GitHub limita resultados a 1.000 itens, então repositórios entre a posição 1.001 e além ficam necessariamente fora da amostra, mesmo que estejam próximos em número de estrelas dos últimos incluídos; (iii) a fonte usada para "linguagem mais popular" (GitHub Octoverse) mede popularidade entre todos os repositórios públicos, não apenas os mais populares — a comparação com RQ05/RQ07 pressupõe que essa referência geral é aplicável ao recorte de repositórios de alta visibilidade, o que pode não se sustentar integralmente; (iv) `primaryLanguage` reflete a linguagem com mais bytes de código no repositório, não necessariamente a linguagem mais relevante para quem usa o projeto (ex.: repositórios de documentação classificados por uma linguagem de marcação).
+
+
+PARA A SEÇÃO "5. CONCLUSÃO" (está vazia — sugestão de texto, ajustem o quanto quiserem):
+
+O estudo confirma, de forma geral, que repositórios populares do GitHub compartilham características observáveis, mas com exceções relevantes que impedem generalizações simples. Quanto à maturidade (RQ01), há predominância de repositórios com vários anos de existência, mas uma minoria não desprezível alcança grande popularidade rapidamente — maturidade ajuda, mas não é condição necessária. Quanto à contribuição externa (RQ02) e à frequência de atualização (RQ04), a maioria dos repositórios populares de fato recebe contribuição ativa e é atualizada com frequência muito alta (mediana de poucos dias), confirmando a ideia de que visibilidade e atividade andam juntas — com a exceção notável de repositórios que são mirrors ou cujo desenvolvimento ocorre fora do GitHub. O uso de releases formais (RQ03) é mais heterogêneo: quase 30% dos repositórios populares não usam esse mecanismo, sugerindo que ele não é universal mesmo entre projetos de destaque. A composição por linguagem (RQ05) confirma a predominância das linguagens mais populares do mercado, com uma inversão específica (TypeScript à frente de JavaScript nesta amostra) que sugere que projetos de grande porte adotam tipagem estática mais que a média geral do GitHub. A saúde de manutenção, medida por issues fechadas (RQ06), é alta na maioria dos casos. Por fim, cruzando popularidade de linguagem com indicadores de contribuição (RQ07), a relação não é linear: linguagens populares como Python lideram em quantidade de repositórios, mas não necessariamente em intensidade de contribuição por repositório.
+
+Como limitações principais, destacam-se: a natureza pontual da coleta (um único snapshot no tempo), o teto de 1.000 resultados imposto pela própria API do GitHub, e a dependência de uma única fonte externa (GitHub Octoverse) para avaliar popularidade de linguagem, que mede uma população mais ampla do que o recorte estudado aqui.
+
+Com mais tempo, o grupo coletaria os dados em múltiplos pontos no tempo (ex.: mensalmente), permitindo observar tendências em vez de um retrato único, e armazenaria as métricas em nível de repositório (não só agregadas) desde a primeira coleta, facilitando análises adicionais sem precisar reprocessar os dados brutos.
+
+
+PARA A SEÇÃO "3.6 INOVAÇÕES PROPOSTAS PELO GRUPO":
+
+RQ08 (proposta pelo grupo) — Repositórios sem linguagem primária detectável têm indicadores de manutenção piores que a média?
+
+Ao segmentar por linguagem para responder a RQ07, notamos que o grupo "Não informado" (87 repositórios, 8,7% da amostra — em geral listas "awesome" e materiais de referência) se destaca por indicadores muito abaixo da mediana geral: mediana de 129 PRs aceitas (vs. 768 da amostra geral), mediana de 0 releases (vs. 39 geral) e mediana de 181 dias sem atualização (vs. 5 dias geral).
+
+Isso sugere que repositórios sem uma linguagem de programação dominante — tipicamente conteúdo curado ou documentação, não software ativo — são populares, mas usam o GitHub de forma fundamentalmente diferente dos demais: menos como projeto de software em desenvolvimento contínuo, mais como referência estática. Esta é uma métrica adicional, não pedida no enunciado, cujo resultado aprofunda a leitura das RQ05 e RQ07: nem todo repositório popular no GitHub representa "software" no sentido de desenvolvimento ativo.
+
+(Já incluí a linha correspondente na Introdução e na Tabela de Métricas — seções acima.)
+
+
+PARA A SEÇÃO "5. REFERÊNCIAS" — adicionar entrada:
+
+GITHUB. Octoverse 2024: the state of open source. GitHub, 2024. Disponível em: https://octoverse.github.com/. Acesso em: 2026.

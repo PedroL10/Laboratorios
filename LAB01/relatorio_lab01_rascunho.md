@@ -1,0 +1,129 @@
+# Relatório de Laboratório — Rascunho (Sprint 2)
+
+> Rascunho de trabalho para transferir ao `Template_Relatorio_Laboratorio.docx`. Cobre só o escopo da Sprint 2 (introdução + hipóteses + metodologia de coleta). Resultados, Visualização Gráfica, Discussão e Conclusão ficam para a Sprint 3 / Relatório Final.
+
+**Curso:** Engenharia de Software
+**Disciplina:** Laboratório de Experimentação de Software
+**Turno/Período:** Noite / 6º
+**Professor(a):** Danilo Maia
+**Laboratório:** Lab01 — Características de repositórios populares + Setup do Kanban
+**Grupo (trio):** [PREENCHER — nomes dos 3 integrantes]
+**Link do repositório / GitHub Projects:** [PREENCHER]
+**Data de entrega:** [PREENCHER]
+
+---
+
+## 1. Introdução
+
+Repositórios populares no GitHub costumam ser usados como referência implícita de qualidade e boas práticas de engenharia de software, mas nem sempre fica claro quais características eles de fato compartilham. Este laboratório investiga essa questão de forma empírica, coletando métricas dos 1.000 repositórios com mais estrelas do GitHub via API GraphQL.
+
+**Questões de Pesquisa e hipóteses informais:**
+
+| RQ | Pergunta | Hipótese informal | Status |
+|---|---|---|---|
+| RQ01 | Sistemas populares são maduros/antigos? | Esperávamos maturidade predominante por acumulação orgânica de estrelas ao longo do tempo. | ✅ escrita (Issue #10) |
+| RQ02 | Sistemas populares recebem muita contribuição externa? | Esperávamos alto volume de PRs aceitas na maioria dos casos. | ✅ escrita (Issue #10) |
+| RQ03 | Sistemas populares lançam releases com frequência? | [PREENCHER — Integrante B] | ⏳ pendente |
+| RQ04 | Sistemas populares são atualizados com frequência? | [PREENCHER — Integrante B] | ⏳ pendente |
+| RQ05 | Sistemas populares são escritos nas linguagens mais populares? | [PREENCHER — Integrante C] | ⏳ pendente |
+| RQ06 | Sistemas populares possuem alto percentual de issues fechadas? | [PREENCHER — Integrante C] | ⏳ pendente |
+| RQ07 | Sistemas em linguagens populares recebem mais contribuição, lançam mais releases e são atualizados com mais frequência? | [PREENCHER — a definir quem fica com essa] | ⏳ pendente |
+
+**Hipóteses já escritas (RQ01/RQ02, Issue #10):**
+
+> RQ01: esperávamos que sistemas populares fossem majoritariamente maduros/antigos, por efeito de acumulação orgânica de estrelas ao longo do tempo. O dado confirma isso em parte (mediana de ~7,7 anos, mais de 1/3 com >10 anos), mas ~8% conseguiram popularidade massiva com menos de 1 ano de existência — sugerindo que certas categorias de projeto conseguem viralizar muito mais rápido que a média histórica do GitHub.
+>
+> RQ02: esperávamos que sistemas populares recebessem, em geral, muita contribuição externa (alto volume de PRs aceitas). O dado confirma a tendência geral (mediana de 768 PRs), mas revela uma exceção relevante: um pequeno grupo (2%) tem estrelas altíssimas sem receber PRs pela plataforma — geralmente porque o desenvolvimento real acontece fora do GitHub.
+
+**RQs/métricas de inovação propostas pelo grupo (30%):** [PREENCHER — ver seção 3.6]
+
+---
+
+## 2. Contexto
+
+Este é o Lab01 da disciplina, primeiro laboratório do semestre — não depende de dados de laboratórios anteriores. O objeto de estudo são os 1.000 repositórios com mais estrelas do GitHub, coletados via API GraphQL oficial (sem bibliotecas de terceiros específicas do GitHub, conforme exigido pelo enunciado).
+
+Fonte de referência para "linguagens mais populares" (RQ05): [PREENCHER — TIOBE Index, GitHut ou GitHub Octoverse — decisão do Integrante C, manter a mesma fonte do início ao fim do laboratório].
+
+---
+
+## 3. Metodologia
+
+### 3.1 Principais Desafios
+
+- **Custo de processamento da API do GitHub**: solicitar muitos repositórios de uma vez (50-100) com campos aninhados (issues, releases, pull requests) excedia o limite de custo da API e retornava erro 502/504, provavelmente por causa de repositórios com trackers de issues/PRs muito grandes. Resolvido com paginação em lotes pequenos (10 repositórios por requisição) e retry com backoff exponencial para erros 502/503/504.
+- **Limite de 1.000 resultados da Search API do GitHub**: tanto a API REST quanto a GraphQL limitam buscas a no máximo 1.000 resultados totais, independente da paginação — confirmado na prática ao coletar exatamente 1.000 repositórios sem erro.
+- **Certificado SSL na rede da instituição**: `pip install` e as chamadas à API falhavam por erro de certificado SSL não confiável na rede do laboratório. Resolvido instalando `pip-system-certs`, que faz o Python usar o repositório de certificados do próprio Windows.
+- **Permissão de escrita em diretório protegido do Python**: instalação de pacotes falhava por falta de permissão em `C:\Python311\Scripts`. Resolvido instalando pacotes com a flag `--user`.
+- **Divergência entre fontes de contagem de PRs aceitas**: ao validar manualmente `pull_requests_merged_total` via API REST de busca (`/search/issues`), os valores ficaram levemente diferentes (<1,5%) dos obtidos pela query GraphQL (`pullRequests(states: MERGED)`). Explicado pela API de busca usar um índice eventualmente consistente, enquanto a query GraphQL consulta a fonte primária diretamente — por isso o projeto usa a GraphQL como fonte oficial.
+- **Ausência de histórico de status no GitHub Projects**: exigiu snapshots manuais recorrentes via script GraphQL (ver Issue de snapshot), já que a API não expõe histórico de mudança de coluna.
+
+### 3.2 Tomadas de Decisão
+
+- **Linguagem do projeto**: Python, escolhido pela boa integração com análise de dados nas próximas sprints (RQs 03-07, visualizações).
+- **Fonte primária de PRs aceitas**: GraphQL (`pullRequests(states: MERGED) { totalCount }`) em vez da API de busca, por ser mais confiável (ver 3.1).
+- **Tamanho de lote (page size) na paginação**: fixado em 10 repositórios por requisição — testado empiricamente; lotes maiores (25-100) causavam erro de custo da API em repositórios com trackers muito grandes.
+- **Critério de amostra**: `search(query: "stars:>1 sort:stars-desc", type: REPOSITORY)` — exclui repositórios com 0-1 estrela (ruído) e ordena por estrelas decrescente.
+- **Limite de WIP na coluna Doing**: 3 cartões — um por integrante ativo no board (trio), garantindo que cada pessoa tenha no máximo uma tarefa em andamento por vez, evitando dispersão de foco e cartões abertos sem responsável dedicado simultâneo.
+- **Formato de saída por sprint**: JSON na Sprint 1 (100 repositórios, inspeção/validação), CSV na Sprint 2 (1.000 repositórios, formato exigido pelo enunciado para a base final).
+
+### 3.3 Etapas
+
+| Sprint | Entregas | Responsável | Issues (nº) |
+|---|---|---|---|
+| S01 | Autenticação GraphQL configurada | Você | #1 |
+| S01 | Query base para 100 repositórios | Você | #2 |
+| S01 | Validação de campos RQ01+RQ02 (amostra) | Você | #3 |
+| S01 | Validação de campos RQ03+RQ04 (amostra) | Integrante B | #4 — [PENDENTE] |
+| S01 | Validação de campos RQ05+RQ06 (amostra) | Integrante C | #5 — [PENDENTE] |
+| S01 | Integração da coleta final (100 repositórios) + registro em JSON | Você | #6, #7 |
+| S02 | Paginação + exportação de 1.000 repositórios em CSV | Você | #8 |
+| S02 | Validação RQ01+RQ02 (1.000 repositórios) + hipótese informal | Você | #10 |
+| S02 | Validação RQ03+RQ04 (1.000 repositórios) + hipótese informal | Integrante B | [PREENCHER Nº] — [PENDENTE] |
+| S02 | Validação RQ05+RQ06 (1.000 repositórios) + hipótese informal | Integrante C | [PREENCHER Nº] — [PENDENTE] |
+| S02 | Primeira versão do relatório | Você | [PREENCHER Nº] |
+| S02 | Snapshot do Project exportado em CSV | Você | [PREENCHER Nº] |
+
+**Configuração do processo:**
+- Colunas do board: `Backlog → To Do → Doing → Review → Done`.
+- Limite de WIP em `Doing`: 3 cartões (um por integrante ativo no board).
+- [Inserir print do board ao final do laboratório]
+
+### 3.4 Ferramentas
+
+- Python 3.11
+- `requests` (cliente HTTP genérico, consumindo a query GraphQL escrita pelo próprio grupo)
+- `python-dotenv` (variáveis de ambiente)
+- `pip-system-certs` (compatibilidade de certificados SSL)
+- API GraphQL oficial do GitHub (`https://api.github.com/graphql`)
+- GitHub Projects (v2) — [PREENCHER link do board]
+
+### 3.5 Tabela de Métricas
+
+| RQ | Métrica | Definição Operacional | Unidade | Ferramenta/Fonte |
+|---|---|---|---|---|
+| RQ01 | Idade do repositório | Data atual − `createdAt` | Dias/anos | Script GraphQL (API do GitHub) |
+| RQ02 | Total de PRs aceitas | `pullRequests(states: MERGED) { totalCount }` | Contagem | Script GraphQL (API do GitHub) |
+| RQ03 | Total de releases | `releases { totalCount }` | Contagem | Script GraphQL (API do GitHub) |
+| RQ04 | Tempo até a última atualização | Data atual − `pushedAt` | Dias | Script GraphQL (API do GitHub) |
+| RQ05 | Linguagem primária | `primaryLanguage.name` comparado à fonte de linguagens populares | Categórica | Script GraphQL + [fonte a definir] |
+| RQ06 | % de issues fechadas | `issues(states: CLOSED).totalCount / issues.totalCount` | Percentual | Script GraphQL (API do GitHub) |
+| RQ07 | RQ02/03/04 segmentadas por linguagem | Agrupamento das métricas de RQ02, RQ03, RQ04 por `primaryLanguage` | — | Análise sobre os dados já coletados |
+
+### 3.6 Inovações Propostas pelo Grupo (30% da nota)
+
+[PREENCHER — decisão do grupo: nova RQ, métrica adicional, mudança de arquitetura de coleta, ou metodologia complementar. Ainda não definido nesta sprint.]
+
+---
+
+## 4. Resultados
+*(fica para a Sprint 3 — análise e visualização das 7 RQs)*
+
+## 4.3 Discussão
+*(fica para a Sprint 3 / Relatório Final — comparação hipótese vs. resultado)*
+
+## 5. Conclusão
+*(fica para o Relatório Final)*
+
+## Referências
+ZUSE, Horst. A framework of software measurement. Walter de Gruyter, 2013.

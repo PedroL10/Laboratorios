@@ -1,0 +1,225 @@
+﻿{
+  "total_repositorios": 100,
+  "RQ03_releases": {
+    "mediana": 13.5,
+    "media": 131.89,
+    "min": 0,
+    "max": 1000,
+    "sem_release_percentual": 41.0
+  },
+  "RQ04_atualizacao": {
+    "mediana_dias": 0.0,
+    "media_dias": 51.13,
+    "min_dias": 0,
+    "max_dias": 786
+  },
+  "RQ05_linguagem": {
+    "distribuicao": [
+      {
+        "linguagem": "Python",
+        "quantidade": 24,
+        "percentual": 24.0
+      },
+      {
+        "linguagem": "TypeScript",
+        "quantidade": 17,
+        "percentual": 17.0
+      },
+      {
+        "linguagem": "Nao informado",
+        "quantidade": 13,
+        "percentual": 13.0
+      },
+      {
+        "linguagem": "JavaScript",
+        "quantidade": 9,
+        "percentual": 9.0
+      },
+      {
+        "linguagem": "Shell",
+        "quantidade": 5,
+        "percentual": 5.0
+      },
+      {
+        "linguagem": "C++",
+        "quantidade": 5,
+        "percentual": 5.0
+      },
+      {
+        "linguagem": "Rust",
+        "quantidade": 5,
+        "percentual": 5.0
+      },
+      {
+        "linguagem": "Go",
+        "quantidade": 5,
+        "percentual": 5.0
+      },
+      {
+        "linguagem": "Markdown",
+        "quantidade": 3,
+        "percentual": 3.0
+      },
+      {
+        "linguagem": "C",
+        "quantidade": 3,
+        "percentual": 3.0
+      },
+      {
+        "linguagem": "HTML",
+        "quantidade": 3,
+        "percentual": 3.0
+      },
+      {
+        "linguagem": "Jupyter Notebook",
+        "quantidade": 2,
+        "percentual": 2.0
+      },
+      {
+        "linguagem": "Batchfile",
+        "quantidade": 1,
+        "percentual": 1.0
+      },
+      {
+        "linguagem": "Dart",
+        "quantidade": 1,
+        "percentual": 1.0
+      },
+      {
+        "linguagem": "MDX",
+        "quantidade": 1,
+        "percentual": 1.0
+      },
+      {
+        "linguagem": "Java",
+        "quantidade": 1,
+        "percentual": 1.0
+      },
+      {
+        "linguagem": "C#",
+        "quantidade": 1,
+        "percentual": 1.0
+      },
+      {
+        "linguagem": "Swift",
+        "quantidade": 1,
+        "percentual": 1.0
+      }
+    ]
+  },
+  "RQ06_issues_fechadas": {
+    "mediana_percentual": 92.7,
+    "media_percentual": 83.5,
+    "repositorios_sem_issues": 12
+  },
+  "RQ07_por_linguagem": {
+    "Markdown": {
+      "quantidade_repos": 3,
+      "mediana_prs_aceitas": 157,
+      "mediana_releases": 0,
+      "mediana_dias_sem_update": 37
+    },
+    "Nao informado": {
+      "quantidade_repos": 13,
+      "mediana_prs_aceitas": 317,
+      "mediana_releases": 0,
+      "mediana_dias_sem_update": 122
+    },
+    "Python": {
+      "quantidade_repos": 24,
+      "mediana_prs_aceitas": 1760.5,
+      "mediana_releases": 34.5,
+      "mediana_dias_sem_update": 1.0
+    },
+    "TypeScript": {
+      "quantidade_repos": 17,
+      "mediana_prs_aceitas": 4400,
+      "mediana_releases": 67,
+      "mediana_dias_sem_update": 0
+    },
+    "Shell": {
+      "quantidade_repos": 5,
+      "mediana_prs_aceitas": 222,
+      "mediana_releases": 7,
+      "mediana_dias_sem_update": 1
+    },
+    "JavaScript": {
+      "quantidade_repos": 9,
+      "mediana_prs_aceitas": 1270,
+      "mediana_releases": 15,
+      "mediana_dias_sem_update": 1
+    },
+    "C": {
+      "quantidade_repos": 3,
+      "mediana_prs_aceitas": 153,
+      "mediana_releases": 52,
+      "mediana_dias_sem_update": 0
+    },
+    "HTML": {
+      "quantidade_repos": 3,
+      "mediana_prs_aceitas": 315,
+      "mediana_releases": 0,
+      "mediana_dias_sem_update": 0
+    },
+    "C++": {
+      "quantidade_repos": 5,
+      "mediana_prs_aceitas": 26699,
+      "mediana_releases": 471,
+      "mediana_dias_sem_update": 0
+    },
+    "Rust": {
+      "quantidade_repos": 5,
+      "mediana_prs_aceitas": 4208,
+      "mediana_releases": 39,
+      "mediana_dias_sem_update": 0
+    },
+    "Batchfile": {
+      "quantidade_repos": 1,
+      "mediana_prs_aceitas": 7,
+      "mediana_releases": 31,
+      "mediana_dias_sem_update": 47
+    },
+    "Jupyter Notebook": {
+      "quantidade_repos": 2,
+      "mediana_prs_aceitas": 307.0,
+      "mediana_releases": 0.0,
+      "mediana_dias_sem_update": 11.0
+    },
+    "Go": {
+      "quantidade_repos": 5,
+      "mediana_prs_aceitas": 3882,
+      "mediana_releases": 218,
+      "mediana_dias_sem_update": 0
+    },
+    "Dart": {
+      "quantidade_repos": 1,
+      "mediana_prs_aceitas": 49690,
+      "mediana_releases": 7,
+      "mediana_dias_sem_update": 0
+    },
+    "MDX": {
+      "quantidade_repos": 1,
+      "mediana_prs_aceitas": 9487,
+      "mediana_releases": 94,
+      "mediana_dias_sem_update": 0
+    },
+    "Java": {
+      "quantidade_repos": 1,
+      "mediana_prs_aceitas": 996,
+      "mediana_releases": 10,
+      "mediana_dias_sem_update": 3
+    },
+    "C#": {
+      "quantidade_repos": 1,
+      "mediana_prs_aceitas": 607,
+      "mediana_releases": 333,
+      "mediana_dias_sem_update": 0
+    },
+    "Swift": {
+      "quantidade_repos": 1,
+      "mediana_prs_aceitas": 1245,
+      "mediana_releases": 15,
+      "mediana_dias_sem_update": 1
+    }
+  }
+}
