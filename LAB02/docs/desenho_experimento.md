@@ -72,7 +72,7 @@ Os enunciados, testes de aceitação, linguagem, ambiente e limite de tempo ser�
 
 ## 6. Objetos experimentais
 
-Serão utilizados quatro katas de dificuldade comparável, identificados provisoriamente como `K1`, `K2`, `K3` e `K4`. Os katas serão escolhidos e documentados na Issue 2.
+Serão utilizados quatro katas autorais, identificados como `K1`, `K2`, `K3` e `K4`, documentados em `docs/katas.md`. K1 e K2 foram classificados como fáceis; K3 e K4, como médios. A classificação será validada em um piloto curto antes da execução oficial.
 
 Cada kata deverá possuir:
 
@@ -96,7 +96,7 @@ Cada participante resolverá os quatro katas:
 - um trial por kata;
 - no máximo 35 minutos por trial.
 
-A distribuição e a ordem final serão definidas após a seleção dos katas. A matriz inicial planejada é:
+A distribuição e a ordem final serão definidas na Issue 3. A matriz inicial planejada é:
 
 | Participante | K1     | K2     | K3     | K4     |
 | ------------ | ------ | ------ | ------ | ------ |
@@ -186,10 +186,9 @@ Serão reportados mediana e IQR por tratamento. O teste de Wilcoxon para amostra
 - Outliers podem influenciar a interpretação, por isso serão reportados mediana e IQR.
 - Trials censurados serão mantidos na análise para evitar favorecer o tratamento com menos falhas.
 
-## 13. Decisões pendentes para a Issue 2
+## 13. Decisões pendentes para as próximas Issues
 
-- nomes e enunciados dos quatro katas;
-- testes de aceitação de cada kata;
+- revisão coletiva dos nomes, enunciados e testes de aceitação dos quatro katas;
 - participantes reais do grupo;
 - matriz final de distribuição dos tratamentos;
 - assistente de IA e versão utilizada;
