@@ -59,6 +59,9 @@ O script recusa gravar duas vezes a mesma tripla participante/kata/tratamento.
 Se uma coleta precisar ser refeita por erro de ambiente, mantenha o registro
 anterior e documente a decisao em `notes` do trial ou no historico do Git.
 
+O esquema foi congelado na Sprint 1 pela Issue #26, antes do inicio dos trials,
+para que todos os participantes produzam registros comparaveis.
+
 ## Regras de integridade
 
 - Os CSVs usam UTF-8, cabecalho na primeira linha e virgula como separador.
