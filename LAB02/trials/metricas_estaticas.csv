@@ -1,0 +1,1 @@
+participant_id,kata_id,treatment,source_path,analyzed_at,loc,lloc,sloc,comments,blank,complexity_function_count,complexity_total,complexity_mean,complexity_max,complexity_rank_worst,duplicate_lines,duplicate_percentage,radon_version,jscpd_version

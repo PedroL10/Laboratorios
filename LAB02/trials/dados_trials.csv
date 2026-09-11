@@ -1,0 +1,1 @@
+participant_id,kata_id,treatment,order,start_time,end_time,duration_seconds,time_to_green_seconds,time_box_seconds,censored,tests_total,tests_passed,tests_failed,prompts_count,python_version,pytest_version,assistant_name,assistant_version,notes

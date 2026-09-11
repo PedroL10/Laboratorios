@@ -244,7 +244,10 @@ assistant_version=none
 notes=preencher
 ```
 
-Os arquivos de dados devem ser armazenados em uma pasta de trials, sem credenciais e sem tokens. O formato CSV ou JSON final sera definido na Issue 7.
+Os arquivos de dados devem ser armazenados em `LAB02/trials`, sem credenciais
+nem tokens. O formato definitivo e CSV UTF-8 e esta documentado em
+`trials/README.md`: `dados_trials.csv` guarda os resultados funcionais e
+`metricas_estaticas.csv` guarda LOC, complexidade e duplicacao.
 
 ## 11. Depois de cada trial
 
@@ -257,7 +260,10 @@ Depois da tentativa:
 5. Registre observacoes sobre dificuldades, interrupcoes ou erros.
 6. Nao compare resultados com outros participantes antes de todos concluirem os trials.
 
-As metricas estaticas serao executadas depois sobre o codigo final preservado, usando o mesmo procedimento para todos os trials.
+As metricas estaticas serao executadas depois sobre o codigo final preservado,
+usando o mesmo procedimento para todos os trials. Consulte
+`docs/metricas_estaticas.md` e execute `scripts/collect_static_metrics.py`
+uma unica vez para cada trial finalizado.
 
 ## 12. O que nao pode ser feito
 
