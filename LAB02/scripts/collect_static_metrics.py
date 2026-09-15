@@ -88,9 +88,13 @@ def radon_metrics(source: Path) -> dict[str, object]:
 
 def find_jscpd_command() -> list[str]:
     """Prefere instalacao local versionada e aceita JSCPD no PATH."""
-    local_binary = LAB_ROOT / "node_modules" / ".bin" / "jscpd"
-    if local_binary.exists():
-        return [str(local_binary)]
+    local_dir = LAB_ROOT / "node_modules" / ".bin"
+    for name in ("jscpd.cmd", "jscpd.ps1", "jscpd"):
+        candidate = local_dir / name
+        if candidate.exists():
+            if candidate.suffix == ".ps1":
+                return ["powershell", "-File", str(candidate)]
+            return [str(candidate)]
     if binary := shutil.which("jscpd"):
         return [binary]
     raise RuntimeError("JSCPD nao encontrado. Execute `npm install` dentro de LAB02.")

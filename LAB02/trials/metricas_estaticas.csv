@@ -1,1 +1,5 @@
 participant_id,kata_id,treatment,source_path,analyzed_at,loc,lloc,sloc,comments,blank,complexity_function_count,complexity_total,complexity_mean,complexity_max,complexity_rank_worst,duplicate_lines,duplicate_percentage,radon_version,jscpd_version
+P2,K3,IA,trials\P2\K3_IA\solution.py,2026-09-15T18:07:17.297853+00:00,25,22,22,0,3,1,8,8.0,8,B,0,0.0,6.0.1,jscpd 5.2.0
+P2,K4,IA,trials\P2\K4_IA\solution.py,2026-09-15T18:07:22.611555+00:00,46,31,40,0,6,1,7,7.0,7,B,0,0.0,6.0.1,jscpd 5.2.0
+P2,K2,MANUAL,trials\P2\K2_MANUAL\solution.py,2026-09-15T18:07:25.767443+00:00,41,30,28,0,13,1,14,14.0,14,C,0,0.0,6.0.1,jscpd 5.2.0
+P2,K1,MANUAL,trials\P2\K1_MANUAL\solution.py,2026-09-15T18:10:45.001091+00:00,12,6,9,0,3,1,5,5.0,5,A,0,0.0,6.0.1,jscpd 5.2.0
