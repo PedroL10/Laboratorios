@@ -1,2 +1,4 @@
 pytest==8.4.2
 radon==6.0.1
+pandas==3.0.6
+scipy==1.17.1

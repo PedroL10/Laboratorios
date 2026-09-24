@@ -1,0 +1,103 @@
+{
+  "n_trials": 8,
+  "participants_present": [
+    "P1",
+    "P2"
+  ],
+  "participants_missing": [
+    "P3"
+  ],
+  "rq1_time_to_green": {
+    "description_by_treatment": {
+      "IA": {
+        "n": 4,
+        "median": 192.5,
+        "iqr": 302.0,
+        "q1": 37.0,
+        "q3": 339.0,
+        "min": 4.0,
+        "max": 345.0
+      },
+      "MANUAL": {
+        "n": 4,
+        "median": 655.0,
+        "iqr": 731.0,
+        "q1": 271.0,
+        "q3": 1002.0,
+        "min": 4.0,
+        "max": 1158.0
+      }
+    },
+    "outliers": [],
+    "paired_katas": [
+      "K1",
+      "K2",
+      "K3",
+      "K4"
+    ],
+    "wilcoxon": {
+      "n_pairs": 4,
+      "statistic": 2.0,
+      "p_value": 0.375,
+      "significant_0.05": false
+    }
+  },
+  "rq2_success_rate": {
+    "description_by_treatment": {
+      "IA": {
+        "n": 4,
+        "median": 1.0,
+        "iqr": 0.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "MANUAL": {
+        "n": 4,
+        "median": 1.0,
+        "iqr": 0.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "min": 1.0,
+        "max": 1.0
+      }
+    },
+    "outliers": [],
+    "paired_katas": [
+      "K1",
+      "K2",
+      "K3",
+      "K4"
+    ],
+    "wilcoxon": {
+      "n_pairs": 4,
+      "statistic": 0.0,
+      "p_value": 1.0,
+      "significant_0.05": false
+    }
+  },
+  "rq2_tests_failed": {
+    "description_by_treatment": {
+      "IA": {
+        "n": 4,
+        "median": 0.0,
+        "iqr": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "MANUAL": {
+        "n": 4,
+        "median": 0.0,
+        "iqr": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      }
+    }
+  },
+  "warning": "Participantes ausentes no dataset: P3. Este resultado e preliminar ate os 12 trials estarem completos."
+}

@@ -1,0 +1,159 @@
+{
+  "n_trials": 8,
+  "participants_present": [
+    "P1",
+    "P2"
+  ],
+  "loc": {
+    "description_by_treatment": {
+      "IA": {
+        "n": 4,
+        "median": 35.5,
+        "iqr": 23.25,
+        "q1": 24.0,
+        "q3": 47.25,
+        "min": 21.0,
+        "max": 51.0
+      },
+      "MANUAL": {
+        "n": 4,
+        "median": 39.5,
+        "iqr": 18.0,
+        "q1": 31.5,
+        "q3": 49.5,
+        "min": 12.0,
+        "max": 75.0
+      }
+    },
+    "outliers": [],
+    "paired_katas": [
+      "K1",
+      "K2",
+      "K3",
+      "K4"
+    ],
+    "wilcoxon": {
+      "n_pairs": 4,
+      "statistic": 3.0,
+      "p_value": 0.625,
+      "significant_0.05": false
+    }
+  },
+  "complexity_mean": {
+    "description_by_treatment": {
+      "IA": {
+        "n": 4,
+        "median": 7.5,
+        "iqr": 3.75,
+        "q1": 6.5,
+        "q3": 10.25,
+        "min": 5.0,
+        "max": 17.0
+      },
+      "MANUAL": {
+        "n": 4,
+        "median": 12.0,
+        "iqr": 5.25,
+        "q1": 8.75,
+        "q3": 14.0,
+        "min": 5.0,
+        "max": 14.0
+      }
+    },
+    "outliers": [
+      {
+        "participant_id": "P1",
+        "kata_id": "K2",
+        "treatment": "IA",
+        "complexity_mean": 17.0,
+        "bounds": [
+          0.875,
+          15.875
+        ]
+      }
+    ],
+    "paired_katas": [
+      "K1",
+      "K2",
+      "K3",
+      "K4"
+    ],
+    "wilcoxon": {
+      "n_pairs": 4,
+      "statistic": 2.0,
+      "p_value": 0.75,
+      "significant_0.05": false
+    }
+  },
+  "complexity_per_loc": {
+    "description_by_treatment": {
+      "IA": {
+        "n": 4,
+        "median": 0.27904761904761904,
+        "iqr": 0.10671842650103525,
+        "q1": 0.21661490683229812,
+        "q3": 0.32333333333333336,
+        "min": 0.15217391304347827,
+        "max": 0.3333333333333333
+      },
+      "MANUAL": {
+        "n": 4,
+        "median": 0.30231065468549423,
+        "iqr": 0.1162291399229782,
+        "q1": 0.24403508771929824,
+        "q3": 0.36026422764227645,
+        "min": 0.18666666666666668,
+        "max": 0.4166666666666667
+      }
+    },
+    "outliers": [],
+    "paired_katas": [
+      "K1",
+      "K2",
+      "K3",
+      "K4"
+    ],
+    "wilcoxon": {
+      "n_pairs": 4,
+      "statistic": 3.0,
+      "p_value": 0.625,
+      "significant_0.05": false
+    }
+  },
+  "duplicate_percentage": {
+    "description_by_treatment": {
+      "IA": {
+        "n": 4,
+        "median": 0.0,
+        "iqr": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "MANUAL": {
+        "n": 4,
+        "median": 0.0,
+        "iqr": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      }
+    },
+    "outliers": [],
+    "paired_katas": [
+      "K1",
+      "K2",
+      "K3",
+      "K4"
+    ],
+    "wilcoxon": {
+      "n_pairs": 4,
+      "statistic": 0.0,
+      "p_value": 1.0,
+      "significant_0.05": false
+    }
+  },
+  "warning": "Participantes ausentes no dataset: P3. Este resultado e preliminar ate os 12 trials estarem completos."
+}
