@@ -97,7 +97,11 @@ class GitHubClient:
 
     def get(self, path: str, params: dict | None = None) -> dict | list:
         """Faz um GET e devolve o JSON da resposta (uma unica pagina)."""
-        return self._request(self._url(path), params).json()
+        return self.get_response(path, params).json()
+
+    def get_response(self, path: str, params: dict | None = None) -> requests.Response:
+        """Faz um GET e devolve a resposta inteira, para quem precisa dos cabecalhos."""
+        return self._request(self._url(path), params)
 
     def get_paginated(
         self,

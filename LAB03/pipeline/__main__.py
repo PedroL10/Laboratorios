@@ -5,13 +5,15 @@ Etapas implementadas ate agora:
 2. filtro dos candidatos que usam GitHub Actions (dados/filtro_actions.csv);
 3. criterio de inclusao: >= 5 releases e >= 50 runs validos na janela (dados/criterio_inclusao.csv);
 4. funil de selecao e amostra final (resultados/funil_selecao.csv/.md e resultados/amostra.csv);
-5. coleta de releases (cache/releases/*.json) e commits entre releases
+5. metadados da amostra: contribuidores (dados/contribuidores.csv) e idade, acrescentados
+   a resultados/amostra.csv;
+6. coleta de releases (cache/releases/*.json) e commits entre releases
    (cache/commits_entre_releases/*.json) dos repositorios da amostra;
-6. calculo do lead time (RQ 02, variantes a e b) por repositorio (dados/lead_time.csv).
+7. calculo do lead time (RQ 02, variantes a e b) por repositorio (dados/lead_time.csv).
 As etapas de coleta de workflow runs e das demais metricas serao adicionadas por
 outras tasks.
 
-As etapas 1 a 3 salvam o seu CSV em `dados_dir`. Se o arquivo ja existir, a etapa e
+As etapas 1, 2, 3 e 5 salvam o seu CSV em `dados_dir`. Se o arquivo ja existir, a etapa e
 reaproveitada (ou retomada); para refaze-la do zero, apague o arquivo. A etapa 4 nao
 chama a API e e sempre refeita, em `resultados_dir` (versionado no repositorio).
 """
@@ -45,6 +47,7 @@ from pipeline.github_client import (
     erro_transitorio,
     status_http,
 )
+from pipeline.metadados import coletar_contribuidores, enriquecer_amostra
 from pipeline.releases import coletar_releases, releases_na_janela, releases_principais
 from pipeline.selecao import CANDIDATE_FIELDS, buscar_candidatos, carregar_csv, salvar_csv
 
@@ -188,6 +191,38 @@ def etapa_funil(
     return amostra
 
 
+def etapa_metadados(
+    client: GitHubClient,
+    amostra: list[dict],
+    config: dict,
+    dados_dir: Path,
+    resultados_dir: Path,
+) -> list[dict]:
+    """Acrescenta contribuidores e idade a amostra e regrava resultados/amostra.csv."""
+    janela = Janela(config["janela"]["inicio"], config["janela"]["fim"])
+    print(f"\n[5] Coletando contribuidores de {len(amostra)} repositorios da amostra...")
+
+    def progresso(feitos: int, total: int) -> None:
+        if feitos % 25 == 0 or feitos == total:
+            print(f"    {feitos}/{total} contribuidores contados")
+
+    contribuidores = coletar_contribuidores(
+        client, amostra, dados_dir / "contribuidores.csv", progresso
+    )
+    amostra = enriquecer_amostra(amostra, contribuidores, janela.fim_data)
+    salvar_csv(amostra, resultados_dir / "amostra.csv", list(amostra[0].keys()))
+
+    sem_valor: dict[str, int] = {}
+    for repo in amostra:
+        if repo["erro_contribuidores"]:
+            sem_valor[repo["erro_contribuidores"]] = sem_valor.get(repo["erro_contribuidores"], 0) + 1
+    print(f"    {len(amostra) - sum(sem_valor.values())} de {len(amostra)} com contribuidores contados")
+    for motivo, n in sorted(sem_valor.items()):
+        print(f"    sem contagem ({motivo}): {n}")
+    print(f"    Amostra com metadados salva em {resultados_dir / 'amostra.csv'}")
+    return amostra
+
+
 def etapa_releases_e_lead_time(
     client: GitHubClient,
     candidatos: list[dict],
@@ -197,7 +232,7 @@ def etapa_releases_e_lead_time(
 ) -> None:
     full_names = [c["full_name"] for c in candidatos]
 
-    print(f"\n[5] Coletando releases de {len(full_names)} repositorios...")
+    print(f"\n[6] Coletando releases de {len(full_names)} repositorios...")
 
     def progresso_releases(feitos: int, total: int) -> None:
         if feitos % 50 == 0 or feitos == total:
@@ -213,7 +248,7 @@ def etapa_releases_e_lead_time(
             principais = releases_na_janela(principais, inicio, fim)
         principais_por_repo[full_name] = principais
 
-    print("\n[6] Coletando commits entre releases...")
+    print("\n[7] Coletando commits entre releases...")
 
     def progresso_commits(feitos: int, total: int) -> None:
         if feitos % 50 == 0 or feitos == total:
@@ -279,6 +314,7 @@ def main(argv: list[str] | None = None) -> int:
         com_actions, filtro_actions = etapa_filtro_actions(client, candidatos, dados_dir)
         avaliados = etapa_criterio(client, com_actions, config, dados_dir)
         amostra = etapa_funil(candidatos, filtro_actions, avaliados, config, resultados_dir)
+        amostra = etapa_metadados(client, amostra, config, dados_dir, resultados_dir)
         etapa_releases_e_lead_time(
             client, amostra, config.get("janela", {}), cache_dir, dados_dir
         )
