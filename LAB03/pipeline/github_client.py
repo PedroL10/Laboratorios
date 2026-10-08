@@ -39,6 +39,31 @@ def read_token() -> str:
     return token
 
 
+def cota_esgotada(exc: requests.HTTPError) -> bool:
+    """Diz se o erro HTTP e de cota esgotada (403/429 com X-RateLimit-Remaining = 0).
+
+    Nesse caso a coleta deve parar para ser retomada depois, e nao descartar o repositorio.
+    """
+    response = exc.response
+    if response is None or response.status_code not in (403, 429):
+        return False
+    return response.headers.get("X-RateLimit-Remaining") == "0"
+
+
+def status_http(exc: requests.HTTPError) -> int | None:
+    return exc.response.status_code if exc.response is not None else None
+
+
+def erro_transitorio(exc: requests.HTTPError) -> bool:
+    """Diz se o erro e passageiro (cota esgotada ou 5xx do servidor).
+
+    Esses erros nao dizem nada sobre o repositorio: a coleta deve parar (ou repetir)
+    em vez de descarta-lo.
+    """
+    status = status_http(exc)
+    return cota_esgotada(exc) or (status is not None and status >= 500)
+
+
 class GitHubClient:
     """Cliente minimo da API REST do GitHub, com autenticacao e paginacao."""
 

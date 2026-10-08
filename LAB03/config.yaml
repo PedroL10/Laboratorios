@@ -2,9 +2,11 @@
 # O token do GitHub NAO fica aqui: ele e lido da variavel de ambiente GITHUB_TOKEN.
 
 janela:
-  # Janela de observacao de 12 meses, com datas fixadas pelo professor (formato AAAA-MM-DD).
-  inicio: null
-  fim: null
+  # Janela de observacao de 12 meses (secao 3 do enunciado), formato AAAA-MM-DD.
+  # Fixada pelo grupo: os 12 meses completos anteriores ao inicio da coleta (out/2026).
+  # Datas fixas, e nao "ultimos 12 meses a partir de hoje", para a coleta ser reprodutivel.
+  inicio: "2025-10-01"
+  fim: "2026-09-30"
 
 selecao:
   # Quantidade de repositorios da amostra (100 na Sprint 1, >= 300 na Sprint 2).
@@ -21,3 +23,6 @@ cache_dir: cache
 
 # Pasta onde os CSVs gerados pelo pipeline sao salvos.
 dados_dir: dados
+
+# Pasta dos resultados versionados no repositorio (funil de selecao e amostra final).
+resultados_dir: resultados

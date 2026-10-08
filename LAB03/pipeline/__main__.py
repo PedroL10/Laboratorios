@@ -3,27 +3,48 @@
 Etapas implementadas ate agora:
 1. busca de repositorios candidatos por faixas de estrelas (dados/candidatos.csv);
 2. filtro dos candidatos que usam GitHub Actions (dados/filtro_actions.csv);
-3. coleta de releases (cache/releases/*.json) e commits entre releases
-   (cache/commits_entre_releases/*.json);
-4. calculo do lead time (RQ 02, variantes a e b) por repositorio (dados/lead_time.csv).
+3. criterio de inclusao: >= 5 releases e >= 50 runs validos na janela (dados/criterio_inclusao.csv);
+4. funil de selecao e amostra final (resultados/funil_selecao.csv/.md e resultados/amostra.csv);
+5. coleta de releases (cache/releases/*.json) e commits entre releases
+   (cache/commits_entre_releases/*.json) dos repositorios da amostra;
+6. calculo do lead time (RQ 02, variantes a e b) por repositorio (dados/lead_time.csv).
 As etapas de coleta de workflow runs e das demais metricas serao adicionadas por
 outras tasks.
 
-Cada etapa salva o seu CSV em `dados_dir`. Se o arquivo ja existir, a etapa e
-reaproveitada (ou retomada); para refaze-la do zero, apague o arquivo.
+As etapas 1 a 3 salvam o seu CSV em `dados_dir`. Se o arquivo ja existir, a etapa e
+reaproveitada (ou retomada); para refaze-la do zero, apague o arquivo. A etapa 4 nao
+chama a API e e sempre refeita, em `resultados_dir` (versionado no repositorio).
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
+from datetime import datetime
 from pathlib import Path
+
+import requests
 
 from metricas.lead_time import lead_time_repositorio
 from pipeline.commits import coletar_commits_entre_releases
 from pipeline.config import load_config
+from pipeline.criterio_inclusao import Janela, aplicar_criterio, incluido
 from pipeline.filtro_actions import filtrar_actions, usa_actions
-from pipeline.github_client import GitHubClient, MissingTokenError
+from pipeline.funil import (
+    FUNIL_FIELDS,
+    funil_markdown,
+    funil_para_csv,
+    montar_amostra,
+    montar_funil,
+    salvar_markdown,
+)
+from pipeline.github_client import (
+    GitHubClient,
+    MissingTokenError,
+    cota_esgotada,
+    erro_transitorio,
+    status_http,
+)
 from pipeline.releases import coletar_releases, releases_na_janela, releases_principais
 from pipeline.selecao import CANDIDATE_FIELDS, buscar_candidatos, carregar_csv, salvar_csv
 
@@ -71,7 +92,8 @@ def etapa_busca(client: GitHubClient, selecao: dict, dados_dir: Path) -> list[di
 
 def etapa_filtro_actions(
     client: GitHubClient, candidatos: list[dict], dados_dir: Path
-) -> list[dict]:
+) -> tuple[list[dict], list[dict]]:
+    """Devolve `(com_actions, resultado)`: os candidatos aprovados e uma linha por candidato."""
     caminho = dados_dir / "filtro_actions.csv"
     print("\n[2] Verificando quais candidatos usam GitHub Actions...")
 
@@ -89,7 +111,81 @@ def etapa_filtro_actions(
     print(f"    {len(com_actions)} de {len(candidatos)} usam GitHub Actions")
     for motivo, n in sorted(motivos.items()):
         print(f"    descartados ({motivo}): {n}")
-    return com_actions
+    return com_actions, resultado
+
+
+def etapa_criterio(
+    client: GitHubClient, com_actions: list[dict], config: dict, dados_dir: Path
+) -> list[dict]:
+    """Devolve as linhas do criterio dos repositorios avaliados (incluidos e descartados)."""
+    selecao = config["selecao"]
+    janela = Janela(config["janela"]["inicio"], config["janela"]["fim"])
+    n_repos = selecao.get("n_repos")
+    print(
+        f"\n[3] Aplicando criterio de inclusao na janela {janela.filtro_created()} "
+        f"(>= {selecao['min_releases']} releases e >= {selecao['min_workflow_runs']} runs validos)..."
+    )
+
+    def progresso(feitos: int, total: int) -> None:
+        if feitos % 50 == 0:
+            print(f"    {feitos} avaliados nesta execucao")
+
+    avaliados = aplicar_criterio(
+        client,
+        com_actions,
+        janela,
+        selecao["min_releases"],
+        selecao["min_workflow_runs"],
+        n_repos,
+        dados_dir / "criterio_inclusao.csv",
+        progresso,
+    )
+    amostra = [a for a in avaliados if incluido(a)]
+
+    motivos: dict[str, int] = {}
+    for a in avaliados:
+        if not incluido(a):
+            motivos[a["motivo_descarte"]] = motivos.get(a["motivo_descarte"], 0) + 1
+    print(f"    {len(avaliados)} de {len(com_actions)} avaliados; {len(amostra)} incluidos na amostra")
+    for motivo, n in sorted(motivos.items()):
+        print(f"    descartados ({motivo}): {n}")
+    if n_repos is not None and len(amostra) < n_repos:
+        print(f"    ATENCAO: amostra abaixo de {n_repos}. Aumente selecao.max_candidatos.")
+    return avaliados
+
+
+def etapa_funil(
+    candidatos: list[dict],
+    filtro_actions: list[dict],
+    avaliados: list[dict],
+    config: dict,
+    resultados_dir: Path,
+) -> list[dict]:
+    """Gera o funil e a amostra final; devolve os repositorios da amostra."""
+    selecao = config["selecao"]
+    janela = Janela(config["janela"]["inicio"], config["janela"]["fim"])
+    print("\n[4] Gerando funil de selecao e amostra final...")
+
+    funil = montar_funil(
+        candidatos,
+        filtro_actions,
+        avaliados,
+        selecao["estrelas_min"],
+        selecao["min_releases"],
+        selecao["min_workflow_runs"],
+    )
+    salvar_csv(funil_para_csv(funil), resultados_dir / "funil_selecao.csv", FUNIL_FIELDS)
+    markdown = funil_markdown(funil, janela.filtro_created())
+    salvar_markdown(markdown, resultados_dir / "funil_selecao.md")
+
+    amostra = montar_amostra(candidatos, avaliados)
+    if amostra:
+        salvar_csv(amostra, resultados_dir / "amostra.csv", list(amostra[0].keys()))
+
+    print("\n" + markdown)
+    print(f"    Funil salvo em {resultados_dir / 'funil_selecao.csv'} e .md")
+    print(f"    Amostra final ({len(amostra)} repositorios) salva em {resultados_dir / 'amostra.csv'}")
+    return amostra
 
 
 def etapa_releases_e_lead_time(
@@ -101,7 +197,7 @@ def etapa_releases_e_lead_time(
 ) -> None:
     full_names = [c["full_name"] for c in candidatos]
 
-    print(f"\n[3] Coletando releases de {len(full_names)} repositorios...")
+    print(f"\n[5] Coletando releases de {len(full_names)} repositorios...")
 
     def progresso_releases(feitos: int, total: int) -> None:
         if feitos % 50 == 0 or feitos == total:
@@ -117,7 +213,7 @@ def etapa_releases_e_lead_time(
             principais = releases_na_janela(principais, inicio, fim)
         principais_por_repo[full_name] = principais
 
-    print("\n[4] Coletando commits entre releases...")
+    print("\n[6] Coletando commits entre releases...")
 
     def progresso_commits(feitos: int, total: int) -> None:
         if feitos % 50 == 0 or feitos == total:
@@ -138,6 +234,27 @@ def etapa_releases_e_lead_time(
     print(f"    lead time de {len(linhas)} repositorios salvo em {caminho}")
 
 
+
+def mensagem_de_erro(exc: requests.HTTPError) -> str:
+    """Explica o erro HTTP que interrompeu a coleta e o que fazer."""
+    status = status_http(exc)
+    if status == 401:
+        return "token do GitHub invalido ou expirado (401). Gere um novo e defina GITHUB_TOKEN."
+    if cota_esgotada(exc):
+        reset = exc.response.headers.get("X-RateLimit-Reset")
+        quando = datetime.fromtimestamp(int(reset)).strftime("%H:%M") if reset else "em ate 1 hora"
+        return (
+            f"cota da API esgotada. Ela renova as {quando}; rode o comando de novo "
+            "depois disso e a coleta continua de onde parou."
+        )
+    if erro_transitorio(exc):
+        return (
+            f"erro temporario do GitHub ({status}). Rode o comando de novo: "
+            "a coleta continua de onde parou."
+        )
+    return str(exc)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     config = load_config(args.config)
@@ -149,16 +266,25 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Erro: {exc}", file=sys.stderr)
         return 1
 
-    rate = client.get("/rate_limit")["resources"]["core"]
-    print(f"API do GitHub acessivel. Requisicoes restantes: {rate['remaining']}/{rate['limit']}")
+    try:
+        rate = client.get("/rate_limit")["resources"]["core"]
+        print(f"API do GitHub acessivel. Requisicoes restantes: {rate['remaining']}/{rate['limit']}")
 
-    selecao = config["selecao"]
-    dados_dir = Path(config.get("dados_dir", "dados"))
-    cache_dir = Path(config.get("cache_dir", "cache"))
+        selecao = config["selecao"]
+        dados_dir = Path(config.get("dados_dir", "dados"))
+        resultados_dir = Path(config.get("resultados_dir", "resultados"))
+        cache_dir = Path(config.get("cache_dir", "cache"))
 
-    candidatos = etapa_busca(client, selecao, dados_dir)
-    com_actions = etapa_filtro_actions(client, candidatos, dados_dir)
-    etapa_releases_e_lead_time(client, com_actions, config.get("janela", {}), cache_dir, dados_dir)
+        candidatos = etapa_busca(client, selecao, dados_dir)
+        com_actions, filtro_actions = etapa_filtro_actions(client, candidatos, dados_dir)
+        avaliados = etapa_criterio(client, com_actions, config, dados_dir)
+        amostra = etapa_funil(candidatos, filtro_actions, avaliados, config, resultados_dir)
+        etapa_releases_e_lead_time(
+            client, amostra, config.get("janela", {}), cache_dir, dados_dir
+        )
+    except requests.HTTPError as exc:
+        print(f"\nErro: {mensagem_de_erro(exc)}", file=sys.stderr)
+        return 1
     return 0
 
 
