@@ -9,9 +9,15 @@ janela:
 selecao:
   # Quantidade de repositorios da amostra (100 na Sprint 1, >= 300 na Sprint 2).
   n_repos: 100
+  # A busca usa stars:>estrelas_min, como no enunciado (stars:>1000).
   estrelas_min: 1000
+  # Quantos candidatos buscar antes dos filtros (cada fatia da busca traz ate 1.000).
+  max_candidatos: 2000
   min_releases: 5
   min_workflow_runs: 50
 
 # Pasta onde as respostas da API sao salvas para cache/retomada.
 cache_dir: cache
+
+# Pasta onde os CSVs gerados pelo pipeline sao salvos.
+dados_dir: dados
