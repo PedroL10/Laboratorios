@@ -141,6 +141,12 @@ def buscar_candidatos(
     return list(candidatos.values())[:max_candidatos], fatias
 
 
+def carregar_csv(caminho: str | Path) -> list[dict]:
+    """Le um CSV gerado por `salvar_csv` (os valores voltam como texto)."""
+    with Path(caminho).open(encoding="utf-8", newline="") as f:
+        return list(csv.DictReader(f))
+
+
 def salvar_csv(linhas: list[dict], caminho: str | Path, campos: list[str]) -> Path:
     """Salva uma lista de dicionarios em CSV (UTF-8), criando a pasta se preciso."""
     caminho = Path(caminho)
