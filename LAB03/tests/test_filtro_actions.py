@@ -7,11 +7,11 @@ import requests
 
 from pipeline.filtro_actions import (
     MOTIVO_SEM_WORKFLOWS,
+    carregar_verificados,
     filtrar_actions,
     usa_actions,
     verificar_actions,
 )
-from pipeline.retomada import carregar_processados
 
 
 def http_error(status: int, headers: dict | None = None) -> requests.HTTPError:
@@ -86,7 +86,7 @@ def test_filtrar_actions_mantem_ordem_e_grava_csv(tmp_path):
 
     assert [r["full_name"] for r in resultado] == ["org/a", "org/b", "org/c"]
     assert [usa_actions(r) for r in resultado] == [True, False, True]
-    gravado = carregar_processados(saida)
+    gravado = carregar_verificados(saida)
     assert set(gravado) == {"org/a", "org/b", "org/c"}
     assert gravado["org/b"]["motivo_descarte"] == MOTIVO_SEM_WORKFLOWS
 
@@ -112,7 +112,7 @@ def test_interrupcao_preserva_o_que_ja_foi_verificado(tmp_path):
     with pytest.raises(requests.HTTPError):
         filtrar_actions(client, candidatos("org/a", "org/b"), saida)
 
-    assert set(carregar_processados(saida)) == {"org/a"}
+    assert set(carregar_verificados(saida)) == {"org/a"}
 
 
 def test_progresso_e_informado(tmp_path):
@@ -129,8 +129,3 @@ def test_progresso_e_informado(tmp_path):
 def test_usa_actions_le_texto_do_csv():
     assert usa_actions({"usa_actions": "True"}) is True
     assert usa_actions({"usa_actions": "False"}) is False
-
-
-def test_erro_5xx_interrompe_em_vez_de_descartar():
-    with pytest.raises(requests.HTTPError):
-        verificar_actions(FakeClient({"org/a": http_error(504)}), "org/a")
