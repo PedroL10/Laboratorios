@@ -1,0 +1,17 @@
+# Configuracao do pipeline de mineracao de metricas DORA (LAB03).
+# O token do GitHub NAO fica aqui: ele e lido da variavel de ambiente GITHUB_TOKEN.
+
+janela:
+  # Janela de observacao de 12 meses, com datas fixadas pelo professor (formato AAAA-MM-DD).
+  inicio: null
+  fim: null
+
+selecao:
+  # Quantidade de repositorios da amostra (100 na Sprint 1, >= 300 na Sprint 2).
+  n_repos: 100
+  estrelas_min: 1000
+  min_releases: 5
+  min_workflow_runs: 50
+
+# Pasta onde as respostas da API sao salvas para cache/retomada.
+cache_dir: cache
