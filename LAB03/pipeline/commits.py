@@ -4,7 +4,9 @@ usada para calcular o lead time (RQ 02).
 Para cada release R (exceto a primeira da historia do repositorio, que nao tem
 release anterior), os commits incluidos sao obtidos comparando R com a release
 anterior. O resultado e uma lista no formato esperado por
-`metricas.lead_time.lead_time_repositorio`.
+`metricas.lead_time.lead_time_repositorio` e por `metricas.cfr.cfr_repositorio`
+(que usa `tag_anterior` e `mensagens_commits` para a heuristica de release
+corretiva).
 
 O endpoint de comparacao nao pagina oficialmente, mas devolve no maximo 250
 commits por chamada (secao 4 do enunciado); `comparar_commits` insiste com
@@ -54,6 +56,17 @@ def datas_de_autor(commits: list[dict]) -> list[str]:
     return [c["commit"]["author"]["date"] for c in commits]
 
 
+def mensagens_de_commit(commits: list[dict]) -> list[str]:
+    """Extrai `commit.message` de cada commit retornado pelo compare.
+
+    Usada pela heuristica de release corretiva (`metricas.cfr`), que procura
+    `revert`/`hotfix`/`fix` nas mensagens. `.get` com default vazio porque
+    commits muito antigos no cache (coletados antes desta mensagem existir)
+    podem nao ter o campo.
+    """
+    return [c.get("commit", {}).get("message", "") for c in commits]
+
+
 def montar_releases_com_commits(
     client: GitHubClient, full_name: str, releases_ordenadas: list[dict]
 ) -> tuple[list[dict], dict[str, int]]:
@@ -84,8 +97,10 @@ def montar_releases_com_commits(
         resultado.append(
             {
                 "tag_name": atual["tag_name"],
+                "tag_anterior": anterior["tag_name"],
                 "published_at": atual["published_at"],
                 "commits": datas_de_autor(commits),
+                "mensagens_commits": mensagens_de_commit(commits),
             }
         )
 

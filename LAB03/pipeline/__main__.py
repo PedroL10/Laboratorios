@@ -9,9 +9,12 @@ Etapas implementadas ate agora:
    a resultados/amostra.csv;
 6. coleta de releases (cache/releases/*.json) e commits entre releases
    (cache/commits_entre_releases/*.json) dos repositorios da amostra;
-7. calculo do lead time (RQ 02, variantes a e b) por repositorio (dados/lead_time.csv).
-As etapas de coleta de workflow runs e das demais metricas serao adicionadas por
-outras tasks.
+7. calculo do lead time (RQ 02, variantes a e b) por repositorio (dados/lead_time.csv);
+8. calculo do CFR variante (b), proxy de entrega (RQ 03) por repositorio (dados/cfr.csv).
+A heuristica de release corretiva usada no CFR (b) ainda precisa ser validada contra a
+amostra-ouro (secao 6 do enunciado) antes de entrar nas conclusoes do artigo; ver
+`metricas.cfr.avaliar_heuristica`. As etapas de coleta de workflow runs e das demais
+metricas serao adicionadas por outras tasks.
 
 As etapas 1, 2, 3 e 5 salvam o seu CSV em `dados_dir`. Se o arquivo ja existir, a etapa e
 reaproveitada (ou retomada); para refaze-la do zero, apague o arquivo. A etapa 4 nao
@@ -27,6 +30,7 @@ from pathlib import Path
 
 import requests
 
+from metricas.cfr import cfr_repositorio
 from metricas.lead_time import lead_time_repositorio
 from pipeline.commits import coletar_commits_entre_releases
 from pipeline.config import load_config
@@ -57,6 +61,14 @@ LEAD_TIME_FIELDS = [
     "lead_time_commit_dias",
     "n_releases_variante_a",
     "n_commits_variante_b",
+]
+
+CFR_FIELDS = [
+    "full_name",
+    "cfr_entrega",
+    "n_releases_avaliadas",
+    "n_releases_falhas",
+    "n_releases_censuradas",
 ]
 
 
@@ -223,7 +235,7 @@ def etapa_metadados(
     return amostra
 
 
-def etapa_releases_e_lead_time(
+def etapa_releases_lead_time_e_cfr(
     client: GitHubClient,
     candidatos: list[dict],
     janela: dict,
@@ -258,15 +270,26 @@ def etapa_releases_e_lead_time(
         client, principais_por_repo, cache_dir, progresso_commits
     )
 
-    linhas = []
+    linhas_lead_time = []
+    linhas_cfr = []
     for full_name in full_names:
         releases_com_commits = commits_por_repo[full_name]["releases"]
-        resultado = lead_time_repositorio(releases_com_commits)
-        linhas.append({"full_name": full_name, **resultado})
+        linhas_lead_time.append(
+            {"full_name": full_name, **lead_time_repositorio(releases_com_commits)}
+        )
+        if fim:
+            linhas_cfr.append(
+                {"full_name": full_name, **cfr_repositorio(releases_com_commits, fim)}
+            )
 
-    caminho = dados_dir / "lead_time.csv"
-    salvar_csv(linhas, caminho, LEAD_TIME_FIELDS)
-    print(f"    lead time de {len(linhas)} repositorios salvo em {caminho}")
+    caminho_lead_time = dados_dir / "lead_time.csv"
+    salvar_csv(linhas_lead_time, caminho_lead_time, LEAD_TIME_FIELDS)
+    print(f"    lead time de {len(linhas_lead_time)} repositorios salvo em {caminho_lead_time}")
+
+    if fim:
+        caminho_cfr = dados_dir / "cfr.csv"
+        salvar_csv(linhas_cfr, caminho_cfr, CFR_FIELDS)
+        print(f"    CFR (variante b) de {len(linhas_cfr)} repositorios salvo em {caminho_cfr}")
 
 
 
@@ -315,7 +338,7 @@ def main(argv: list[str] | None = None) -> int:
         avaliados = etapa_criterio(client, com_actions, config, dados_dir)
         amostra = etapa_funil(candidatos, filtro_actions, avaliados, config, resultados_dir)
         amostra = etapa_metadados(client, amostra, config, dados_dir, resultados_dir)
-        etapa_releases_e_lead_time(
+        etapa_releases_lead_time_e_cfr(
             client, amostra, config.get("janela", {}), cache_dir, dados_dir
         )
     except requests.HTTPError as exc:
