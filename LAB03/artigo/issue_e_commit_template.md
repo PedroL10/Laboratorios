@@ -1,8 +1,3 @@
-<!--
-Casca para abrir a Issue no GitHub Projects e para a mensagem de commit.
-So copiar o texto, preencher os colchetes e colar no GitHub / terminal.
--->
-
 ## Issue 1 — heurística de CFR (b)
 
 **Título:** `[Lab03S02] Heurística de release corretiva e CFR (b)`
@@ -20,7 +15,7 @@ Arquivos: metricas/cfr.py, tests/test_cfr.py, pipeline/commits.py (campos
 tag_anterior/mensagens_commits), pipeline/__main__.py (dados/cfr.csv).
 ```
 
-**Assignee:** você (EnricoBessa)
+**Assignee:** EnricoBessa
 
 ---
 
@@ -38,7 +33,7 @@ tipo do projeto, se as releases representam entrega real, e se cada uma de
 Planilha gerada por pipeline/amostra_ouro.py, preenchida manualmente.
 ```
 
-**Assignee:** você (EnricoBessa)
+**Assignee:** EnricoBessa
 
 ---
 
@@ -50,17 +45,17 @@ e confirmar que está tudo verde:
 ```powershell
 git add metricas/cfr.py tests/test_cfr.py pipeline/commits.py tests/test_commits.py pipeline/__main__.py
 git status
-git commit -m "#[NUMERO_ISSUE_1] Implementa heuristica e calculo de CFR variante b (RQ03)"
+git commit -m "#5 Implementa heuristica e calculo de CFR variante b (RQ03)"
 ```
 
 ```powershell
 git add pipeline/amostra_ouro.py tests/test_amostra_ouro.py
-git commit -m "#[NUMERO_ISSUE_1] Gera planilha da amostra-ouro com sorteio reproduzivel"
+git commit -m "#5 Gera planilha da amostra-ouro com sorteio reproduzivel"
 ```
 
 ```powershell
 git add resultados/amostra_ouro_enrico.csv
-git commit -m "#[NUMERO_ISSUE_2] Rotulagem independente da amostra-ouro"
+git commit -m "#6 Rotulagem independente da amostra-ouro"
 ```
 
 ```powershell
