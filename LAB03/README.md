@@ -51,6 +51,17 @@ Dentro da pasta `LAB03`, um único comando roda o pipeline inteiro:
 python -m pipeline --config config.yaml
 ```
 
+Para rodar só a seleção da amostra (etapas 1 a 5: busca, filtro, critério, funil e
+metadados), sem coletar releases e commits:
+
+```bash
+python -m pipeline --config config.yaml --somente-selecao
+```
+
+A amostra versionada em `resultados/amostra.csv` é gerada por **um único integrante**; os
+demais usam a versão do repositório (`git pull`) em vez de rodar a seleção de novo, já que
+as estrelas mudam com o tempo e a busca daria uma amostra ligeiramente diferente.
+
 ### Etapas
 
 | Etapa | O que faz | Saída |
@@ -85,7 +96,7 @@ Para refazer uma etapa do zero, apague o arquivo dela em `dados/` (ou a pasta em
 
 A API REST permite 5.000 requisições por hora com token. As etapas 1 a 5 cabem com folga
 numa hora. As etapas 6 e 7 fazem uma chamada de comparação por release e podem esgotar a
-cota mais de uma vez com 100 repositórios: deixe o comando rodando e repita-o quando a
+cota mais de uma vez com 300 repositórios: deixe o comando rodando e repita-o quando a
 cota renovar.
 
 ## 5. Configuração (`config.yaml`)
@@ -93,7 +104,7 @@ cota renovar.
 | Campo | Valor atual | Significado |
 | --- | --- | --- |
 | `janela.inicio` / `janela.fim` | `2025-10-01` / `2026-09-30` | Janela de observação de 12 meses (inclusive nas duas pontas) |
-| `selecao.n_repos` | `100` | Tamanho da amostra (≥ 300 na Sprint 2) |
+| `selecao.n_repos` | `300` | Tamanho da amostra (100 na Sprint 1, ≥ 300 a partir da Sprint 2) |
 | `selecao.estrelas_min` | `1000` | A busca usa `stars:>estrelas_min` |
 | `selecao.max_candidatos` | `2000` | Quantos candidatos buscar antes dos filtros |
 | `selecao.min_releases` | `5` | Mínimo de releases publicadas na janela |

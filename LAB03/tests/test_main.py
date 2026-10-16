@@ -31,3 +31,10 @@ def test_mensagem_erro_temporario():
 
 def test_outros_erros_mostram_a_mensagem_original():
     assert mensagem_de_erro(http_error(418)) == "HTTP 418"
+
+
+def test_parametro_somente_selecao():
+    from pipeline.__main__ import parse_args
+
+    assert parse_args(["--somente-selecao"]).somente_selecao is True
+    assert parse_args([]).somente_selecao is False

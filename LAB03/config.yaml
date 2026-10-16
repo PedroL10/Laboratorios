@@ -10,7 +10,7 @@ janela:
 
 selecao:
   # Quantidade de repositorios da amostra (100 na Sprint 1, >= 300 na Sprint 2).
-  n_repos: 100
+  n_repos: 300
   # A busca usa stars:>estrelas_min, como no enunciado (stars:>1000).
   estrelas_min: 1000
   # Quantos candidatos buscar antes dos filtros (cada fatia da busca traz ate 1.000).

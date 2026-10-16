@@ -77,6 +77,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         prog="pipeline", description="Mineracao de metricas DORA (LAB03)."
     )
     parser.add_argument("--config", default="config.yaml", help="Caminho do config.yaml")
+    parser.add_argument(
+        "--somente-selecao",
+        action="store_true",
+        help="Roda so as etapas 1 a 5 (selecao, funil e metadados), sem coletar releases e commits",
+    )
     return parser.parse_args(argv)
 
 
@@ -338,6 +343,9 @@ def main(argv: list[str] | None = None) -> int:
         avaliados = etapa_criterio(client, com_actions, config, dados_dir)
         amostra = etapa_funil(candidatos, filtro_actions, avaliados, config, resultados_dir)
         amostra = etapa_metadados(client, amostra, config, dados_dir, resultados_dir)
+        if args.somente_selecao:
+            print("\n--somente-selecao: etapas de releases, commits, lead time e CFR nao executadas.")
+            return 0
         etapa_releases_lead_time_e_cfr(
             client, amostra, config.get("janela", {}), cache_dir, dados_dir
         )
