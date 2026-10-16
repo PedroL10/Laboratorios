@@ -1,0 +1,6 @@
+etapa,descricao,repositorios,descartados,motivos_descarte
+1,"Candidatos da busca (stars:>1000, mais estrelados primeiro)",2000,0,
+2,Usam GitHub Actions,1726,274,sem_workflows: 274
+3,Avaliados pelo criterio de inclusao,201,1525,nao_avaliado_amostra_completa: 1525
+4,>= 5 releases na janela,109,92,menos_de_5_releases: 92
+5,>= 50 runs validos na janela (amostra final),100,9,menos_de_50_runs_validos: 9

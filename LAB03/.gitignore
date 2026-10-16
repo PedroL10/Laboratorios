@@ -1,0 +1,13 @@
+# Token e configuracoes locais
+.env
+
+# Cache das respostas da API e dados gerados pela coleta
+cache/
+dados/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
