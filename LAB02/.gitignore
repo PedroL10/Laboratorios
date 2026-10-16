@@ -1,0 +1,5 @@
+.venv/
+node_modules/
+jscpd-report/
+__pycache__/
+*.pyc

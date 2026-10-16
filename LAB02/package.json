@@ -1,0 +1,7 @@
+{
+  "name": "lab02-experimento-ia",
+  "private": true,
+  "devDependencies": {
+    "jscpd": "5.2.0"
+  }
+}

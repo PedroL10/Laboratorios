@@ -1,0 +1,2336 @@
+Iniciando busca de 100 repositórios em lotes por faixa de estrelas...
+(Sem paginação - usando filtros diferentes para cada lote)
+
+
+[Lote 1/10] Buscando: stars:>=200000
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 10)
+  Aguardando 2s antes do próximo lote...
+
+[Lote 2/10] Buscando: stars:150000..199999
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 20)
+  Aguardando 2s antes do próximo lote...
+
+[Lote 3/10] Buscando: stars:120000..149999
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 30)
+  Aguardando 2s antes do próximo lote...
+
+[Lote 4/10] Buscando: stars:100000..119999
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 40)
+  Aguardando 2s antes do próximo lote...
+
+[Lote 5/10] Buscando: stars:85000..99999
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 50)
+  Aguardando 2s antes do próximo lote...
+
+[Lote 6/10] Buscando: stars:70000..84999
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 60)
+  Aguardando 2s antes do próximo lote...
+
+[Lote 7/10] Buscando: stars:60000..69999
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 70)
+  Aguardando 2s antes do próximo lote...
+
+[Lote 8/10] Buscando: stars:50000..59999
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 80)
+  Aguardando 2s antes do próximo lote...
+
+[Lote 9/10] Buscando: stars:45000..49999
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 90)
+  Aguardando 2s antes do próximo lote...
+
+[Lote 10/10] Buscando: stars:40000..44999
+  Tentativa 1/10...
+  ✓ Coletados 10 repositórios (total: 100)
+
+==================================================
+Total de repositórios coletados: 100
+==================================================
+
+Todos os repositórios coletados:
+
+--- Repositório 1 ---
+{
+  "nameWithOwner": "codecrafters-io/build-your-own-x",
+  "createdAt": "2018-05-09T12:03:18Z",
+  "updatedAt": "2026-03-06T00:37:58Z",
+  "stargazerCount": 472553,
+  "primaryLanguage": {
+    "name": "Markdown"
+  },
+  "pullRequests": {
+    "totalCount": 155
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 888
+  },
+  "closedIssues": {
+    "totalCount": 653
+  }
+}
+
+--- Repositório 2 ---
+{
+  "nameWithOwner": "sindresorhus/awesome",
+  "createdAt": "2014-07-11T13:42:37Z",
+  "updatedAt": "2026-03-06T00:24:04Z",
+  "stargazerCount": 442887,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 694
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 365
+  },
+  "closedIssues": {
+    "totalCount": 349
+  }
+}
+
+--- Repositório 3 ---
+{
+  "nameWithOwner": "freeCodeCamp/freeCodeCamp",
+  "createdAt": "2014-12-24T17:49:19Z",
+  "updatedAt": "2026-03-06T00:40:16Z",
+  "stargazerCount": 437810,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 27772
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 21154
+  },
+  "closedIssues": {
+    "totalCount": 20978
+  }
+}
+
+--- Repositório 4 ---
+{
+  "nameWithOwner": "public-apis/public-apis",
+  "createdAt": "2016-03-20T23:49:42Z",
+  "updatedAt": "2026-03-06T00:35:25Z",
+  "stargazerCount": 404542,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 1872
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 839
+  },
+  "closedIssues": {
+    "totalCount": 833
+  }
+}
+
+--- Repositório 5 ---
+{
+  "nameWithOwner": "EbookFoundation/free-programming-books",
+  "createdAt": "2013-10-11T06:50:37Z",
+  "updatedAt": "2026-03-06T00:34:01Z",
+  "stargazerCount": 383637,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 7328
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 1263
+  },
+  "closedIssues": {
+    "totalCount": 1227
+  }
+}
+
+--- Repositório 6 ---
+{
+  "nameWithOwner": "kamranahmedse/developer-roadmap",
+  "createdAt": "2017-03-15T13:45:52Z",
+  "updatedAt": "2026-03-05T23:38:57Z",
+  "stargazerCount": 350254,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 4073
+  },
+  "releases": {
+    "totalCount": 1
+  },
+  "issues": {
+    "totalCount": 3085
+  },
+  "closedIssues": {
+    "totalCount": 3054
+  }
+}
+
+--- Repositório 7 ---
+{
+  "nameWithOwner": "jwasham/coding-interview-university",
+  "createdAt": "2016-06-06T02:34:12Z",
+  "updatedAt": "2026-03-06T00:17:38Z",
+  "stargazerCount": 337615,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 415
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 525
+  },
+  "closedIssues": {
+    "totalCount": 454
+  }
+}
+
+--- Repositório 8 ---
+{
+  "nameWithOwner": "donnemartin/system-design-primer",
+  "createdAt": "2017-02-26T16:15:28Z",
+  "updatedAt": "2026-03-06T00:36:11Z",
+  "stargazerCount": 337396,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 203
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 360
+  },
+  "closedIssues": {
+    "totalCount": 110
+  }
+}
+
+--- Repositório 9 ---
+{
+  "nameWithOwner": "vinta/awesome-python",
+  "createdAt": "2014-06-27T21:00:06Z",
+  "updatedAt": "2026-03-06T00:36:25Z",
+  "stargazerCount": 285759,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 641
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 0
+  },
+  "closedIssues": {
+    "totalCount": 0
+  }
+}
+
+--- Repositório 10 ---
+{
+  "nameWithOwner": "awesome-selfhosted/awesome-selfhosted",
+  "createdAt": "2015-06-01T02:33:17Z",
+  "updatedAt": "2026-03-06T00:39:59Z",
+  "stargazerCount": 277572,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 2395
+  },
+  "releases": {
+    "totalCount": 1
+  },
+  "issues": {
+    "totalCount": 807
+  },
+  "closedIssues": {
+    "totalCount": 807
+  }
+}
+
+--- Repositório 11 ---
+{
+  "nameWithOwner": "trekhleb/javascript-algorithms",
+  "createdAt": "2018-03-24T07:47:04Z",
+  "updatedAt": "2026-03-05T23:06:35Z",
+  "stargazerCount": 195733,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 304
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 371
+  },
+  "closedIssues": {
+    "totalCount": 233
+  }
+}
+
+--- Repositório 12 ---
+{
+  "nameWithOwner": "tensorflow/tensorflow",
+  "createdAt": "2015-11-07T01:19:20Z",
+  "updatedAt": "2026-03-05T23:38:19Z",
+  "stargazerCount": 194007,
+  "primaryLanguage": {
+    "name": "C++"
+  },
+  "pullRequests": {
+    "totalCount": 42328
+  },
+  "releases": {
+    "totalCount": 221
+  },
+  "issues": {
+    "totalCount": 41195
+  },
+  "closedIssues": {
+    "totalCount": 40300
+  }
+}
+
+--- Repositório 13 ---
+{
+  "nameWithOwner": "ohmyzsh/ohmyzsh",
+  "createdAt": "2009-08-28T18:15:37Z",
+  "updatedAt": "2026-03-06T00:23:25Z",
+  "stargazerCount": 185129,
+  "primaryLanguage": {
+    "name": "Shell"
+  },
+  "pullRequests": {
+    "totalCount": 3515
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 5034
+  },
+  "closedIssues": {
+    "totalCount": 4891
+  }
+}
+
+--- Repositório 14 ---
+{
+  "nameWithOwner": "getify/You-Dont-Know-JS",
+  "createdAt": "2013-11-16T02:37:24Z",
+  "updatedAt": "2026-03-05T23:44:57Z",
+  "stargazerCount": 184462,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 370
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 949
+  },
+  "closedIssues": {
+    "totalCount": 949
+  }
+}
+
+--- Repositório 15 ---
+{
+  "nameWithOwner": "CyC2018/CS-Notes",
+  "createdAt": "2018-02-13T14:56:24Z",
+  "updatedAt": "2026-03-06T00:02:01Z",
+  "stargazerCount": 183819,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 374
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 578
+  },
+  "closedIssues": {
+    "totalCount": 449
+  }
+}
+
+--- Repositório 16 ---
+{
+  "nameWithOwner": "microsoft/vscode",
+  "createdAt": "2015-09-03T20:23:38Z",
+  "updatedAt": "2026-03-06T00:35:35Z",
+  "stargazerCount": 182325,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 43331
+  },
+  "releases": {
+    "totalCount": 197
+  },
+  "issues": {
+    "totalCount": 232196
+  },
+  "closedIssues": {
+    "totalCount": 218769
+  }
+}
+
+--- Repositório 17 ---
+{
+  "nameWithOwner": "Significant-Gravitas/AutoGPT",
+  "createdAt": "2023-03-16T09:21:07Z",
+  "updatedAt": "2026-03-05T21:56:15Z",
+  "stargazerCount": 182202,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 3970
+  },
+  "releases": {
+    "totalCount": 94
+  },
+  "issues": {
+    "totalCount": 3738
+  },
+  "closedIssues": {
+    "totalCount": 3505
+  }
+}
+
+--- Repositório 18 ---
+{
+  "nameWithOwner": "jackfrued/Python-100-Days",
+  "createdAt": "2018-03-01T16:05:52Z",
+  "updatedAt": "2026-03-06T00:25:38Z",
+  "stargazerCount": 179312,
+  "primaryLanguage": {
+    "name": "Jupyter Notebook"
+  },
+  "pullRequests": {
+    "totalCount": 13
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 711
+  },
+  "closedIssues": {
+    "totalCount": 188
+  }
+}
+
+--- Repositório 19 ---
+{
+  "nameWithOwner": "n8n-io/n8n",
+  "createdAt": "2019-06-22T09:24:21Z",
+  "updatedAt": "2026-03-06T00:24:59Z",
+  "stargazerCount": 177761,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 14089
+  },
+  "releases": {
+    "totalCount": 547
+  },
+  "issues": {
+    "totalCount": 8223
+  },
+  "closedIssues": {
+    "totalCount": 7747
+  }
+}
+
+--- Repositório 20 ---
+{
+  "nameWithOwner": "flutter/flutter",
+  "createdAt": "2015-03-06T22:54:58Z",
+  "updatedAt": "2026-03-06T00:17:06Z",
+  "stargazerCount": 175436,
+  "primaryLanguage": {
+    "name": "Dart"
+  },
+  "pullRequests": {
+    "totalCount": 46932
+  },
+  "releases": {
+    "totalCount": 7
+  },
+  "issues": {
+    "totalCount": 112444
+  },
+  "closedIssues": {
+    "totalCount": 100282
+  }
+}
+
+--- Repositório 21 ---
+{
+  "nameWithOwner": "yt-dlp/yt-dlp",
+  "createdAt": "2020-10-26T04:22:55Z",
+  "updatedAt": "2026-03-06T00:38:45Z",
+  "stargazerCount": 149771,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 3229
+  },
+  "releases": {
+    "totalCount": 131
+  },
+  "issues": {
+    "totalCount": 11123
+  },
+  "closedIssues": {
+    "totalCount": 9305
+  }
+}
+
+--- Repositório 22 ---
+{
+  "nameWithOwner": "airbnb/javascript",
+  "createdAt": "2012-11-01T23:13:50Z",
+  "updatedAt": "2026-03-06T00:08:32Z",
+  "stargazerCount": 148095,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 813
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 1401
+  },
+  "closedIssues": {
+    "totalCount": 1299
+  }
+}
+
+--- Repositório 23 ---
+{
+  "nameWithOwner": "langflow-ai/langflow",
+  "createdAt": "2023-02-08T22:28:03Z",
+  "updatedAt": "2026-03-06T00:29:17Z",
+  "stargazerCount": 145283,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 5792
+  },
+  "releases": {
+    "totalCount": 285
+  },
+  "issues": {
+    "totalCount": 3160
+  },
+  "closedIssues": {
+    "totalCount": 2819
+  }
+}
+
+--- Repositório 24 ---
+{
+  "nameWithOwner": "521xueweihan/HelloGitHub",
+  "createdAt": "2016-05-04T06:24:11Z",
+  "updatedAt": "2026-03-05T23:57:02Z",
+  "stargazerCount": 144897,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 17
+  },
+  "releases": {
+    "totalCount": 63
+  },
+  "issues": {
+    "totalCount": 2963
+  },
+  "closedIssues": {
+    "totalCount": 2681
+  }
+}
+
+--- Repositório 25 ---
+{
+  "nameWithOwner": "ytdl-org/youtube-dl",
+  "createdAt": "2010-10-31T14:35:07Z",
+  "updatedAt": "2026-03-05T23:08:56Z",
+  "stargazerCount": 139800,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 1646
+  },
+  "releases": {
+    "totalCount": 341
+  },
+  "issues": {
+    "totalCount": 26819
+  },
+  "closedIssues": {
+    "totalCount": 23190
+  }
+}
+
+--- Repositório 26 ---
+{
+  "nameWithOwner": "vercel/next.js",
+  "createdAt": "2016-10-05T23:32:51Z",
+  "updatedAt": "2026-03-05T23:39:13Z",
+  "stargazerCount": 138167,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 26138
+  },
+  "releases": {
+    "totalCount": 1000
+  },
+  "issues": {
+    "totalCount": 24312
+  },
+  "closedIssues": {
+    "totalCount": 22260
+  }
+}
+
+--- Repositório 27 ---
+{
+  "nameWithOwner": "yangshun/tech-interview-handbook",
+  "createdAt": "2016-07-05T05:00:48Z",
+  "updatedAt": "2026-03-05T23:51:39Z",
+  "stargazerCount": 138003,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 486
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 120
+  },
+  "closedIssues": {
+    "totalCount": 76
+  }
+}
+
+--- Repositório 28 ---
+{
+  "nameWithOwner": "Genymobile/scrcpy",
+  "createdAt": "2017-11-21T18:00:27Z",
+  "updatedAt": "2026-03-06T00:35:57Z",
+  "stargazerCount": 136537,
+  "primaryLanguage": {
+    "name": "C"
+  },
+  "pullRequests": {
+    "totalCount": 123
+  },
+  "releases": {
+    "totalCount": 50
+  },
+  "issues": {
+    "totalCount": 5960
+  },
+  "closedIssues": {
+    "totalCount": 3285
+  }
+}
+
+--- Repositório 29 ---
+{
+  "nameWithOwner": "labuladong/fucking-algorithm",
+  "createdAt": "2020-02-19T09:01:23Z",
+  "updatedAt": "2026-03-06T00:08:56Z",
+  "stargazerCount": 132922,
+  "primaryLanguage": {
+    "name": "Markdown"
+  },
+  "pullRequests": {
+    "totalCount": 244
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 963
+  },
+  "closedIssues": {
+    "totalCount": 962
+  }
+}
+
+--- Repositório 30 ---
+{
+  "nameWithOwner": "golang/go",
+  "createdAt": "2014-08-19T04:33:40Z",
+  "updatedAt": "2026-03-06T00:15:02Z",
+  "stargazerCount": 132899,
+  "primaryLanguage": {
+    "name": "Go"
+  },
+  "pullRequests": {
+    "totalCount": 1
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 70410
+  },
+  "closedIssues": {
+    "totalCount": 60976
+  }
+}
+
+--- Repositório 31 ---
+{
+  "nameWithOwner": "ripienaar/free-for-dev",
+  "createdAt": "2015-03-18T21:06:26Z",
+  "updatedAt": "2026-03-06T00:39:32Z",
+  "stargazerCount": 118668,
+  "primaryLanguage": {
+    "name": "HTML"
+  },
+  "pullRequests": {
+    "totalCount": 2900
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 0
+  },
+  "closedIssues": {
+    "totalCount": 0
+  }
+}
+
+--- Repositório 32 ---
+{
+  "nameWithOwner": "excalidraw/excalidraw",
+  "createdAt": "2020-01-02T01:04:43Z",
+  "updatedAt": "2026-03-06T00:10:19Z",
+  "stargazerCount": 118097,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 3838
+  },
+  "releases": {
+    "totalCount": 14
+  },
+  "issues": {
+    "totalCount": 4643
+  },
+  "closedIssues": {
+    "totalCount": 2539
+  }
+}
+
+--- Repositório 33 ---
+{
+  "nameWithOwner": "anomalyco/opencode",
+  "createdAt": "2025-04-30T20:08:00Z",
+  "updatedAt": "2026-03-06T00:40:17Z",
+  "stargazerCount": 116617,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 2583
+  },
+  "releases": {
+    "totalCount": 728
+  },
+  "issues": {
+    "totalCount": 9793
+  },
+  "closedIssues": {
+    "totalCount": 5087
+  }
+}
+
+--- Repositório 34 ---
+{
+  "nameWithOwner": "justjavac/free-programming-books-zh_CN",
+  "createdAt": "2013-11-04T01:59:19Z",
+  "updatedAt": "2026-03-05T23:13:35Z",
+  "stargazerCount": 116406,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 282
+  },
+  "releases": {
+    "totalCount": 3
+  },
+  "issues": {
+    "totalCount": 0
+  },
+  "closedIssues": {
+    "totalCount": 0
+  }
+}
+
+--- Repositório 35 ---
+{
+  "nameWithOwner": "nodejs/node",
+  "createdAt": "2014-11-26T19:57:11Z",
+  "updatedAt": "2026-03-06T00:27:12Z",
+  "stargazerCount": 116089,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 11893
+  },
+  "releases": {
+    "totalCount": 486
+  },
+  "issues": {
+    "totalCount": 20088
+  },
+  "closedIssues": {
+    "totalCount": 18331
+  }
+}
+
+--- Repositório 36 ---
+{
+  "nameWithOwner": "d3/d3",
+  "createdAt": "2010-09-27T17:22:42Z",
+  "updatedAt": "2026-03-05T20:47:03Z",
+  "stargazerCount": 112468,
+  "primaryLanguage": {
+    "name": "Shell"
+  },
+  "pullRequests": {
+    "totalCount": 494
+  },
+  "releases": {
+    "totalCount": 194
+  },
+  "issues": {
+    "totalCount": 2239
+  },
+  "closedIssues": {
+    "totalCount": 2229
+  }
+}
+
+--- Repositório 37 ---
+{
+  "nameWithOwner": "iptv-org/iptv",
+  "createdAt": "2018-11-14T22:00:57Z",
+  "updatedAt": "2026-03-06T00:23:19Z",
+  "stargazerCount": 112436,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 6821
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 21742
+  },
+  "closedIssues": {
+    "totalCount": 21446
+  }
+}
+
+--- Repositório 38 ---
+{
+  "nameWithOwner": "mrdoob/three.js",
+  "createdAt": "2010-03-23T18:58:01Z",
+  "updatedAt": "2026-03-05T22:49:53Z",
+  "stargazerCount": 111195,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 15235
+  },
+  "releases": {
+    "totalCount": 175
+  },
+  "issues": {
+    "totalCount": 13507
+  },
+  "closedIssues": {
+    "totalCount": 13065
+  }
+}
+
+--- Repositório 39 ---
+{
+  "nameWithOwner": "rust-lang/rust",
+  "createdAt": "2010-06-16T20:39:03Z",
+  "updatedAt": "2026-03-06T00:28:09Z",
+  "stargazerCount": 110925,
+  "primaryLanguage": {
+    "name": "Rust"
+  },
+  "pullRequests": {
+    "totalCount": 69560
+  },
+  "releases": {
+    "totalCount": 147
+  },
+  "issues": {
+    "totalCount": 61600
+  },
+  "closedIssues": {
+    "totalCount": 50473
+  }
+}
+
+--- Repositório 40 ---
+{
+  "nameWithOwner": "rustdesk/rustdesk",
+  "createdAt": "2020-09-28T15:36:08Z",
+  "updatedAt": "2026-03-06T00:39:12Z",
+  "stargazerCount": 108711,
+  "primaryLanguage": {
+    "name": "Rust"
+  },
+  "pullRequests": {
+    "totalCount": 3946
+  },
+  "releases": {
+    "totalCount": 36
+  },
+  "issues": {
+    "totalCount": 4001
+  },
+  "closedIssues": {
+    "totalCount": 3939
+  }
+}
+
+--- Repositório 41 ---
+{
+  "nameWithOwner": "Shubhamsaboo/awesome-llm-apps",
+  "createdAt": "2024-04-29T05:30:25Z",
+  "updatedAt": "2026-03-06T00:33:16Z",
+  "stargazerCount": 99839,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 170
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 119
+  },
+  "closedIssues": {
+    "totalCount": 119
+  }
+}
+
+--- Repositório 42 ---
+{
+  "nameWithOwner": "jaywcjlove/awesome-mac",
+  "createdAt": "2016-07-17T15:33:47Z",
+  "updatedAt": "2026-03-06T00:26:00Z",
+  "stargazerCount": 99559,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 1081
+  },
+  "releases": {
+    "totalCount": 13
+  },
+  "issues": {
+    "totalCount": 513
+  },
+  "closedIssues": {
+    "totalCount": 378
+  }
+}
+
+--- Repositório 43 ---
+{
+  "nameWithOwner": "supabase/supabase",
+  "createdAt": "2019-10-12T05:56:49Z",
+  "updatedAt": "2026-03-06T00:26:03Z",
+  "stargazerCount": 98579,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 15581
+  },
+  "releases": {
+    "totalCount": 26
+  },
+  "issues": {
+    "totalCount": 5240
+  },
+  "closedIssues": {
+    "totalCount": 4973
+  }
+}
+
+--- Repositório 44 ---
+{
+  "nameWithOwner": "Anduin2017/HowToCook",
+  "createdAt": "2020-02-29T10:43:49Z",
+  "updatedAt": "2026-03-05T22:34:37Z",
+  "stargazerCount": 98536,
+  "primaryLanguage": {
+    "name": "Dockerfile"
+  },
+  "pullRequests": {
+    "totalCount": 614
+  },
+  "releases": {
+    "totalCount": 4
+  },
+  "issues": {
+    "totalCount": 827
+  },
+  "closedIssues": {
+    "totalCount": 364
+  }
+}
+
+--- Repositório 45 ---
+{
+  "nameWithOwner": "mtdvio/every-programmer-should-know",
+  "createdAt": "2017-08-24T13:18:26Z",
+  "updatedAt": "2026-03-05T20:33:21Z",
+  "stargazerCount": 98183,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 110
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 45
+  },
+  "closedIssues": {
+    "totalCount": 31
+  }
+}
+
+--- Repositório 46 ---
+{
+  "nameWithOwner": "mui/material-ui",
+  "createdAt": "2014-08-18T19:11:54Z",
+  "updatedAt": "2026-03-05T20:06:31Z",
+  "stargazerCount": 98005,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 21490
+  },
+  "releases": {
+    "totalCount": 558
+  },
+  "issues": {
+    "totalCount": 20348
+  },
+  "closedIssues": {
+    "totalCount": 18753
+  }
+}
+
+--- Repositório 47 ---
+{
+  "nameWithOwner": "pytorch/pytorch",
+  "createdAt": "2016-08-13T05:26:41Z",
+  "updatedAt": "2026-03-06T00:31:25Z",
+  "stargazerCount": 97986,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 6428
+  },
+  "releases": {
+    "totalCount": 64
+  },
+  "issues": {
+    "totalCount": 57147
+  },
+  "closedIssues": {
+    "totalCount": 41048
+  }
+}
+
+--- Repositório 48 ---
+{
+  "nameWithOwner": "2dust/v2rayN",
+  "createdAt": "2019-07-30T03:47:24Z",
+  "updatedAt": "2026-03-06T00:21:27Z",
+  "stargazerCount": 97971,
+  "primaryLanguage": {
+    "name": "C#"
+  },
+  "pullRequests": {
+    "totalCount": 395
+  },
+  "releases": {
+    "totalCount": 300
+  },
+  "issues": {
+    "totalCount": 6598
+  },
+  "closedIssues": {
+    "totalCount": 6592
+  }
+}
+
+--- Repositório 49 ---
+{
+  "nameWithOwner": "ant-design/ant-design",
+  "createdAt": "2015-04-24T15:37:24Z",
+  "updatedAt": "2026-03-05T22:50:06Z",
+  "stargazerCount": 97669,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 17062
+  },
+  "releases": {
+    "totalCount": 740
+  },
+  "issues": {
+    "totalCount": 32407
+  },
+  "closedIssues": {
+    "totalCount": 31120
+  }
+}
+
+--- Repositório 50 ---
+{
+  "nameWithOwner": "neovim/neovim",
+  "createdAt": "2014-01-31T13:39:22Z",
+  "updatedAt": "2026-03-06T00:21:56Z",
+  "stargazerCount": 96967,
+  "primaryLanguage": {
+    "name": "Vim Script"
+  },
+  "pullRequests": {
+    "totalCount": 17732
+  },
+  "releases": {
+    "totalCount": 48
+  },
+  "issues": {
+    "totalCount": 13750
+  },
+  "closedIssues": {
+    "totalCount": 12107
+  }
+}
+
+--- Repositório 51 ---
+{
+  "nameWithOwner": "3b1b/manim",
+  "createdAt": "2015-03-22T18:50:58Z",
+  "updatedAt": "2026-03-06T00:09:19Z",
+  "stargazerCount": 84989,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 661
+  },
+  "releases": {
+    "totalCount": 13
+  },
+  "issues": {
+    "totalCount": 1223
+  },
+  "closedIssues": {
+    "totalCount": 765
+  }
+}
+
+--- Repositório 52 ---
+{
+  "nameWithOwner": "anthropics/skills",
+  "createdAt": "2025-09-22T15:53:31Z",
+  "updatedAt": "2026-03-06T00:35:31Z",
+  "stargazerCount": 84930,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 21
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 147
+  },
+  "closedIssues": {
+    "totalCount": 21
+  }
+}
+
+--- Repositório 53 ---
+{
+  "nameWithOwner": "microsoft/ML-For-Beginners",
+  "createdAt": "2021-03-03T01:34:05Z",
+  "updatedAt": "2026-03-05T23:41:37Z",
+  "stargazerCount": 84141,
+  "primaryLanguage": {
+    "name": "Jupyter Notebook"
+  },
+  "pullRequests": {
+    "totalCount": 446
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 158
+  },
+  "closedIssues": {
+    "totalCount": 158
+  }
+}
+
+--- Repositório 54 ---
+{
+  "nameWithOwner": "laravel/laravel",
+  "createdAt": "2011-06-08T03:06:08Z",
+  "updatedAt": "2026-03-06T00:32:56Z",
+  "stargazerCount": 83894,
+  "primaryLanguage": {
+    "name": "Blade"
+  },
+  "pullRequests": {
+    "totalCount": 1670
+  },
+  "releases": {
+    "totalCount": 211
+  },
+  "issues": {
+    "totalCount": 0
+  },
+  "closedIssues": {
+    "totalCount": 0
+  }
+}
+
+--- Repositório 55 ---
+{
+  "nameWithOwner": "louislam/uptime-kuma",
+  "createdAt": "2021-07-03T01:02:42Z",
+  "updatedAt": "2026-03-06T00:10:26Z",
+  "stargazerCount": 83644,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 1684
+  },
+  "releases": {
+    "totalCount": 125
+  },
+  "issues": {
+    "totalCount": 4643
+  },
+  "closedIssues": {
+    "totalCount": 3981
+  }
+}
+
+--- Repositório 56 ---
+{
+  "nameWithOwner": "microsoft/playwright",
+  "createdAt": "2019-11-15T18:32:42Z",
+  "updatedAt": "2026-03-06T00:40:32Z",
+  "stargazerCount": 83549,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 16277
+  },
+  "releases": {
+    "totalCount": 158
+  },
+  "issues": {
+    "totalCount": 17097
+  },
+  "closedIssues": {
+    "totalCount": 16506
+  }
+}
+
+--- Repositório 57 ---
+{
+  "nameWithOwner": "MunGell/awesome-for-beginners",
+  "createdAt": "2015-10-24T19:53:36Z",
+  "updatedAt": "2026-03-06T00:19:28Z",
+  "stargazerCount": 83178,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 469
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 204
+  },
+  "closedIssues": {
+    "totalCount": 188
+  }
+}
+
+--- Repositório 58 ---
+{
+  "nameWithOwner": "macrozheng/mall",
+  "createdAt": "2018-04-04T01:11:44Z",
+  "updatedAt": "2026-03-06T00:12:55Z",
+  "stargazerCount": 83025,
+  "primaryLanguage": {
+    "name": "Java"
+  },
+  "pullRequests": {
+    "totalCount": 1
+  },
+  "releases": {
+    "totalCount": 3
+  },
+  "issues": {
+    "totalCount": 499
+  },
+  "closedIssues": {
+    "totalCount": 489
+  }
+}
+
+--- Repositório 59 ---
+{
+  "nameWithOwner": "realworld-apps/realworld",
+  "createdAt": "2016-02-26T20:49:53Z",
+  "updatedAt": "2026-03-06T00:25:56Z",
+  "stargazerCount": 82919,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 434
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 545
+  },
+  "closedIssues": {
+    "totalCount": 511
+  }
+}
+
+--- Repositório 60 ---
+{
+  "nameWithOwner": "animate-css/animate.css",
+  "createdAt": "2011-10-12T10:07:38Z",
+  "updatedAt": "2026-03-05T18:28:44Z",
+  "stargazerCount": 82617,
+  "primaryLanguage": {
+    "name": "CSS"
+  },
+  "pullRequests": {
+    "totalCount": 315
+  },
+  "releases": {
+    "totalCount": 22
+  },
+  "issues": {
+    "totalCount": 883
+  },
+  "closedIssues": {
+    "totalCount": 843
+  }
+}
+
+--- Repositório 61 ---
+{
+  "nameWithOwner": "swiftlang/swift",
+  "createdAt": "2015-10-23T21:15:07Z",
+  "updatedAt": "2026-03-06T00:35:31Z",
+  "stargazerCount": 69847,
+  "primaryLanguage": {
+    "name": "C++"
+  },
+  "pullRequests": {
+    "totalCount": 58085
+  },
+  "releases": {
+    "totalCount": 66
+  },
+  "issues": {
+    "totalCount": 17480
+  },
+  "closedIssues": {
+    "totalCount": 10068
+  }
+}
+
+--- Repositório 62 ---
+{
+  "nameWithOwner": "Eugeny/tabby",
+  "createdAt": "2016-12-23T09:06:10Z",
+  "updatedAt": "2026-03-05T23:39:18Z",
+  "stargazerCount": 69304,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 1512
+  },
+  "releases": {
+    "totalCount": 204
+  },
+  "issues": {
+    "totalCount": 6029
+  },
+  "closedIssues": {
+    "totalCount": 3509
+  }
+}
+
+--- Repositório 63 ---
+{
+  "nameWithOwner": "danielmiessler/SecLists",
+  "createdAt": "2012-02-19T01:30:18Z",
+  "updatedAt": "2026-03-05T23:33:27Z",
+  "stargazerCount": 69269,
+  "primaryLanguage": {
+    "name": "PHP"
+  },
+  "pullRequests": {
+    "totalCount": 696
+  },
+  "releases": {
+    "totalCount": 29
+  },
+  "issues": {
+    "totalCount": 318
+  },
+  "closedIssues": {
+    "totalCount": 308
+  }
+}
+
+--- Repositório 64 ---
+{
+  "nameWithOwner": "nektos/act",
+  "createdAt": "2019-01-02T19:53:43Z",
+  "updatedAt": "2026-03-05T22:56:55Z",
+  "stargazerCount": 69159,
+  "primaryLanguage": {
+    "name": "Go"
+  },
+  "pullRequests": {
+    "totalCount": 1057
+  },
+  "releases": {
+    "totalCount": 92
+  },
+  "issues": {
+    "totalCount": 1317
+  },
+  "closedIssues": {
+    "totalCount": 1076
+  }
+}
+
+--- Repositório 65 ---
+{
+  "nameWithOwner": "binhnguyennus/awesome-scalability",
+  "createdAt": "2017-12-27T03:46:40Z",
+  "updatedAt": "2026-03-06T00:06:07Z",
+  "stargazerCount": 68975,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 37
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 0
+  },
+  "closedIssues": {
+    "totalCount": 0
+  }
+}
+
+--- Repositório 66 ---
+{
+  "nameWithOwner": "expressjs/express",
+  "createdAt": "2009-06-26T18:56:01Z",
+  "updatedAt": "2026-03-05T21:20:07Z",
+  "stargazerCount": 68867,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 522
+  },
+  "releases": {
+    "totalCount": 164
+  },
+  "issues": {
+    "totalCount": 4030
+  },
+  "closedIssues": {
+    "totalCount": 3930
+  }
+}
+
+--- Repositório 67 ---
+{
+  "nameWithOwner": "base/node",
+  "createdAt": "2023-02-01T13:55:02Z",
+  "updatedAt": "2026-03-05T21:48:53Z",
+  "stargazerCount": 68708,
+  "primaryLanguage": {
+    "name": "Go"
+  },
+  "pullRequests": {
+    "totalCount": 249
+  },
+  "releases": {
+    "totalCount": 72
+  },
+  "issues": {
+    "totalCount": 330
+  },
+  "closedIssues": {
+    "totalCount": 323
+  }
+}
+
+--- Repositório 68 ---
+{
+  "nameWithOwner": "OpenHands/OpenHands",
+  "createdAt": "2024-03-13T03:33:31Z",
+  "updatedAt": "2026-03-06T00:10:30Z",
+  "stargazerCount": 68619,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 6442
+  },
+  "releases": {
+    "totalCount": 99
+  },
+  "issues": {
+    "totalCount": 3846
+  },
+  "closedIssues": {
+    "totalCount": 3678
+  }
+}
+
+--- Repositório 69 ---
+{
+  "nameWithOwner": "AppFlowy-IO/AppFlowy",
+  "createdAt": "2021-06-16T12:56:48Z",
+  "updatedAt": "2026-03-05T23:58:05Z",
+  "stargazerCount": 68383,
+  "primaryLanguage": {
+    "name": "Dart"
+  },
+  "pullRequests": {
+    "totalCount": 3894
+  },
+  "releases": {
+    "totalCount": 127
+  },
+  "issues": {
+    "totalCount": 3899
+  },
+  "closedIssues": {
+    "totalCount": 2996
+  }
+}
+
+--- Repositório 70 ---
+{
+  "nameWithOwner": "ansible/ansible",
+  "createdAt": "2012-03-06T14:58:02Z",
+  "updatedAt": "2026-03-05T22:11:16Z",
+  "stargazerCount": 68207,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 39671
+  },
+  "releases": {
+    "totalCount": 207
+  },
+  "issues": {
+    "totalCount": 33292
+  },
+  "closedIssues": {
+    "totalCount": 32755
+  }
+}
+
+--- Repositório 71 ---
+{
+  "nameWithOwner": "jquery/jquery",
+  "createdAt": "2009-04-03T15:20:14Z",
+  "updatedAt": "2026-03-06T00:27:48Z",
+  "stargazerCount": 59852,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 867
+  },
+  "releases": {
+    "totalCount": 13
+  },
+  "issues": {
+    "totalCount": 2381
+  },
+  "closedIssues": {
+    "totalCount": 2305
+  }
+}
+
+--- Repositório 72 ---
+{
+  "nameWithOwner": "nuxt/nuxt",
+  "createdAt": "2016-10-26T11:18:47Z",
+  "updatedAt": "2026-03-06T00:27:21Z",
+  "stargazerCount": 59790,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 7471
+  },
+  "releases": {
+    "totalCount": 274
+  },
+  "issues": {
+    "totalCount": 17160
+  },
+  "closedIssues": {
+    "totalCount": 16350
+  }
+}
+
+--- Repositório 73 ---
+{
+  "nameWithOwner": "spring-projects/spring-framework",
+  "createdAt": "2010-12-08T04:04:45Z",
+  "updatedAt": "2026-03-05T22:28:25Z",
+  "stargazerCount": 59704,
+  "primaryLanguage": {
+    "name": "Java"
+  },
+  "pullRequests": {
+    "totalCount": 905
+  },
+  "releases": {
+    "totalCount": 357
+  },
+  "issues": {
+    "totalCount": 27888
+  },
+  "closedIssues": {
+    "totalCount": 27577
+  }
+}
+
+--- Repositório 74 ---
+{
+  "nameWithOwner": "jgraph/drawio-desktop",
+  "createdAt": "2017-05-25T20:58:42Z",
+  "updatedAt": "2026-03-05T23:11:25Z",
+  "stargazerCount": 59678,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 22
+  },
+  "releases": {
+    "totalCount": 169
+  },
+  "issues": {
+    "totalCount": 1738
+  },
+  "closedIssues": {
+    "totalCount": 1677
+  }
+}
+
+--- Repositório 75 ---
+{
+  "nameWithOwner": "pathwaycom/pathway",
+  "createdAt": "2022-11-27T13:01:14Z",
+  "updatedAt": "2026-03-05T21:50:13Z",
+  "stargazerCount": 59511,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 19
+  },
+  "releases": {
+    "totalCount": 84
+  },
+  "issues": {
+    "totalCount": 140
+  },
+  "closedIssues": {
+    "totalCount": 113
+  }
+}
+
+--- Repositório 76 ---
+{
+  "nameWithOwner": "CorentinJ/Real-Time-Voice-Cloning",
+  "createdAt": "2019-05-26T08:56:15Z",
+  "updatedAt": "2026-03-05T18:29:33Z",
+  "stargazerCount": 59501,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 50
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 1111
+  },
+  "closedIssues": {
+    "totalCount": 951
+  }
+}
+
+--- Repositório 77 ---
+{
+  "nameWithOwner": "git/git",
+  "createdAt": "2008-07-23T14:21:26Z",
+  "updatedAt": "2026-03-05T23:39:22Z",
+  "stargazerCount": 59496,
+  "primaryLanguage": {
+    "name": "C"
+  },
+  "pullRequests": {
+    "totalCount": 3
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 0
+  },
+  "closedIssues": {
+    "totalCount": 0
+  }
+}
+
+--- Repositório 78 ---
+{
+  "nameWithOwner": "shadowsocks/shadowsocks-windows",
+  "createdAt": "2013-01-14T07:54:16Z",
+  "updatedAt": "2026-03-05T23:56:05Z",
+  "stargazerCount": 59266,
+  "primaryLanguage": {
+    "name": "C#"
+  },
+  "pullRequests": {
+    "totalCount": 290
+  },
+  "releases": {
+    "totalCount": 55
+  },
+  "issues": {
+    "totalCount": 2915
+  },
+  "closedIssues": {
+    "totalCount": 2727
+  }
+}
+
+--- Repositório 79 ---
+{
+  "nameWithOwner": "meta-llama/llama",
+  "createdAt": "2023-02-14T09:29:12Z",
+  "updatedAt": "2026-03-05T16:50:02Z",
+  "stargazerCount": 59191,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 54
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 1112
+  },
+  "closedIssues": {
+    "totalCount": 652
+  }
+}
+
+--- Repositório 80 ---
+{
+  "nameWithOwner": "Solido/awesome-flutter",
+  "createdAt": "2017-05-07T11:45:27Z",
+  "updatedAt": "2026-03-06T00:06:14Z",
+  "stargazerCount": 59173,
+  "primaryLanguage": {
+    "name": "Dart"
+  },
+  "pullRequests": {
+    "totalCount": 448
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 0
+  },
+  "closedIssues": {
+    "totalCount": 0
+  }
+}
+
+--- Repositório 81 ---
+{
+  "nameWithOwner": "jesseduffield/lazydocker",
+  "createdAt": "2019-05-18T08:53:50Z",
+  "updatedAt": "2026-03-06T00:22:58Z",
+  "stargazerCount": 49990,
+  "primaryLanguage": {
+    "name": "Go"
+  },
+  "pullRequests": {
+    "totalCount": 191
+  },
+  "releases": {
+    "totalCount": 45
+  },
+  "issues": {
+    "totalCount": 397
+  },
+  "closedIssues": {
+    "totalCount": 204
+  }
+}
+
+--- Repositório 82 ---
+{
+  "nameWithOwner": "harry0703/MoneyPrinterTurbo",
+  "createdAt": "2024-03-11T02:57:34Z",
+  "updatedAt": "2026-03-06T00:17:45Z",
+  "stargazerCount": 49967,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 145
+  },
+  "releases": {
+    "totalCount": 9
+  },
+  "issues": {
+    "totalCount": 618
+  },
+  "closedIssues": {
+    "totalCount": 400
+  }
+}
+
+--- Repositório 83 ---
+{
+  "nameWithOwner": "Avik-Jain/100-Days-Of-ML-Code",
+  "createdAt": "2018-07-05T09:11:43Z",
+  "updatedAt": "2026-03-05T23:41:18Z",
+  "stargazerCount": 49762,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 6
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 0
+  },
+  "closedIssues": {
+    "totalCount": 0
+  }
+}
+
+--- Repositório 84 ---
+{
+  "nameWithOwner": "mastodon/mastodon",
+  "createdAt": "2016-02-22T15:01:25Z",
+  "updatedAt": "2026-03-06T00:14:21Z",
+  "stargazerCount": 49706,
+  "primaryLanguage": {
+    "name": "Ruby"
+  },
+  "pullRequests": {
+    "totalCount": 19158
+  },
+  "releases": {
+    "totalCount": 327
+  },
+  "issues": {
+    "totalCount": 12738
+  },
+  "closedIssues": {
+    "totalCount": 8545
+  }
+}
+
+--- Repositório 85 ---
+{
+  "nameWithOwner": "cypress-io/cypress",
+  "createdAt": "2015-03-04T00:46:28Z",
+  "updatedAt": "2026-03-05T22:11:50Z",
+  "stargazerCount": 49596,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 8074
+  },
+  "releases": {
+    "totalCount": 387
+  },
+  "issues": {
+    "totalCount": 15321
+  },
+  "closedIssues": {
+    "totalCount": 14121
+  }
+}
+
+--- Repositório 86 ---
+{
+  "nameWithOwner": "NARKOZ/hacker-scripts",
+  "createdAt": "2015-11-21T19:05:09Z",
+  "updatedAt": "2026-03-05T21:15:12Z",
+  "stargazerCount": 49430,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 63
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 104
+  },
+  "closedIssues": {
+    "totalCount": 68
+  }
+}
+
+--- Repositório 87 ---
+{
+  "nameWithOwner": "odoo/odoo",
+  "createdAt": "2014-05-13T15:38:58Z",
+  "updatedAt": "2026-03-05T23:01:53Z",
+  "stargazerCount": 49326,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 6182
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 18815
+  },
+  "closedIssues": {
+    "totalCount": 15253
+  }
+}
+
+--- Repositório 88 ---
+{
+  "nameWithOwner": "lyswhut/lx-music-desktop",
+  "createdAt": "2019-08-14T14:31:08Z",
+  "updatedAt": "2026-03-05T19:58:31Z",
+  "stargazerCount": 49146,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 88
+  },
+  "releases": {
+    "totalCount": 112
+  },
+  "issues": {
+    "totalCount": 2353
+  },
+  "closedIssues": {
+    "totalCount": 1275
+  }
+}
+
+--- Repositório 89 ---
+{
+  "nameWithOwner": "dkhamsing/open-source-ios-apps",
+  "createdAt": "2015-01-26T23:32:34Z",
+  "updatedAt": "2026-03-06T00:06:24Z",
+  "stargazerCount": 49115,
+  "primaryLanguage": null,
+  "pullRequests": {
+    "totalCount": 1543
+  },
+  "releases": {
+    "totalCount": 37
+  },
+  "issues": {
+    "totalCount": 333
+  },
+  "closedIssues": {
+    "totalCount": 333
+  }
+}
+
+--- Repositório 90 ---
+{
+  "nameWithOwner": "AlistGo/alist",
+  "createdAt": "2020-12-23T17:40:29Z",
+  "updatedAt": "2026-03-05T21:04:05Z",
+  "stargazerCount": 49108,
+  "primaryLanguage": {
+    "name": "Go"
+  },
+  "pullRequests": {
+    "totalCount": 899
+  },
+  "releases": {
+    "totalCount": 143
+  },
+  "issues": {
+    "totalCount": 4433
+  },
+  "closedIssues": {
+    "totalCount": 3890
+  }
+}
+
+--- Repositório 91 ---
+{
+  "nameWithOwner": "bevyengine/bevy",
+  "createdAt": "2020-01-18T21:13:55Z",
+  "updatedAt": "2026-03-05T21:57:59Z",
+  "stargazerCount": 44897,
+  "primaryLanguage": {
+    "name": "Rust"
+  },
+  "pullRequests": {
+    "totalCount": 7483
+  },
+  "releases": {
+    "totalCount": 53
+  },
+  "issues": {
+    "totalCount": 8010
+  },
+  "closedIssues": {
+    "totalCount": 5351
+  }
+}
+
+--- Repositório 92 ---
+{
+  "nameWithOwner": "NanmiCoder/MediaCrawler",
+  "createdAt": "2023-06-09T12:14:34Z",
+  "updatedAt": "2026-03-05T21:44:33Z",
+  "stargazerCount": 44892,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 132
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 567
+  },
+  "closedIssues": {
+    "totalCount": 435
+  }
+}
+
+--- Repositório 93 ---
+{
+  "nameWithOwner": "RocketChat/Rocket.Chat",
+  "createdAt": "2015-05-19T07:36:09Z",
+  "updatedAt": "2026-03-05T22:23:37Z",
+  "stargazerCount": 44821,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 15683
+  },
+  "releases": {
+    "totalCount": 1000
+  },
+  "issues": {
+    "totalCount": 16818
+  },
+  "closedIssues": {
+    "totalCount": 14498
+  }
+}
+
+--- Repositório 94 ---
+{
+  "nameWithOwner": "isocpp/CppCoreGuidelines",
+  "createdAt": "2015-08-19T20:22:52Z",
+  "updatedAt": "2026-03-05T20:04:21Z",
+  "stargazerCount": 44814,
+  "primaryLanguage": {
+    "name": "CSS"
+  },
+  "pullRequests": {
+    "totalCount": 825
+  },
+  "releases": {
+    "totalCount": 4
+  },
+  "issues": {
+    "totalCount": 1230
+  },
+  "closedIssues": {
+    "totalCount": 990
+  }
+}
+
+--- Repositório 95 ---
+{
+  "nameWithOwner": "meteor/meteor",
+  "createdAt": "2012-01-19T01:58:17Z",
+  "updatedAt": "2026-03-05T13:29:11Z",
+  "stargazerCount": 44779,
+  "primaryLanguage": {
+    "name": "JavaScript"
+  },
+  "pullRequests": {
+    "totalCount": 2664
+  },
+  "releases": {
+    "totalCount": 0
+  },
+  "issues": {
+    "totalCount": 9256
+  },
+  "closedIssues": {
+    "totalCount": 9020
+  }
+}
+
+--- Repositório 96 ---
+{
+  "nameWithOwner": "KRTirtho/spotube",
+  "createdAt": "2021-02-14T03:17:58Z",
+  "updatedAt": "2026-03-06T00:18:32Z",
+  "stargazerCount": 44754,
+  "primaryLanguage": {
+    "name": "Dart"
+  },
+  "pullRequests": {
+    "totalCount": 257
+  },
+  "releases": {
+    "totalCount": 43
+  },
+  "issues": {
+    "totalCount": 2024
+  },
+  "closedIssues": {
+    "totalCount": 1304
+  }
+}
+
+--- Repositório 97 ---
+{
+  "nameWithOwner": "coqui-ai/TTS",
+  "createdAt": "2020-05-20T15:45:28Z",
+  "updatedAt": "2026-03-06T00:07:20Z",
+  "stargazerCount": 44723,
+  "primaryLanguage": {
+    "name": "Python"
+  },
+  "pullRequests": {
+    "totalCount": 467
+  },
+  "releases": {
+    "totalCount": 98
+  },
+  "issues": {
+    "totalCount": 1229
+  },
+  "closedIssues": {
+    "totalCount": 1225
+  }
+}
+
+--- Repositório 98 ---
+{
+  "nameWithOwner": "vercel/hyper",
+  "createdAt": "2016-07-01T06:01:21Z",
+  "updatedAt": "2026-03-05T21:52:12Z",
+  "stargazerCount": 44698,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 3291
+  },
+  "releases": {
+    "totalCount": 88
+  },
+  "issues": {
+    "totalCount": 3821
+  },
+  "closedIssues": {
+    "totalCount": 2874
+  }
+}
+
+--- Repositório 99 ---
+{
+  "nameWithOwner": "slidevjs/slidev",
+  "createdAt": "2021-04-24T01:25:23Z",
+  "updatedAt": "2026-03-05T23:48:02Z",
+  "stargazerCount": 44648,
+  "primaryLanguage": {
+    "name": "TypeScript"
+  },
+  "pullRequests": {
+    "totalCount": 804
+  },
+  "releases": {
+    "totalCount": 419
+  },
+  "issues": {
+    "totalCount": 1295
+  },
+  "closedIssues": {
+    "totalCount": 1139
+  }
+}
+
+--- Repositório 100 ---
+{
+  "nameWithOwner": "penpot/penpot",
+  "createdAt": "2015-12-29T22:09:07Z",
+  "updatedAt": "2026-03-06T00:06:28Z",
+  "stargazerCount": 44598,
+  "primaryLanguage": {
+    "name": "Clojure"
+  },
+  "pullRequests": {
+    "totalCount": 5511
+  },
+  "releases": {
+    "totalCount": 69
+  },
+  "issues": {
+    "totalCount": 2171
+  },
+  "closedIssues": {
+    "totalCount": 1625
+  }
+}

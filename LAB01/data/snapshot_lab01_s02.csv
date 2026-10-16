@@ -1,0 +1,14 @@
+issue_number,title,status,assignees,state,url,is_draft_issue
+5,Validar campos da RQ05 e RQ06 em amostra pequena.,In progress,EnricoBessa,OPEN,https://github.com/PedroL10/Lab01Exp/issues/5,False
+14,Rodar o script GraphQL de snapshot do Project e exportar o CSV,In progress,PedroL10,OPEN,https://github.com/PedroL10/Lab01Exp/issues/14,False
+10,Validar RQ01 e RQ02 nos 1.000 repositórios e escrever hipótese informal,Done,PedroL10,CLOSED,https://github.com/PedroL10/Lab01Exp/issues/10,False
+4,Validar campos da RQ03 e RQ04 em amostra pequena.,Ready,EnricoBessa,OPEN,https://github.com/PedroL10/Lab01Exp/issues/4,False
+3,Validar campos da RQ01 e RQ02 em amostra pequena.,Done,PedroL10,CLOSED,https://github.com/PedroL10/Lab01Exp/issues/3,False
+1,Configurar autenticacao com a GitHub GraphQL API.,Done,PedroL10,CLOSED,https://github.com/PedroL10/Lab01Exp/issues/1,False
+2,Montar query base para coletar 100 repositorios.,Done,PedroL10,CLOSED,https://github.com/PedroL10/Lab01Exp/issues/2,False
+6,Integrar a coleta final com os 100 repositorios.,Done,PedroL10,CLOSED,https://github.com/PedroL10/Lab01Exp/issues/6,False
+7,Registrar a saida provisoria em JSON ou CSV.,Done,PedroL10,CLOSED,https://github.com/PedroL10/Lab01Exp/issues/7,False
+8,Implementar paginação e exportar os 1.000 repositórios em .csv,Done,PedroL10,CLOSED,https://github.com/PedroL10/Lab01Exp/issues/8,False
+13,Montar a primeira versão do relatório (metodologia + hipóteses consolidadas),Done,PedroL10,CLOSED,https://github.com/PedroL10/Lab01Exp/issues/13,False
+11,Validar RQ03 e RQ04 nos 1.000 repositórios e escrever hipótese informal,Backlog,,OPEN,https://github.com/PedroL10/Lab01Exp/issues/11,False
+12,Validar RQ05 e RQ06 nos 1.000 repositórios e escrever hipótese informal,Backlog,,OPEN,https://github.com/PedroL10/Lab01Exp/issues/12,False

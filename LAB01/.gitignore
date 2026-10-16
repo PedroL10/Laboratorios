@@ -1,0 +1,16 @@
+# Segredos
+.env*
+!.env.example
+
+# Ferramentas locais
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Editor
+.vscode/

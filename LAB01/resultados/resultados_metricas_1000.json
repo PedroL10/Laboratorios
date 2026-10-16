@@ -1,0 +1,201 @@
+{
+  "total_repositorios": 1000,
+  "analysis_reference_at": "2026-08-24T00:00:00Z",
+  "qualidade_dados": {
+    "duplicados": 0,
+    "linguagem_primaria_nao_informada": 87,
+    "repositorios_sem_issues": 43,
+    "issues_fechadas_maior_que_total": 0
+  },
+  "RQ01_idade": {
+    "mediana_dias": 2829.0,
+    "media_dias": 2799.95,
+    "mediana_anos": 7.8,
+    "min_dias": 10,
+    "max_dias": 6708
+  },
+  "RQ02_prs_aceitas": {
+    "mediana": 768.0,
+    "media": 4243.29,
+    "min": 0,
+    "max": 103403
+  },
+  "RQ03_releases": {
+    "mediana": 39.0,
+    "media": 126.86,
+    "min": 0,
+    "max": 1000,
+    "sem_release_percentual": 28.5
+  },
+  "RQ04_atualizacao": {
+    "mediana_dias": 4.0,
+    "media_dias": 116.66,
+    "min_dias": 3,
+    "max_dias": 2455
+  },
+  "RQ05_linguagem": {
+    "distribuicao_top10": [
+      {
+        "linguagem": "Python",
+        "quantidade": 227,
+        "percentual": 22.7
+      },
+      {
+        "linguagem": "TypeScript",
+        "quantidade": 173,
+        "percentual": 17.3
+      },
+      {
+        "linguagem": "JavaScript",
+        "quantidade": 111,
+        "percentual": 11.1
+      },
+      {
+        "linguagem": "Nao informado",
+        "quantidade": 87,
+        "percentual": 8.7
+      },
+      {
+        "linguagem": "Go",
+        "quantidade": 77,
+        "percentual": 7.7
+      },
+      {
+        "linguagem": "Rust",
+        "quantidade": 58,
+        "percentual": 5.8
+      },
+      {
+        "linguagem": "C++",
+        "quantidade": 41,
+        "percentual": 4.1
+      },
+      {
+        "linguagem": "Java",
+        "quantidade": 41,
+        "percentual": 4.1
+      },
+      {
+        "linguagem": "Jupyter Notebook",
+        "quantidade": 24,
+        "percentual": 2.4
+      },
+      {
+        "linguagem": "C",
+        "quantidade": 21,
+        "percentual": 2.1
+      }
+    ],
+    "total_linguagens_distintas": 44
+  },
+  "RQ06_issues_fechadas": {
+    "mediana_percentual": 87.5,
+    "media_percentual": 80.2,
+    "repositorios_sem_issues": 43
+  },
+  "RQ07_por_linguagem": {
+    "Python": {
+      "quantidade_repos": 227,
+      "mediana_prs_aceitas": 560,
+      "mediana_releases": 20,
+      "mediana_dias_sem_update": 5
+    },
+    "TypeScript": {
+      "quantidade_repos": 173,
+      "mediana_prs_aceitas": 1979,
+      "mediana_releases": 133,
+      "mediana_dias_sem_update": 3
+    },
+    "JavaScript": {
+      "quantidade_repos": 111,
+      "mediana_prs_aceitas": 617,
+      "mediana_releases": 37,
+      "mediana_dias_sem_update": 8
+    },
+    "Nao informado": {
+      "quantidade_repos": 87,
+      "mediana_prs_aceitas": 129,
+      "mediana_releases": 0,
+      "mediana_dias_sem_update": 181
+    },
+    "Go": {
+      "quantidade_repos": 77,
+      "mediana_prs_aceitas": 1958,
+      "mediana_releases": 142,
+      "mediana_dias_sem_update": 3
+    },
+    "Rust": {
+      "quantidade_repos": 58,
+      "mediana_prs_aceitas": 2353.5,
+      "mediana_releases": 96.0,
+      "mediana_dias_sem_update": 3.0
+    },
+    "C++": {
+      "quantidade_repos": 41,
+      "mediana_prs_aceitas": 1159,
+      "mediana_releases": 46,
+      "mediana_dias_sem_update": 3
+    },
+    "Java": {
+      "quantidade_repos": 41,
+      "mediana_prs_aceitas": 945,
+      "mediana_releases": 55,
+      "mediana_dias_sem_update": 5
+    },
+    "Jupyter Notebook": {
+      "quantidade_repos": 24,
+      "mediana_prs_aceitas": 78.0,
+      "mediana_releases": 0.0,
+      "mediana_dias_sem_update": 26.0
+    },
+    "C": {
+      "quantidade_repos": 21,
+      "mediana_prs_aceitas": 294,
+      "mediana_releases": 46,
+      "mediana_dias_sem_update": 3
+    },
+    "Shell": {
+      "quantidade_repos": 20,
+      "mediana_prs_aceitas": 389.5,
+      "mediana_releases": 9.5,
+      "mediana_dias_sem_update": 17.5
+    },
+    "Ruby": {
+      "quantidade_repos": 13,
+      "mediana_prs_aceitas": 6269,
+      "mediana_releases": 28,
+      "mediana_dias_sem_update": 5
+    },
+    "HTML": {
+      "quantidade_repos": 11,
+      "mediana_prs_aceitas": 232,
+      "mediana_releases": 0,
+      "mediana_dias_sem_update": 35
+    },
+    "Swift": {
+      "quantidade_repos": 10,
+      "mediana_prs_aceitas": 704.5,
+      "mediana_releases": 38.5,
+      "mediana_dias_sem_update": 5.5
+    }
+  },
+  "RQ08_sem_linguagem": {
+    "definicao_grupo_sem_linguagem": "primaryLanguage nulo na resposta GraphQL; nao implica ausencia de codigo",
+    "sem_linguagem": {
+      "quantidade_repos": 87,
+      "mediana_prs_aceitas": 129,
+      "mediana_releases": 0,
+      "mediana_dias_sem_update": 181,
+      "mediana_percentual_issues_fechadas": 77.7,
+      "repositorios_sem_issues": 15
+    },
+    "com_linguagem": {
+      "quantidade_repos": 913,
+      "mediana_prs_aceitas": 929,
+      "mediana_releases": 51,
+      "mediana_dias_sem_update": 4,
+      "mediana_percentual_issues_fechadas": 88.1,
+      "repositorios_sem_issues": 28
+    }
+  }
+}
