@@ -77,27 +77,30 @@ as estrelas mudam com o tempo e a busca daria uma amostra ligeiramente diferente
 As pastas `dados/` e `cache/` não são versionadas: são recriadas pelo pipeline. A pasta
 `resultados/` é versionada e guarda a amostra usada pelo grupo.
 
-### Interrupções e retomada
+### Rate limit, erros temporários e retomada
+
+O pipeline lida sozinho com os limites e as instabilidades da API:
+
+- **Cota esgotada** (5.000 requisições por hora; 30 por minuto na busca): espera até o
+  horário de renovação informado pela API e continua, avisando no terminal:
+  ```
+      Limite da API atingido: aguardando 1820 s (ate 14:35:05) para continuar...
+  ```
+- **Erros 5xx do GitHub e quedas de rede:** repete a chamada com backoff exponencial
+  (1 s, 2 s, 4 s, 8 s, 16 s). Se o erro persistir depois de 5 tentativas, o pipeline para
+  com uma mensagem explicando o que houve.
 
 Cada etapa grava o resultado de cada repositório assim que ele sai. Se a execução parar
-(cota da API esgotada, erro temporário do GitHub, queda de rede ou `Ctrl+C`), **rode o
-mesmo comando de novo**: o pipeline pula o que já foi feito e continua de onde parou.
-
-Quando a parada é por cota ou erro do GitHub, o pipeline explica o que aconteceu, por
-exemplo:
-
-```
-Erro: cota da API esgotada. Ela renova as 14:35; rode o comando de novo depois disso e a coleta continua de onde parou.
-```
+por qualquer motivo (erro persistente, queda de energia ou `Ctrl+C`), **rode o mesmo
+comando de novo**: o pipeline pula o que já foi feito e continua de onde parou.
 
 Para refazer uma etapa do zero, apague o arquivo dela em `dados/` (ou a pasta em `cache/`).
 
 ### Tempo e cota
 
-A API REST permite 5.000 requisições por hora com token. As etapas 1 a 5 cabem com folga
-numa hora. As etapas 6 e 7 fazem uma chamada de comparação por release e podem esgotar a
-cota mais de uma vez com 300 repositórios: deixe o comando rodando e repita-o quando a
-cota renovar.
+As etapas 1 a 5 cabem numa hora de cota. As etapas 6 e 7 fazem uma chamada de comparação
+por release e podem esgotar a cota mais de uma vez com 300 repositórios: o pipeline espera
+a renovação sozinho, então basta deixar o comando rodando.
 
 ## 5. Configuração (`config.yaml`)
 
@@ -156,8 +159,8 @@ do GitHub (como PyGithub).
 | --- | --- | --- |
 | `Defina a variavel de ambiente GITHUB_TOKEN` | Token não definido neste terminal | Veja a seção 3 |
 | `token do GitHub invalido ou expirado (401)` | Token errado, expirado ou revogado | Gere um novo token |
-| `cota da API esgotada` | Limite de 5.000 requisições/hora atingido | Espere o horário indicado e rode de novo |
-| `erro temporario do GitHub (5xx)` | Instabilidade da API | Rode de novo |
+| `Limite da API atingido: aguardando ...` | Cota de requisições esgotada | Nada: o pipeline espera a renovação e continua sozinho |
+| `erro temporario do GitHub (5xx)` | A API falhou nas 5 tentativas | Rode de novo mais tarde: a coleta continua de onde parou |
 | `bash: :GITHUB_TOKEN: command not found` | Sintaxe do PowerShell usada no Git Bash | Use `export GITHUB_TOKEN=...` |
 | `No module named pipeline` | Comando rodado fora da pasta `LAB03` | `cd LAB03` |
 | `No module named yaml` | Dependências não instaladas | `pip install -r requirements.txt` |

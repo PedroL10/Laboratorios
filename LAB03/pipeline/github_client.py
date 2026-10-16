@@ -5,16 +5,26 @@ entao as chamadas sao feitas diretamente com `requests`.
 
 Responsabilidades deste modulo:
 - autenticar cada requisicao com o token lido da variavel de ambiente GITHUB_TOKEN;
-- seguir a paginacao pelo cabecalho `Link` (rel="next") ate a ultima pagina.
+- seguir a paginacao pelo cabecalho `Link` (rel="next") ate a ultima pagina;
+- tratar rate limit e erros temporarios (secao 7 do enunciado), em `_request`:
+  - cota esgotada (403/429 com `X-RateLimit-Remaining: 0`): espera ate o horario
+    de `X-RateLimit-Reset` e repete a chamada;
+  - limite secundario (403/429 com `Retry-After`): espera os segundos indicados;
+  - respostas 5xx e falhas de rede: repete com backoff exponencial
+    (1 s, 2 s, 4 s, 8 s, 16 s) ate `max_tentativas`.
+  Esgotadas as tentativas, o erro e propagado e a coleta pode ser retomada depois.
 
-O tratamento de rate limit, backoff e cache/retomada fica nas tasks proprias
-e deve ser plugado em `GitHubClient._request`.
+A retomada (nao repetir chamadas ja feitas) fica em `pipeline.retomada` e nos
+caches de cada etapa.
 """
 
 from __future__ import annotations
 
 import os
-from typing import Iterator
+import sys
+import time
+from datetime import datetime
+from typing import Callable, Iterator
 
 import requests
 
@@ -23,6 +33,11 @@ API_VERSION = "2022-11-28"
 TOKEN_ENV_VAR = "GITHUB_TOKEN"
 DEFAULT_PER_PAGE = 100
 DEFAULT_TIMEOUT_SECONDS = 30
+
+MAX_TENTATIVAS = 5  # repeticoes para 5xx e falhas de rede
+BACKOFF_INICIAL_SEGUNDOS = 1.0  # 1, 2, 4, 8, 16 s
+MARGEM_RESET_SEGUNDOS = 5  # folga apos o horario de renovacao da cota
+MAX_ESPERAS_COTA = 10  # protege contra laco infinito se a cota nunca renovar
 
 
 class MissingTokenError(RuntimeError):
@@ -64,8 +79,13 @@ def erro_transitorio(exc: requests.HTTPError) -> bool:
     return cota_esgotada(exc) or (status is not None and status >= 500)
 
 
+def _avisar_no_stderr(mensagem: str) -> None:
+    print(mensagem, file=sys.stderr, flush=True)
+
+
 class GitHubClient:
-    """Cliente minimo da API REST do GitHub, com autenticacao e paginacao."""
+    """Cliente minimo da API REST do GitHub, com autenticacao, paginacao e
+    tratamento de rate limit e erros temporarios."""
 
     def __init__(
         self,
@@ -73,9 +93,17 @@ class GitHubClient:
         session: requests.Session | None = None,
         base_url: str = API_URL,
         timeout: float = DEFAULT_TIMEOUT_SECONDS,
+        max_tentativas: int = MAX_TENTATIVAS,
+        sleep: Callable[[float], None] = time.sleep,
+        agora: Callable[[], float] = time.time,
+        aviso: Callable[[str], None] = _avisar_no_stderr,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
+        self.max_tentativas = max_tentativas
+        self._sleep = sleep
+        self._agora = agora
+        self._aviso = aviso
         self.session = session or requests.Session()
         self.session.headers.update(
             {
@@ -90,10 +118,60 @@ class GitHubClient:
             return path_or_url
         return f"{self.base_url}/{path_or_url.lstrip('/')}"
 
+    def _espera_por_limite(self, response: requests.Response) -> float | None:
+        """Segundos a esperar se a resposta indica limite de requisicoes; None se nao."""
+        if response.status_code not in (403, 429):
+            return None
+        retry_after = response.headers.get("Retry-After")
+        if retry_after is not None:
+            return float(retry_after)
+        if response.headers.get("X-RateLimit-Remaining") == "0":
+            reset = float(response.headers.get("X-RateLimit-Reset", self._agora()))
+            return max(0.0, reset - self._agora()) + MARGEM_RESET_SEGUNDOS
+        return None  # 403 que nao e de limite (ex.: lista de contribuidores grande demais)
+
+    def _esperar_cota(self, segundos: float) -> None:
+        retorno = datetime.fromtimestamp(self._agora() + segundos).strftime("%H:%M:%S")
+        self._aviso(
+            f"    Limite da API atingido: aguardando {segundos:.0f} s (ate {retorno}) "
+            "para continuar..."
+        )
+        self._sleep(segundos)
+
+    def _esperar_backoff(self, tentativa: int, motivo: str) -> None:
+        segundos = BACKOFF_INICIAL_SEGUNDOS * 2**tentativa
+        self._aviso(
+            f"    {motivo}: nova tentativa em {segundos:.0f} s "
+            f"({tentativa + 1}/{self.max_tentativas})..."
+        )
+        self._sleep(segundos)
+
     def _request(self, url: str, params: dict | None = None) -> requests.Response:
-        response = self.session.get(url, params=params, timeout=self.timeout)
-        response.raise_for_status()
-        return response
+        tentativas = 0  # erros 5xx e de rede ja repetidos nesta chamada
+        esperas_cota = 0
+        while True:
+            try:
+                response = self.session.get(url, params=params, timeout=self.timeout)
+            except (requests.ConnectionError, requests.Timeout) as exc:
+                if tentativas >= self.max_tentativas:
+                    raise
+                self._esperar_backoff(tentativas, f"Falha de rede ({type(exc).__name__})")
+                tentativas += 1
+                continue
+
+            espera = self._espera_por_limite(response)
+            if espera is not None and esperas_cota < MAX_ESPERAS_COTA:
+                self._esperar_cota(espera)
+                esperas_cota += 1
+                continue
+
+            if response.status_code >= 500 and tentativas < self.max_tentativas:
+                self._esperar_backoff(tentativas, f"Erro temporario do GitHub ({response.status_code})")
+                tentativas += 1
+                continue
+
+            response.raise_for_status()
+            return response
 
     def get(self, path: str, params: dict | None = None) -> dict | list:
         """Faz um GET e devolve o JSON da resposta (uma unica pagina)."""

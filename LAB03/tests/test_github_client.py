@@ -9,9 +9,16 @@ from pipeline.github_client import GitHubClient, MissingTokenError, read_token
 
 
 class FakeResponse:
-    def __init__(self, payload, next_url: str | None = None, status_code: int = 200):
+    def __init__(
+        self,
+        payload,
+        next_url: str | None = None,
+        status_code: int = 200,
+        headers: dict | None = None,
+    ):
         self._payload = payload
         self.status_code = status_code
+        self.headers = headers or {}
         self.links = {"next": {"url": next_url}} if next_url else {}
 
     def json(self):
@@ -32,7 +39,10 @@ class FakeSession:
 
     def get(self, url, params=None, timeout=None):
         self.calls.append((url, params))
-        return self.responses.pop(0)
+        resposta = self.responses.pop(0)
+        if isinstance(resposta, Exception):
+            raise resposta
+        return resposta
 
 
 def make_client(responses: list[FakeResponse]) -> tuple[GitHubClient, FakeSession]:
@@ -101,3 +111,148 @@ def test_erro_http_e_propagado():
     client, _ = make_client([FakeResponse({}, status_code=404)])
     with pytest.raises(requests.HTTPError):
         client.get("/repos/nao/existe")
+
+
+# --- Rate limit e erros temporarios ----------------------------------------
+
+AGORA = 1_800_000_000.0
+
+
+class Relogio:
+    """Registra as esperas sem dormir de verdade."""
+
+    def __init__(self):
+        self.esperas: list[float] = []
+        self.avisos: list[str] = []
+
+    def sleep(self, segundos):
+        self.esperas.append(segundos)
+
+
+def cliente_com_relogio(responses) -> tuple[GitHubClient, FakeSession, Relogio]:
+    session = FakeSession(responses)
+    relogio = Relogio()
+    client = GitHubClient(
+        token="t",
+        session=session,
+        sleep=relogio.sleep,
+        agora=lambda: AGORA,
+        aviso=relogio.avisos.append,
+    )
+    return client, session, relogio
+
+
+def cota_esgotada_resp(reset: float = AGORA + 60, status: int = 403) -> FakeResponse:
+    return FakeResponse(
+        {"message": "API rate limit exceeded"},
+        status_code=status,
+        headers={"X-RateLimit-Remaining": "0", "X-RateLimit-Reset": str(int(reset))},
+    )
+
+
+def test_cota_esgotada_espera_ate_o_reset_e_repete():
+    client, session, relogio = cliente_com_relogio([cota_esgotada_resp(), FakeResponse({"ok": 1})])
+
+    assert client.get("/x") == {"ok": 1}
+    assert relogio.esperas == [65.0]  # 60 s ate o reset + 5 s de margem
+    assert len(session.calls) == 2
+    assert "Limite da API atingido" in relogio.avisos[0]
+
+
+def test_cota_esgotada_com_429_tambem_espera():
+    client, _, relogio = cliente_com_relogio([cota_esgotada_resp(status=429), FakeResponse({})])
+    client.get("/x")
+    assert relogio.esperas == [65.0]
+
+
+def test_reset_no_passado_espera_so_a_margem():
+    client, _, relogio = cliente_com_relogio([cota_esgotada_resp(reset=AGORA - 10), FakeResponse({})])
+    client.get("/x")
+    assert relogio.esperas == [5.0]
+
+
+def test_limite_secundario_respeita_retry_after():
+    limite = FakeResponse({}, status_code=429, headers={"Retry-After": "30"})
+    client, _, relogio = cliente_com_relogio([limite, FakeResponse({"ok": 1})])
+
+    assert client.get("/x") == {"ok": 1}
+    assert relogio.esperas == [30.0]
+
+
+def test_cota_que_nunca_renova_desiste_apos_o_limite_de_esperas():
+    from pipeline.github_client import MAX_ESPERAS_COTA
+
+    client, session, relogio = cliente_com_relogio(
+        [cota_esgotada_resp() for _ in range(MAX_ESPERAS_COTA + 1)]
+    )
+    with pytest.raises(requests.HTTPError):
+        client.get("/x")
+    assert len(relogio.esperas) == MAX_ESPERAS_COTA
+    assert len(session.calls) == MAX_ESPERAS_COTA + 1
+
+
+def test_403_que_nao_e_limite_nao_espera():
+    # ex.: "contributor list is too large" — erro definitivo, tratado por quem chamou
+    grande = FakeResponse({"message": "too large"}, status_code=403, headers={"X-RateLimit-Remaining": "4000"})
+    client, session, relogio = cliente_com_relogio([grande])
+
+    with pytest.raises(requests.HTTPError):
+        client.get("/x")
+    assert relogio.esperas == []
+    assert len(session.calls) == 1
+
+
+def test_erro_5xx_repete_com_backoff_e_recupera():
+    client, session, relogio = cliente_com_relogio(
+        [FakeResponse({}, status_code=502), FakeResponse({}, status_code=504), FakeResponse({"ok": 1})]
+    )
+    assert client.get("/x") == {"ok": 1}
+    assert relogio.esperas == [1.0, 2.0]
+    assert "Erro temporario do GitHub (502)" in relogio.avisos[0]
+
+
+def test_erro_5xx_persistente_desiste_apos_max_tentativas():
+    client, session, relogio = cliente_com_relogio([FakeResponse({}, status_code=500) for _ in range(6)])
+
+    with pytest.raises(requests.HTTPError):
+        client.get("/x")
+    assert relogio.esperas == [1.0, 2.0, 4.0, 8.0, 16.0]
+    assert len(session.calls) == 6
+
+
+def test_falha_de_rede_repete_com_backoff():
+    client, _, relogio = cliente_com_relogio(
+        [requests.ConnectionError("queda"), requests.Timeout("lento"), FakeResponse({"ok": 1})]
+    )
+    assert client.get("/x") == {"ok": 1}
+    assert relogio.esperas == [1.0, 2.0]
+    assert "Falha de rede (ConnectionError)" in relogio.avisos[0]
+
+
+def test_falha_de_rede_persistente_propaga_o_erro():
+    client, _, relogio = cliente_com_relogio([requests.ConnectionError("queda") for _ in range(6)])
+    with pytest.raises(requests.ConnectionError):
+        client.get("/x")
+    assert len(relogio.esperas) == 5
+
+
+def test_erro_4xx_comum_nao_e_repetido():
+    client, session, relogio = cliente_com_relogio([FakeResponse({}, status_code=404)])
+    with pytest.raises(requests.HTTPError):
+        client.get("/x")
+    assert relogio.esperas == []
+    assert len(session.calls) == 1
+
+
+def test_paginacao_continua_depois_de_esperar_a_cota():
+    client, session, relogio = cliente_com_relogio(
+        [
+            FakeResponse([{"id": 1}], next_url="https://api.github.com/x?page=2"),
+            cota_esgotada_resp(),
+            FakeResponse([{"id": 2}]),
+        ]
+    )
+    assert [i["id"] for i in client.get_paginated("/x")] == [1, 2]
+    assert relogio.esperas == [65.0]
+    # a pagina 2 foi pedida de novo com a mesma URL
+    assert session.calls[1] == session.calls[2] == ("https://api.github.com/x?page=2", None)
