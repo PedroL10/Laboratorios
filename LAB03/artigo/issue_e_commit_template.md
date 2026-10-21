@@ -66,3 +66,7 @@ git push origin master
 Depois: conferir a aba **Actions** (workflow `lab03-testes` verde), comentar nas
 duas Issues com a evidência (saída do pytest, link do CI), mover os cartões
 para "Done" e fechar.
+
+
+
+Teste
