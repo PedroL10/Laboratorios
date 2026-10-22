@@ -74,6 +74,7 @@ as estrelas mudam com o tempo e a busca daria uma amostra ligeiramente diferente
 | [6] Releases | Releases de cada repositório da amostra | `cache/releases/*.json` |
 | [7] Commits, frequência, lead time e CFR (b) | Deployment frequency: releases da janela ÷ semanas da janela (RQ 01); commits entre cada release da janela e a release anterior (mesmo que fora da janela); lead time (RQ 02, variantes a e b) e CFR (b), proxy de entrega (RQ 03) | `cache/commits_entre_releases/*.json`, `dados/frequencia.csv`, `dados/lead_time.csv`, `dados/cfr.csv` |
 | [8] Workflow runs, CFR (a) e recuperação | Runs de push no default branch, consultados mês a mês (um mês com mais de 1.000 runs é dividido ao meio até caber); CFR (a), proxy de CI (RQ 03), e tempo de recuperação por workflow, com episódios censurados (RQ 04) | `cache/workflow_runs/*.json`, `dados/cfr_ci.csv`, `dados/recuperacao.csv` |
+| [9] Variantes da RQ 07 | Frequência, lead time (a e b) e CFR (b) com duas outras unidades de deploy: release + pré-release, e tag (data do commit apontado, listada pela API GraphQL já ordenada por data) | `cache/tags/*.json`, `cache/commits_variante_pre/`, `cache/commits_variante_tag/`, `dados/variantes.csv` |
 
 As pastas `dados/` e `cache/` não são versionadas: são recriadas pelo pipeline. A pasta
 `resultados/` é versionada e guarda a amostra usada pelo grupo.
@@ -100,8 +101,8 @@ Para refazer uma etapa do zero, apague o arquivo dela em `dados/` (ou a pasta em
 ### Tempo e cota
 
 As etapas 1 a 5 cabem numa hora de cota. As etapas 6 e 7 fazem uma chamada de comparação
-por release, e a etapa 8 uma chamada por página de 100 runs: com 300 repositórios elas
-esgotam a cota várias vezes. O pipeline espera a renovação sozinho, então basta deixar o
+por release, a etapa 8 uma chamada por página de 100 runs e a etapa 9 uma comparação
+por pré-release e por tag: com 300 repositórios elas esgotam a cota várias vezes. O pipeline espera a renovação sozinho, então basta deixar o
 comando rodando.
 
 ## 5. Configuração (`config.yaml`)
@@ -145,6 +146,7 @@ LAB03/
 │   ├── releases.py         # [6] releases
 │   ├── commits.py          # [7] commits entre releases
 │   ├── workflow_runs.py    # [8] workflow runs, fatiados por mês
+│   ├── tags.py             # [9] tags com data do commit (GraphQL)
 │   └── retomada.py         # gravação por repositório e retomada
 ├── metricas/               # funções de cálculo: frequencia, lead_time, cfr (b), cfr_ci (a),
 │                           # recuperacao, classificacao DORA, correlacao (RQ 05) e subgrupos (RQ 06)
@@ -156,7 +158,8 @@ LAB03/
 ```
 
 A coleta usa só `requests`: o enunciado não permite bibliotecas prontas de acesso à API
-do GitHub (como PyGithub).
+do GitHub (como PyGithub). Quase tudo usa a API REST; só a listagem de tags usa a API
+GraphQL, que devolve as tags ordenadas pela data do commit.
 
 ## 8. Problemas comuns
 

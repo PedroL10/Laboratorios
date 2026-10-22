@@ -109,3 +109,49 @@ def test_etapa_releases_gera_frequencia_lead_time_e_cfr(tmp_path):
     assert lead_time["n_releases_variante_a"] == "2"
     assert float(lead_time["lead_time_release_dias"]) == 7.0
     assert (tmp_path / "cfr.csv").exists()
+
+
+def test_etapa_variantes_calcula_metricas_por_pre_release_e_por_tag(tmp_path):
+    import csv
+
+    from pipeline.__main__ import VARIANTES_FIELDS, etapa_variantes
+
+    def release(tag, publicada, prerelease=False):
+        return {"id": hash(tag), "tag_name": tag, "target_commitish": "main", "draft": False,
+                "prerelease": prerelease, "published_at": publicada}
+
+    class Client:
+        def get_paginated(self, path, params=None, items_key=None, max_pages=None):
+            yield from [
+                release("v1.1.0", "2024-03-01T00:00:00Z"),
+                release("v1.1.0-rc1", "2024-02-20T00:00:00Z", prerelease=True),
+                release("v1.0.0", "2023-12-01T00:00:00Z"),
+            ]
+
+        def graphql(self, query, variables=None):
+            nos = [
+                {"name": "v1.1.0", "target": {"committedDate": "2024-02-29T00:00:00Z"}},
+                {"name": "v1.1.0-rc1", "target": {"committedDate": "2024-02-19T00:00:00Z"}},
+                {"name": "v1.0.1", "target": {"committedDate": "2024-01-10T00:00:00Z"}},
+                {"name": "v1.0.0", "target": {"committedDate": "2023-11-30T00:00:00Z"}},
+            ]
+            return {"repository": {"refs": {"pageInfo": {"hasNextPage": False, "endCursor": None},
+                                            "nodes": nos}}}
+
+        def get(self, path, params=None):
+            return {"commits": [{"commit": {"author": {"date": "2024-01-05T00:00:00Z"}, "message": "feat"}}]}
+
+    janela = {"inicio": "2024-01-01", "fim": "2024-12-31"}
+    etapa_variantes(Client(), [{"full_name": "org/a"}], janela, tmp_path / "cache", tmp_path)
+
+    with (tmp_path / "variantes.csv").open(encoding="utf-8") as f:
+        leitor = csv.DictReader(f)
+        assert leitor.fieldnames == VARIANTES_FIELDS
+        linha = next(leitor)
+    # Release + pre-release: rc1 e v1.1.0 na janela; tags: v1.0.1, rc1 e v1.1.0.
+    assert linha["n_unidades_janela_pre"] == "2"
+    assert linha["n_unidades_janela_tag"] == "3"
+    assert float(linha["deployment_frequency_tag"]) == 3 / (366 / 7)
+    # A primeira unidade da janela e comparada com a anterior, fora dela: todas tem lead time.
+    assert linha["lead_time_release_dias_pre"] != ""
+    assert linha["lead_time_commit_dias_tag"] != ""

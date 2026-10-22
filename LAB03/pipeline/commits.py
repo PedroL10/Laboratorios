@@ -33,8 +33,8 @@ MOTIVO_PRIMEIRA_RELEASE = "primeira_release"
 MOTIVO_COMPARE_404 = "compare_404"
 
 
-def _caminho_cache(cache_dir: str | Path, full_name: str) -> Path:
-    return Path(cache_dir) / CACHE_SUBDIR / f"{full_name.replace('/', '__')}.json"
+def _caminho_cache(cache_dir: str | Path, full_name: str, subdir: str = CACHE_SUBDIR) -> Path:
+    return Path(cache_dir) / subdir / f"{full_name.replace('/', '__')}.json"
 
 
 def comparar_commits(client: GitHubClient, full_name: str, base: str, head: str) -> list[dict]:
@@ -129,6 +129,7 @@ def coletar_commits_entre_releases(
     cache_dir: str | Path,
     progresso: Callable[[int, int], None] | None = None,
     janela: Janela | None = None,
+    subdir: str = CACHE_SUBDIR,
 ) -> dict[str, dict]:
     """Para cada repositorio, monta as releases com commits, reaproveitando o cache.
 
@@ -137,14 +138,16 @@ def coletar_commits_entre_releases(
     Devolve `full_name -> {"releases": [...], "motivos_ignoradas": {...}}`.
 
     O cache guarda a janela usada; um cache de outra janela (ou de uma versao
-    anterior do pipeline, que nao a registrava) e refeito.
+    anterior do pipeline, que nao a registrava) e refeito. `subdir` separa o
+    cache de cada unidade de deploy (release, release + pre-release, tag) da RQ 07:
+    a mesma funcao serve as tres, so muda a lista de "releases" recebida.
     """
     cache_dir = Path(cache_dir)
     chave_janela = janela.filtro_created() if janela else None
     resultado: dict[str, dict] = {}
     pendentes = []
     for full_name in repositorios:
-        caminho = _caminho_cache(cache_dir, full_name)
+        caminho = _caminho_cache(cache_dir, full_name, subdir)
         if caminho.exists():
             dados = json.loads(caminho.read_text(encoding="utf-8"))
             if dados.get("janela") == chave_janela:
@@ -157,7 +160,7 @@ def coletar_commits_entre_releases(
             client, full_name, repositorios[full_name], janela
         )
         dados = {"janela": chave_janela, "releases": releases, "motivos_ignoradas": motivos}
-        caminho = _caminho_cache(cache_dir, full_name)
+        caminho = _caminho_cache(cache_dir, full_name, subdir)
         caminho.parent.mkdir(parents=True, exist_ok=True)
         caminho.write_text(json.dumps(dados), encoding="utf-8")
         resultado[full_name] = dados

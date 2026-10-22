@@ -1,7 +1,9 @@
 """Cliente HTTP proprio para a API REST do GitHub.
 
 O enunciado proibe bibliotecas prontas de acesso a API do GitHub (ex.: PyGithub),
-entao as chamadas sao feitas diretamente com `requests`.
+entao as chamadas sao feitas diretamente com `requests`. Quase tudo usa a API REST;
+a API GraphQL (`graphql`) so e usada onde a REST nao basta (ex.: listar tags
+ordenadas pela data do commit, em `pipeline.tags`).
 
 Responsabilidades deste modulo:
 - autenticar cada requisicao com o token lido da variavel de ambiente GITHUB_TOKEN;
@@ -79,6 +81,18 @@ def erro_transitorio(exc: requests.HTTPError) -> bool:
     return cota_esgotada(exc) or (status is not None and status >= 500)
 
 
+class GraphQLError(RuntimeError):
+    """Erro devolvido no campo `errors` de uma resposta GraphQL (ex.: repositorio inexistente)."""
+
+    def __init__(self, erros: list[dict]) -> None:
+        self.erros = erros
+        super().__init__("; ".join(e.get("message", str(e)) for e in erros))
+
+    @property
+    def tipos(self) -> set[str]:
+        return {e.get("type", "") for e in self.erros}
+
+
 def _avisar_no_stderr(mensagem: str) -> None:
     print(mensagem, file=sys.stderr, flush=True)
 
@@ -146,12 +160,18 @@ class GitHubClient:
         )
         self._sleep(segundos)
 
-    def _request(self, url: str, params: dict | None = None) -> requests.Response:
+    def _request(
+        self, url: str, params: dict | None = None, corpo_json: dict | None = None
+    ) -> requests.Response:
+        """GET (ou POST, se `corpo_json` for dado) com espera de cota e backoff."""
         tentativas = 0  # erros 5xx e de rede ja repetidos nesta chamada
         esperas_cota = 0
         while True:
             try:
-                response = self.session.get(url, params=params, timeout=self.timeout)
+                if corpo_json is None:
+                    response = self.session.get(url, params=params, timeout=self.timeout)
+                else:
+                    response = self.session.post(url, json=corpo_json, timeout=self.timeout)
             # ChunkedEncodingError: a conexao caiu no meio da resposta (nao e ConnectionError).
             except (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError) as exc:
                 if tentativas >= self.max_tentativas:
@@ -181,6 +201,30 @@ class GitHubClient:
     def get_response(self, path: str, params: dict | None = None) -> requests.Response:
         """Faz um GET e devolve a resposta inteira, para quem precisa dos cabecalhos."""
         return self._request(self._url(path), params)
+
+    def graphql(self, query: str, variables: dict | None = None) -> dict:
+        """Executa uma consulta na API GraphQL e devolve o campo `data`.
+
+        A cota da GraphQL e separada da REST. Quando ela acaba, a API pode
+        responder 200 com um erro do tipo RATE_LIMITED, em vez de 403: nesse
+        caso o cliente tambem espera a renovacao e repete. Outros erros viram
+        `GraphQLError`.
+        """
+        corpo = {"query": query, "variables": variables or {}}
+        esperas_cota = 0
+        while True:
+            response = self._request(self._url("/graphql"), corpo_json=corpo)
+            payload = response.json()
+            erros = payload.get("errors")
+            if not erros:
+                return payload["data"]
+            erro = GraphQLError(erros)
+            if "RATE_LIMITED" in erro.tipos and esperas_cota < MAX_ESPERAS_COTA:
+                reset = float(response.headers.get("X-RateLimit-Reset", self._agora()))
+                self._esperar_cota(max(0.0, reset - self._agora()) + MARGEM_RESET_SEGUNDOS)
+                esperas_cota += 1
+                continue
+            raise erro
 
     def get_paginated(
         self,

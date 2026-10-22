@@ -239,3 +239,17 @@ def test_coletar_commits_entre_releases_informa_progresso(tmp_path):
         client, repositorios, tmp_path, progresso=lambda feitos, total: chamadas.append((feitos, total))
     )
     assert chamadas == [(1, 2), (2, 2)]
+
+
+def test_cada_variante_tem_o_seu_proprio_cache(tmp_path):
+    repositorios = {
+        "org/a": [release("v1", "2024-01-01T00:00:00Z"), release("v2", "2024-01-10T00:00:00Z")]
+    }
+    coletar_commits_entre_releases(FakeClient({"v1...v2": []}), repositorios, tmp_path, janela=JANELA)
+
+    client = FakeClient({"v1...v2": []})
+    coletar_commits_entre_releases(
+        client, repositorios, tmp_path, janela=JANELA, subdir="commits_variante_tag"
+    )
+    assert client.consultas == [("v1...v2", 1)]
+    assert (tmp_path / "commits_variante_tag" / "org__a.json").exists()

@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 import requests
 
-from pipeline.github_client import GitHubClient, MissingTokenError, read_token
+from pipeline.github_client import GitHubClient, GraphQLError, MissingTokenError, read_token
 
 
 class FakeResponse:
@@ -43,6 +43,9 @@ class FakeSession:
         if isinstance(resposta, Exception):
             raise resposta
         return resposta
+
+    def post(self, url, json=None, timeout=None):
+        return self.get(url, json, timeout)
 
 
 def make_client(responses: list[FakeResponse]) -> tuple[GitHubClient, FakeSession]:
@@ -265,3 +268,39 @@ def test_paginacao_continua_depois_de_esperar_a_cota():
     assert relogio.esperas == [65.0]
     # a pagina 2 foi pedida de novo com a mesma URL
     assert session.calls[1] == session.calls[2] == ("https://api.github.com/x?page=2", None)
+
+
+def test_graphql_envia_a_consulta_por_post_e_devolve_data():
+    client, session = make_client([FakeResponse({"data": {"repository": {"id": 1}}})])
+    assert client.graphql("query { x }", {"owner": "org"}) == {"repository": {"id": 1}}
+    assert session.calls[0] == (
+        "https://api.github.com/graphql",
+        {"query": "query { x }", "variables": {"owner": "org"}},
+    )
+
+
+def test_graphql_com_erro_levanta_graphqlerror():
+    client, _ = make_client(
+        [FakeResponse({"data": None, "errors": [{"type": "NOT_FOUND", "message": "nao existe"}]})]
+    )
+    with pytest.raises(GraphQLError, match="nao existe") as exc:
+        client.graphql("query { x }")
+    assert exc.value.tipos == {"NOT_FOUND"}
+
+
+def test_graphql_rate_limited_espera_o_reset_e_repete():
+    limitado = FakeResponse(
+        {"errors": [{"type": "RATE_LIMITED", "message": "limite"}]},
+        headers={"X-RateLimit-Remaining": "0", "X-RateLimit-Reset": str(int(AGORA + 100))},
+    )
+    client, _, relogio = cliente_com_relogio([limitado, FakeResponse({"data": {"ok": 1}})])
+    assert client.graphql("query { x }") == {"ok": 1}
+    assert relogio.esperas == [105.0]
+
+
+def test_graphql_tambem_repete_erro_5xx():
+    client, _, relogio = cliente_com_relogio(
+        [FakeResponse({}, status_code=502), FakeResponse({"data": {"ok": 1}})]
+    )
+    assert client.graphql("query { x }") == {"ok": 1}
+    assert relogio.esperas == [1.0]

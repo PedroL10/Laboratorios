@@ -14,7 +14,10 @@ Etapas implementadas ate agora:
 8. calculo do CFR variante (b), proxy de entrega (RQ 03) por repositorio (dados/cfr.csv);
 9. coleta de workflow runs de push no default branch, fatiada por mes
    (cache/workflow_runs/*.json), e calculo do CFR variante (a), proxy de CI
-   (dados/cfr_ci.csv), e do tempo de recuperacao (RQ 04, dados/recuperacao.csv).
+   (dados/cfr_ci.csv), e do tempo de recuperacao (RQ 04, dados/recuperacao.csv);
+10. variantes da RQ 07: as mesmas metricas de entrega (frequencia, lead time e
+   CFR b) com outras unidades de deploy -- release + pre-release e tag (com a
+   data do commit apontado, via GraphQL) -- em dados/variantes.csv.
 A heuristica de release corretiva usada no CFR (b) ainda precisa ser validada contra a
 amostra-ouro (secao 6 do enunciado) antes de entrar nas conclusoes do artigo; ver
 `metricas.cfr.avaliar_heuristica`.
@@ -52,14 +55,21 @@ from pipeline.funil import (
 )
 from pipeline.github_client import (
     GitHubClient,
+    GraphQLError,
     MissingTokenError,
     cota_esgotada,
     erro_transitorio,
     status_http,
 )
 from pipeline.metadados import coletar_contribuidores, enriquecer_amostra
-from pipeline.releases import coletar_releases, releases_na_janela, releases_principais
+from pipeline.releases import (
+    coletar_releases,
+    releases_na_janela,
+    releases_principais,
+    releases_publicadas,
+)
 from pipeline.selecao import CANDIDATE_FIELDS, buscar_candidatos, carregar_csv, salvar_csv
+from pipeline.tags import coletar_tags
 from pipeline.workflow_runs import coletar_workflow_runs
 
 LEAD_TIME_FIELDS = [
@@ -83,6 +93,20 @@ FREQUENCIA_FIELDS = [
     "deployment_frequency",
     "n_releases_janela",
     "semanas_janela",
+]
+
+# Unidades de deploy alternativas da RQ 07: sufixo das colunas -> subpasta do cache.
+VARIANTES_UNIDADE = {"pre": "commits_variante_pre", "tag": "commits_variante_tag"}
+COLUNAS_POR_VARIANTE = [
+    "deployment_frequency",
+    "n_unidades_janela",
+    "lead_time_release_dias",
+    "lead_time_commit_dias",
+    "cfr_entrega",
+    "n_avaliadas_cfr",
+]
+VARIANTES_FIELDS = ["full_name"] + [
+    f"{coluna}_{sufixo}" for sufixo in VARIANTES_UNIDADE for coluna in COLUNAS_POR_VARIANTE
 ]
 
 CFR_CI_FIELDS = [
@@ -391,6 +415,71 @@ def etapa_workflow_runs(
     if no_teto:
         print(f"    ATENCAO: {no_teto} repositorios com algum dia acima de 1.000 runs (runs incompletos)")
 
+def metricas_da_unidade(historico: list[dict], releases_com_commits: list[dict], janela: dict) -> dict:
+    """Frequencia, lead time (a e b) e CFR (b) para uma unidade de deploy.
+
+    `historico` e a lista cronologica de unidades (releases, releases +
+    pre-releases ou tags) e `releases_com_commits` a saida de
+    `pipeline.commits` para ela.
+    """
+    inicio, fim = janela["inicio"], janela["fim"]
+    n_unidades = len(releases_na_janela(historico, inicio, fim))
+    lead_time = lead_time_repositorio(releases_com_commits)
+    cfr = cfr_repositorio(releases_com_commits, fim)
+    return {
+        "deployment_frequency": deployment_frequency(n_unidades, semanas_da_janela(inicio, fim)),
+        "n_unidades_janela": n_unidades,
+        "lead_time_release_dias": lead_time["lead_time_release_dias"],
+        "lead_time_commit_dias": lead_time["lead_time_commit_dias"],
+        "cfr_entrega": cfr["cfr_entrega"],
+        "n_avaliadas_cfr": cfr["n_releases_avaliadas"],
+    }
+
+
+def etapa_variantes(
+    client: GitHubClient,
+    amostra: list[dict],
+    janela: dict,
+    cache_dir: Path,
+    dados_dir: Path,
+) -> None:
+    janela_observacao = Janela(janela["inicio"], janela["fim"])
+    full_names = [repo["full_name"] for repo in amostra]
+
+    print(f"\n[9] Variantes da RQ 07: coletando tags de {len(full_names)} repositorios (GraphQL)...")
+
+    def progresso_tags(feitos: int, total: int) -> None:
+        if feitos % 50 == 0 or feitos == total:
+            print(f"    tags: {feitos}/{total} repositorios")
+
+    # Releases ja estao no cache da etapa 6: nao gastam cota de novo.
+    todas_releases = coletar_releases(client, full_names, cache_dir)
+    historicos = {
+        "pre": {nome: releases_publicadas(releases) for nome, releases in todas_releases.items()},
+        "tag": coletar_tags(client, full_names, janela_observacao, cache_dir, progresso_tags),
+    }
+
+    linhas = {nome: {"full_name": nome} for nome in full_names}
+    for sufixo, subdir in VARIANTES_UNIDADE.items():
+        print(f"    Commits entre unidades da variante '{sufixo}'...")
+
+        def progresso_commits(feitos: int, total: int) -> None:
+            if feitos % 50 == 0 or feitos == total:
+                print(f"    commits ({sufixo}): {feitos}/{total} repositorios")
+
+        commits_por_repo = coletar_commits_entre_releases(
+            client, historicos[sufixo], cache_dir, progresso_commits, janela_observacao, subdir
+        )
+        for nome in full_names:
+            metricas = metricas_da_unidade(
+                historicos[sufixo][nome], commits_por_repo[nome]["releases"], janela
+            )
+            linhas[nome].update({f"{coluna}_{sufixo}": valor for coluna, valor in metricas.items()})
+
+    caminho = dados_dir / "variantes.csv"
+    salvar_csv(list(linhas.values()), caminho, VARIANTES_FIELDS)
+    print(f"    Variantes de {len(linhas)} repositorios salvas em {caminho}")
+
 
 def mensagem_de_erro(exc: requests.HTTPError) -> str:
     """Explica o erro HTTP que interrompeu a coleta e o que fazer."""
@@ -444,8 +533,16 @@ def main(argv: list[str] | None = None) -> int:
             client, amostra, config.get("janela", {}), cache_dir, dados_dir
         )
         etapa_workflow_runs(client, amostra, config["janela"], cache_dir, dados_dir)
+        etapa_variantes(client, amostra, config["janela"], cache_dir, dados_dir)
     except requests.HTTPError as exc:
         print(f"\nErro: {mensagem_de_erro(exc)}", file=sys.stderr)
+        return 1
+    except GraphQLError as exc:
+        print(
+            f"\nErro na API GraphQL do GitHub: {exc}. Rode o comando de novo: "
+            "a coleta continua de onde parou.",
+            file=sys.stderr,
+        )
         return 1
     return 0
 

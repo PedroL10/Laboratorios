@@ -9,6 +9,7 @@ from pipeline.releases import (
     coletar_releases_repositorio,
     releases_na_janela,
     releases_principais,
+    releases_publicadas,
 )
 
 
@@ -136,3 +137,12 @@ def test_coletar_releases_informa_progresso(tmp_path):
         client, ["org/a", "org/b"], tmp_path, progresso=lambda feitos, total: chamadas.append((feitos, total))
     )
     assert chamadas == [(1, 2), (2, 2)]
+
+
+def test_releases_publicadas_inclui_pre_releases_e_exclui_drafts():
+    releases = [
+        release_api("v1", "2024-01-01T00:00:00Z"),
+        release_api("v2-rc1", "2024-01-05T00:00:00Z", prerelease=True),
+        release_api("v3-draft", None, draft=True),
+    ]
+    assert [r["tag_name"] for r in releases_publicadas(releases)] == ["v1", "v2-rc1"]

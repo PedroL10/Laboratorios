@@ -85,6 +85,11 @@ def releases_principais(releases: list[dict]) -> list[dict]:
     return [r for r in releases if not r["draft"] and not r["prerelease"]]
 
 
+def releases_publicadas(releases: list[dict]) -> list[dict]:
+    """Variante "release + pre-release" da RQ 07: toda release que nao e draft."""
+    return [r for r in releases if not r["draft"] and r["published_at"]]
+
+
 def releases_na_janela(releases: list[dict], inicio: str, fim: str) -> list[dict]:
     """Filtra releases publicadas dentro da janela (datas AAAA-MM-DD, inclusive nas duas pontas).
 
