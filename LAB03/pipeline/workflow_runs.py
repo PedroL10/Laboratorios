@@ -27,6 +27,7 @@ from typing import Callable
 
 from pipeline.criterio_inclusao import Janela
 from pipeline.github_client import GitHubClient
+from pipeline.retomada import TRABALHADORES_PADRAO, gravar_json, processar_em_paralelo
 
 CACHE_SUBDIR = "workflow_runs"
 TETO_POR_CONSULTA = 1000  # maximo de resultados de uma consulta filtrada
@@ -113,8 +114,11 @@ def coletar_workflow_runs(
     janela: Janela,
     cache_dir: str | Path,
     progresso: Callable[[int, int], None] | None = None,
+    trabalhadores: int = TRABALHADORES_PADRAO,
 ) -> dict[str, dict]:
     """Coleta os runs de varios repositorios, reaproveitando o cache existente.
+
+    Os repositorios pendentes sao processados `trabalhadores` por vez.
 
     `repositorios` sao linhas da amostra, com `full_name` e `default_branch`.
     Devolve `full_name -> {"janela", "runs", "fatias_no_teto"}`, na ordem de
@@ -133,16 +137,14 @@ def coletar_workflow_runs(
                 continue
         pendentes.append(repo)
 
-    for i, repo in enumerate(pendentes, start=1):
+    def processar(client_thread: GitHubClient, repo: dict) -> None:
         runs, fatias_no_teto = coletar_runs_repositorio(
-            client, repo["full_name"], repo["default_branch"], janela
+            client_thread, repo["full_name"], repo["default_branch"], janela
         )
         dados = {"janela": chave_janela, "runs": runs, "fatias_no_teto": fatias_no_teto}
-        caminho = _caminho_cache(cache_dir, repo["full_name"])
-        caminho.parent.mkdir(parents=True, exist_ok=True)
-        caminho.write_text(json.dumps(dados), encoding="utf-8")
+        gravar_json(_caminho_cache(cache_dir, repo["full_name"]), dados)
         resultado[repo["full_name"]] = dados
-        if progresso:
-            progresso(i, len(pendentes))
+
+    processar_em_paralelo(pendentes, processar, client, trabalhadores, progresso)
 
     return {repo["full_name"]: resultado[repo["full_name"]] for repo in repositorios}

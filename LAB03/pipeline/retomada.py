@@ -8,8 +8,66 @@ ja estao no arquivo.
 from __future__ import annotations
 
 import csv
+import json
+import os
+import threading
+from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import Any, Callable, Iterable
+
+TRABALHADORES_PADRAO = 8  # repositorios processados ao mesmo tempo nas coletas longas
+
+
+def gravar_json(caminho: Path, dados: Any) -> None:
+    """Grava o JSON num arquivo temporario e so depois o move para o lugar.
+
+    Se a coleta for interrompida no meio da gravacao, o arquivo anterior (ou
+    nenhum) continua la, e nunca um JSON pela metade que quebraria a retomada.
+    """
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    temporario = caminho.with_name(f"{caminho.name}.{os.getpid()}.{threading.get_ident()}.tmp")
+    temporario.write_text(json.dumps(dados), encoding="utf-8")
+    os.replace(temporario, caminho)
+
+
+def processar_em_paralelo(
+    itens: list,
+    processar: Callable[[Any, Any], None],
+    client: Any,
+    trabalhadores: int = TRABALHADORES_PADRAO,
+    progresso: Callable[[int, int], None] | None = None,
+) -> None:
+    """Chama `processar(client_da_thread, item)` para cada item, `trabalhadores` por vez.
+
+    A coleta e limitada pelo tempo de resposta da API, e nao pela cota: uma
+    chamada por vez usa so uma fracao das 5.000 requisicoes por hora. Cada
+    thread usa a sua propria copia do cliente (`client.copia()`, se existir),
+    porque uma sessao HTTP nao deve ser compartilhada entre threads. Se um item
+    falhar, os que ainda nao comecaram sao cancelados e o erro e propagado.
+    """
+    if not itens:
+        return
+    locais = threading.local()
+
+    def cliente_da_thread():
+        if not hasattr(locais, "client"):
+            locais.client = client.copia() if hasattr(client, "copia") else client
+        return locais.client
+
+    executor = ThreadPoolExecutor(max_workers=max(1, trabalhadores))
+    try:
+        futuros = [executor.submit(lambda item=item: processar(cliente_da_thread(), item)) for item in itens]
+        feitos = 0
+        pendentes = set(futuros)
+        while pendentes:
+            prontos, pendentes = wait(pendentes, return_when=FIRST_EXCEPTION)
+            for futuro in prontos:
+                futuro.result()  # propaga o erro do item, se houver
+                feitos += 1
+                if progresso:
+                    progresso(feitos, len(itens))
+    finally:
+        executor.shutdown(wait=True, cancel_futures=True)
 
 
 def carregar_processados(caminho: Path) -> dict[str, dict]:

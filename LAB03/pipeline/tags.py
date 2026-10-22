@@ -25,6 +25,7 @@ from typing import Callable
 
 from pipeline.criterio_inclusao import Janela, parse_data
 from pipeline.github_client import GitHubClient, GraphQLError
+from pipeline.retomada import gravar_json
 
 CACHE_SUBDIR = "tags"
 
@@ -119,8 +120,7 @@ def coletar_tags(
     for i, full_name in enumerate(pendentes, start=1):
         tags = coletar_tags_repositorio(client, full_name, janela)
         caminho = _caminho_cache(cache_dir, full_name)
-        caminho.parent.mkdir(parents=True, exist_ok=True)
-        caminho.write_text(json.dumps({"janela": chave_janela, "tags": tags}), encoding="utf-8")
+        gravar_json(caminho, {"janela": chave_janela, "tags": tags})
         resultado[full_name] = tags
         if progresso:
             progresso(i, len(pendentes))

@@ -31,6 +31,7 @@ import requests
 
 from pipeline.criterio_inclusao import Janela, parse_data
 from pipeline.github_client import GitHubClient
+from pipeline.retomada import TRABALHADORES_PADRAO, gravar_json, processar_em_paralelo
 
 CACHE_SUBDIR = "commits_entre_releases"
 CACHE_COMPARES_SUBDIR = "compares"
@@ -80,8 +81,7 @@ class CacheCompares:
     def salvar(self) -> None:
         if self.caminho is None or not self._novos:
             return
-        self.caminho.parent.mkdir(parents=True, exist_ok=True)
-        self.caminho.write_text(json.dumps(self.pares), encoding="utf-8")
+        gravar_json(self.caminho, self.pares)
 
 
 def comparar_commits(client: GitHubClient, full_name: str, base: str, head: str) -> list[dict]:
@@ -176,6 +176,7 @@ def coletar_commits_entre_releases(
     progresso: Callable[[int, int], None] | None = None,
     janela: Janela | None = None,
     subdir: str = CACHE_SUBDIR,
+    trabalhadores: int = TRABALHADORES_PADRAO,
 ) -> dict[str, dict]:
     """Para cada repositorio, monta as releases com commits, reaproveitando o cache.
 
@@ -187,6 +188,7 @@ def coletar_commits_entre_releases(
     anterior do pipeline, que nao a registrava) e refeito. `subdir` separa o
     cache de cada unidade de deploy (release, release + pre-release, tag) da RQ 07:
     a mesma funcao serve as tres, so muda a lista de "releases" recebida.
+    Os repositorios pendentes sao processados `trabalhadores` por vez.
     """
     cache_dir = Path(cache_dir)
     chave_janela = janela.filtro_created() if janela else None
@@ -201,21 +203,19 @@ def coletar_commits_entre_releases(
                 continue
         pendentes.append(full_name)
 
-    for i, full_name in enumerate(pendentes, start=1):
+    def processar(client_thread: GitHubClient, full_name: str) -> None:
         compares = CacheCompares(_caminho_cache(cache_dir, full_name, CACHE_COMPARES_SUBDIR))
         try:
             releases, motivos = montar_releases_com_commits(
-                client, full_name, repositorios[full_name], janela, compares
+                client_thread, full_name, repositorios[full_name], janela, compares
             )
         finally:
             # Grava os pares ja comparados mesmo se a coleta parar no meio do repositorio.
             compares.salvar()
         dados = {"janela": chave_janela, "releases": releases, "motivos_ignoradas": motivos}
-        caminho = _caminho_cache(cache_dir, full_name, subdir)
-        caminho.parent.mkdir(parents=True, exist_ok=True)
-        caminho.write_text(json.dumps(dados), encoding="utf-8")
+        gravar_json(_caminho_cache(cache_dir, full_name, subdir), dados)
         resultado[full_name] = dados
-        if progresso:
-            progresso(i, len(pendentes))
+
+    processar_em_paralelo(pendentes, processar, client, trabalhadores, progresso)
 
     return {full_name: resultado[full_name] for full_name in repositorios}

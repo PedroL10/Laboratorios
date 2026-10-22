@@ -112,6 +112,7 @@ class GitHubClient:
         agora: Callable[[], float] = time.time,
         aviso: Callable[[str], None] = _avisar_no_stderr,
     ) -> None:
+        self._token = token or read_token()
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.max_tentativas = max_tentativas
@@ -121,10 +122,22 @@ class GitHubClient:
         self.session = session or requests.Session()
         self.session.headers.update(
             {
-                "Authorization": f"Bearer {token or read_token()}",
+                "Authorization": f"Bearer {self._token}",
                 "Accept": "application/vnd.github+json",
                 "X-GitHub-Api-Version": API_VERSION,
             }
+        )
+
+    def copia(self) -> "GitHubClient":
+        """Novo cliente, com sessao HTTP propria, mesmo token e mesma configuracao (uso em threads)."""
+        return GitHubClient(
+            token=self._token,
+            base_url=self.base_url,
+            timeout=self.timeout,
+            max_tentativas=self.max_tentativas,
+            sleep=self._sleep,
+            agora=self._agora,
+            aviso=self._aviso,
         )
 
     def _url(self, path_or_url: str) -> str:

@@ -18,6 +18,7 @@ from typing import Callable
 
 from pipeline.criterio_inclusao import Janela, parse_data
 from pipeline.github_client import GitHubClient
+from pipeline.retomada import gravar_json
 
 CACHE_SUBDIR = "releases"
 
@@ -71,8 +72,7 @@ def coletar_releases(
     for i, full_name in enumerate(pendentes, start=1):
         releases = coletar_releases_repositorio(client, full_name)
         caminho = _caminho_cache(cache_dir, full_name)
-        caminho.parent.mkdir(parents=True, exist_ok=True)
-        caminho.write_text(json.dumps(releases), encoding="utf-8")
+        gravar_json(caminho, releases)
         resultado[full_name] = releases
         if progresso:
             progresso(i, len(pendentes))
