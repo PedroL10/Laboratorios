@@ -68,5 +68,3 @@ duas Issues com a evidência (saída do pytest, link do CI), mover os cartões
 para "Done" e fechar.
 
 
-
-Teste

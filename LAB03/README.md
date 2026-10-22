@@ -115,6 +115,17 @@ por release, a etapa 8 uma chamada por página de 100 runs e a etapa 9 uma compa
 por pré-release e por tag: com 300 repositórios elas esgotam a cota várias vezes. O pipeline espera a renovação sozinho, então basta deixar o
 comando rodando.
 
+### Análises
+
+Cada RQ tem um script em `analise/` que lê o dataset final e grava tabelas e figuras em
+`resultados/`. Não chamam a API nem precisam de token:
+
+| Comando | RQ | Saída |
+| --- | --- | --- |
+| `python -m analise.rq01_04` | RQ 01 a 04: mediana, IQR, censura e classificação DORA de referência (C1) | `resultados/rq01_04/` (tabelas `.md`/`.csv` e `figuras/`) |
+| `python -m analise.rq05` | RQ 05: correlação de Spearman entre frequência e CFR | terminal |
+| `python -m analise.rq06` | RQ 06: Kruskal-Wallis/Mann-Whitney por fator, com Holm | terminal |
+
 ## 5. Configuração (`config.yaml`)
 
 | Campo | Valor atual | Significado |
