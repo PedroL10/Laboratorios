@@ -4,9 +4,9 @@ Pipeline que seleciona repositórios open-source populares que usam GitHub Actio
 calcula, a partir dos dados públicos da API do GitHub, aproximações das métricas DORA
 (frequência de deploy, lead time, taxa de falha e tempo de recuperação).
 
-> **Versão inicial (Sprint 1).** Hoje o pipeline faz a seleção da amostra, coleta os
-> metadados, as releases e os commits entre releases, e calcula o lead time (RQ 02).
-> A coleta de workflow runs, o CFR e o tempo de recuperação entram nas próximas tasks.
+> **Em construção.** Hoje o pipeline faz a seleção da amostra, coleta os metadados, as
+> releases, os commits entre releases e os workflow runs, e calcula o lead time (RQ 02),
+> o CFR nas variantes (a) e (b) (RQ 03) e o tempo de recuperação (RQ 04).
 
 Enunciado completo: [03 - Mineração de Métricas DORA.md](03%20-%20Mineração%20de%20Métricas%20DORA.md).
 Guia para quem contribui com o código: [manual.md](manual.md).
@@ -72,7 +72,8 @@ as estrelas mudam com o tempo e a busca daria uma amostra ligeiramente diferente
 | [4] Funil e amostra | Tabela com quantos repositórios restaram em cada etapa e por quê; lista da amostra final | `resultados/funil_selecao.md`, `resultados/funil_selecao.csv`, `resultados/amostra.csv` |
 | [5] Metadados | Número de contribuidores (inclusive anônimos) e idade no fim da janela | `dados/contribuidores.csv`, colunas novas em `resultados/amostra.csv` |
 | [6] Releases | Releases de cada repositório da amostra | `cache/releases/*.json` |
-| [7] Commits e lead time | Commits entre releases consecutivas e lead time (RQ 02, variantes a e b) | `cache/commits_entre_releases/*.json`, `dados/lead_time.csv` |
+| [7] Commits, lead time e CFR (b) | Commits entre cada release da janela e a release anterior (mesmo que fora da janela); lead time (RQ 02, variantes a e b) e CFR (b), proxy de entrega (RQ 03) | `cache/commits_entre_releases/*.json`, `dados/lead_time.csv`, `dados/cfr.csv` |
+| [8] Workflow runs, CFR (a) e recuperação | Runs de push no default branch, consultados mês a mês (um mês com mais de 1.000 runs é dividido ao meio até caber); CFR (a), proxy de CI (RQ 03), e tempo de recuperação por workflow, com episódios censurados (RQ 04) | `cache/workflow_runs/*.json`, `dados/cfr_ci.csv`, `dados/recuperacao.csv` |
 
 As pastas `dados/` e `cache/` não são versionadas: são recriadas pelo pipeline. A pasta
 `resultados/` é versionada e guarda a amostra usada pelo grupo.
@@ -99,8 +100,9 @@ Para refazer uma etapa do zero, apague o arquivo dela em `dados/` (ou a pasta em
 ### Tempo e cota
 
 As etapas 1 a 5 cabem numa hora de cota. As etapas 6 e 7 fazem uma chamada de comparação
-por release e podem esgotar a cota mais de uma vez com 300 repositórios: o pipeline espera
-a renovação sozinho, então basta deixar o comando rodando.
+por release, e a etapa 8 uma chamada por página de 100 runs: com 300 repositórios elas
+esgotam a cota várias vezes. O pipeline espera a renovação sozinho, então basta deixar o
+comando rodando.
 
 ## 5. Configuração (`config.yaml`)
 
@@ -142,8 +144,11 @@ LAB03/
 │   ├── metadados.py        # [5] contribuidores e idade
 │   ├── releases.py         # [6] releases
 │   ├── commits.py          # [7] commits entre releases
+│   ├── workflow_runs.py    # [8] workflow runs, fatiados por mês
 │   └── retomada.py         # gravação por repositório e retomada
-├── metricas/               # funções de cálculo das métricas (lead_time.py)
+├── metricas/               # funções de cálculo: lead_time, cfr (b), cfr_ci (a), recuperacao,
+│                           # correlacao (RQ 05) e subgrupos (RQ 06)
+├── analise/                # scripts de análise das RQs, a partir do CSV final
 ├── tests/                  # testes com pytest
 ├── resultados/             # funil e amostra (versionados)
 ├── config.yaml

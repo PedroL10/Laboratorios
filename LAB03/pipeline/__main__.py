@@ -10,11 +10,13 @@ Etapas implementadas ate agora:
 6. coleta de releases (cache/releases/*.json) e commits entre releases
    (cache/commits_entre_releases/*.json) dos repositorios da amostra;
 7. calculo do lead time (RQ 02, variantes a e b) por repositorio (dados/lead_time.csv);
-8. calculo do CFR variante (b), proxy de entrega (RQ 03) por repositorio (dados/cfr.csv).
+8. calculo do CFR variante (b), proxy de entrega (RQ 03) por repositorio (dados/cfr.csv);
+9. coleta de workflow runs de push no default branch, fatiada por mes
+   (cache/workflow_runs/*.json), e calculo do CFR variante (a), proxy de CI
+   (dados/cfr_ci.csv), e do tempo de recuperacao (RQ 04, dados/recuperacao.csv).
 A heuristica de release corretiva usada no CFR (b) ainda precisa ser validada contra a
 amostra-ouro (secao 6 do enunciado) antes de entrar nas conclusoes do artigo; ver
-`metricas.cfr.avaliar_heuristica`. As etapas de coleta de workflow runs e das demais
-metricas serao adicionadas por outras tasks.
+`metricas.cfr.avaliar_heuristica`.
 
 As etapas 1, 2, 3 e 5 salvam o seu CSV em `dados_dir`. Se o arquivo ja existir, a etapa e
 reaproveitada (ou retomada); para refaze-la do zero, apague o arquivo. A etapa 4 nao
@@ -31,7 +33,9 @@ from pathlib import Path
 import requests
 
 from metricas.cfr import cfr_repositorio
+from metricas.cfr_ci import cfr_ci_repositorio
 from metricas.lead_time import lead_time_repositorio
+from metricas.recuperacao import recuperacao_repositorio
 from pipeline.commits import coletar_commits_entre_releases
 from pipeline.config import load_config
 from pipeline.criterio_inclusao import Janela, aplicar_criterio, incluido
@@ -54,6 +58,7 @@ from pipeline.github_client import (
 from pipeline.metadados import coletar_contribuidores, enriquecer_amostra
 from pipeline.releases import coletar_releases, releases_principais
 from pipeline.selecao import CANDIDATE_FIELDS, buscar_candidatos, carregar_csv, salvar_csv
+from pipeline.workflow_runs import coletar_workflow_runs
 
 LEAD_TIME_FIELDS = [
     "full_name",
@@ -71,6 +76,24 @@ CFR_FIELDS = [
     "n_releases_censuradas",
 ]
 
+CFR_CI_FIELDS = [
+    "full_name",
+    "cfr_ci",
+    "n_runs_falha",
+    "n_runs_sucesso",
+    "n_runs_ignorados",
+    "fatias_no_teto",
+]
+
+RECUPERACAO_FIELDS = [
+    "full_name",
+    "tempo_recuperacao_horas",
+    "n_episodios",
+    "n_episodios_censurados",
+    "proporcao_censurados",
+    "n_episodios_sem_inicio",
+]
+
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -80,7 +103,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--somente-selecao",
         action="store_true",
-        help="Roda so as etapas 1 a 5 (selecao, funil e metadados), sem coletar releases e commits",
+        help="Roda so as etapas 1 a 5 (selecao, funil e metadados), sem coletar releases, commits e runs",
     )
     return parser.parse_args(argv)
 
@@ -297,6 +320,51 @@ def etapa_releases_lead_time_e_cfr(
         print(f"    CFR (variante b) de {len(linhas_cfr)} repositorios salvo em {caminho_cfr}")
 
 
+def etapa_workflow_runs(
+    client: GitHubClient,
+    amostra: list[dict],
+    janela: dict,
+    cache_dir: Path,
+    dados_dir: Path,
+) -> None:
+    janela_observacao = Janela(janela["inicio"], janela["fim"])
+    print(f"\n[8] Coletando workflow runs de {len(amostra)} repositorios (fatias mensais)...")
+
+    def progresso(feitos: int, total: int) -> None:
+        if feitos % 25 == 0 or feitos == total:
+            print(f"    workflow runs: {feitos}/{total} repositorios")
+
+    runs_por_repo = coletar_workflow_runs(
+        client, amostra, janela_observacao, cache_dir, progresso
+    )
+
+    linhas_cfr_ci = []
+    linhas_recuperacao = []
+    for full_name, dados in runs_por_repo.items():
+        linhas_cfr_ci.append(
+            {
+                "full_name": full_name,
+                **cfr_ci_repositorio(dados["runs"]),
+                "fatias_no_teto": dados["fatias_no_teto"],
+            }
+        )
+        linhas_recuperacao.append({"full_name": full_name, **recuperacao_repositorio(dados["runs"])})
+
+    caminho_cfr_ci = dados_dir / "cfr_ci.csv"
+    salvar_csv(linhas_cfr_ci, caminho_cfr_ci, CFR_CI_FIELDS)
+    print(f"    CFR (variante a) de {len(linhas_cfr_ci)} repositorios salvo em {caminho_cfr_ci}")
+
+    caminho_recuperacao = dados_dir / "recuperacao.csv"
+    salvar_csv(linhas_recuperacao, caminho_recuperacao, RECUPERACAO_FIELDS)
+    print(
+        f"    Tempo de recuperacao de {len(linhas_recuperacao)} repositorios salvo em "
+        f"{caminho_recuperacao}"
+    )
+
+    no_teto = sum(1 for linha in linhas_cfr_ci if linha["fatias_no_teto"])
+    if no_teto:
+        print(f"    ATENCAO: {no_teto} repositorios com algum dia acima de 1.000 runs (runs incompletos)")
+
 
 def mensagem_de_erro(exc: requests.HTTPError) -> str:
     """Explica o erro HTTP que interrompeu a coleta e o que fazer."""
@@ -344,11 +412,12 @@ def main(argv: list[str] | None = None) -> int:
         amostra = etapa_funil(candidatos, filtro_actions, avaliados, config, resultados_dir)
         amostra = etapa_metadados(client, amostra, config, dados_dir, resultados_dir)
         if args.somente_selecao:
-            print("\n--somente-selecao: etapas de releases, commits, lead time e CFR nao executadas.")
+            print("\n--somente-selecao: etapas de releases, commits, workflow runs e metricas nao executadas.")
             return 0
         etapa_releases_lead_time_e_cfr(
             client, amostra, config.get("janela", {}), cache_dir, dados_dir
         )
+        etapa_workflow_runs(client, amostra, config["janela"], cache_dir, dados_dir)
     except requests.HTTPError as exc:
         print(f"\nErro: {mensagem_de_erro(exc)}", file=sys.stderr)
         return 1

@@ -28,6 +28,7 @@ from typing import Callable
 
 import requests
 
+from metricas.cfr_ci import CONCLUSOES_VALIDAS
 from pipeline.github_client import GitHubClient, erro_transitorio, status_http
 from pipeline.retomada import processar_com_retomada
 
@@ -41,9 +42,6 @@ CRITERIO_FIELDS = [
     "motivo_descarte",
 ]
 
-CONCLUSOES_SUCESSO = {"success"}
-CONCLUSOES_FALHA = {"failure", "timed_out", "startup_failure"}
-CONCLUSOES_VALIDAS = CONCLUSOES_SUCESSO | CONCLUSOES_FALHA
 # Status aceitos pelo filtro `status` da API (startup_failure nao e aceito).
 STATUS_FILTRAVEIS = ("success", "failure", "timed_out")
 
