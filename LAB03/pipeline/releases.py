@@ -16,6 +16,7 @@ import json
 from pathlib import Path
 from typing import Callable
 
+from pipeline.criterio_inclusao import Janela, parse_data
 from pipeline.github_client import GitHubClient
 
 CACHE_SUBDIR = "releases"
@@ -85,5 +86,10 @@ def releases_principais(releases: list[dict]) -> list[dict]:
 
 
 def releases_na_janela(releases: list[dict], inicio: str, fim: str) -> list[dict]:
-    """Filtra releases publicadas dentro da janela `[inicio, fim)` (datas ISO)."""
-    return [r for r in releases if r["published_at"] and inicio <= r["published_at"] < fim]
+    """Filtra releases publicadas dentro da janela (datas AAAA-MM-DD, inclusive nas duas pontas).
+
+    Usa a mesma `Janela` do criterio de inclusao, para que uma release publicada
+    no ultimo dia (ex.: 2026-09-30T15:00:00Z) seja contada aqui e la.
+    """
+    janela = Janela(inicio, fim)
+    return [r for r in releases if r["published_at"] and janela.contem(parse_data(r["published_at"]))]

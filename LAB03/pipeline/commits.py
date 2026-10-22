@@ -1,9 +1,11 @@
 """Coleta de commits entre releases (`GET /repos/{full_name}/compare/{base}...{head}`),
 usada para calcular o lead time (RQ 02).
 
-Para cada release R (exceto a primeira da historia do repositorio, que nao tem
-release anterior), os commits incluidos sao obtidos comparando R com a release
-anterior. O resultado e uma lista no formato esperado por
+Para cada release R da janela (exceto a primeira da historia do repositorio,
+que nao tem release anterior), os commits incluidos sao obtidos comparando R
+com a release anterior -- que pode estar fora da janela (secao 5, RQ 02). Por
+isso a coleta recebe o historico completo de releases principais e a janela,
+e nao so as releases da janela. O resultado e uma lista no formato esperado por
 `metricas.lead_time.lead_time_repositorio` e por `metricas.cfr.cfr_repositorio`
 (que usa `tag_anterior` e `mensagens_commits` para a heuristica de release
 corretiva).
@@ -21,6 +23,7 @@ from typing import Callable
 
 import requests
 
+from pipeline.criterio_inclusao import Janela, parse_data
 from pipeline.github_client import GitHubClient
 
 CACHE_SUBDIR = "commits_entre_releases"
@@ -68,24 +71,37 @@ def mensagens_de_commit(commits: list[dict]) -> list[str]:
 
 
 def montar_releases_com_commits(
-    client: GitHubClient, full_name: str, releases_ordenadas: list[dict]
+    client: GitHubClient,
+    full_name: str,
+    releases_ordenadas: list[dict],
+    janela: Janela | None = None,
 ) -> tuple[list[dict], dict[str, int]]:
-    """Monta, para cada release com release anterior, a lista de commits incluidos.
+    """Monta, para cada release da janela com release anterior, a lista de commits incluidos.
 
-    `releases_ordenadas` deve conter apenas as releases da definicao principal
-    (ver `pipeline.releases.releases_principais`), em ordem cronologica.
+    `releases_ordenadas` deve conter o historico completo das releases da
+    definicao principal (ver `pipeline.releases.releases_principais`), em ordem
+    cronologica, e nao so as da janela: a release anterior a primeira release da
+    janela costuma estar fora dela e e a base do compare. So as releases dentro
+    de `janela` sao comparadas; sem `janela`, todas sao.
 
     Devolve `(releases_com_commits, motivos_ignoradas)`: as releases prontas
     para `metricas.lead_time.lead_time_repositorio` e a contagem de releases
-    ignoradas por motivo, usada no funil/ameacas a validade.
+    da janela ignoradas por motivo, usada no funil/ameacas a validade.
     """
     resultado: list[dict] = []
     motivos = {MOTIVO_PRIMEIRA_RELEASE: 0, MOTIVO_COMPARE_404: 0}
 
-    if releases_ordenadas:
+    def na_janela(release: dict) -> bool:
+        if janela is None:
+            return True
+        return bool(release["published_at"]) and janela.contem(parse_data(release["published_at"]))
+
+    if releases_ordenadas and na_janela(releases_ordenadas[0]):
         motivos[MOTIVO_PRIMEIRA_RELEASE] = 1
 
     for anterior, atual in zip(releases_ordenadas, releases_ordenadas[1:]):
+        if not na_janela(atual):
+            continue
         try:
             commits = comparar_commits(client, full_name, anterior["tag_name"], atual["tag_name"])
         except requests.HTTPError as exc:
@@ -112,26 +128,35 @@ def coletar_commits_entre_releases(
     repositorios: dict[str, list[dict]],
     cache_dir: str | Path,
     progresso: Callable[[int, int], None] | None = None,
+    janela: Janela | None = None,
 ) -> dict[str, dict]:
     """Para cada repositorio, monta as releases com commits, reaproveitando o cache.
 
-    `repositorios` mapeia `full_name -> releases principais ordenadas` (ja
-    filtradas por `releases_principais`/`releases_na_janela`).
+    `repositorios` mapeia `full_name -> historico de releases principais
+    ordenadas` (ja filtradas por `releases_principais`, sem cortar pela janela).
     Devolve `full_name -> {"releases": [...], "motivos_ignoradas": {...}}`.
+
+    O cache guarda a janela usada; um cache de outra janela (ou de uma versao
+    anterior do pipeline, que nao a registrava) e refeito.
     """
     cache_dir = Path(cache_dir)
+    chave_janela = janela.filtro_created() if janela else None
     resultado: dict[str, dict] = {}
     pendentes = []
     for full_name in repositorios:
         caminho = _caminho_cache(cache_dir, full_name)
         if caminho.exists():
-            resultado[full_name] = json.loads(caminho.read_text(encoding="utf-8"))
-        else:
-            pendentes.append(full_name)
+            dados = json.loads(caminho.read_text(encoding="utf-8"))
+            if dados.get("janela") == chave_janela:
+                resultado[full_name] = dados
+                continue
+        pendentes.append(full_name)
 
     for i, full_name in enumerate(pendentes, start=1):
-        releases, motivos = montar_releases_com_commits(client, full_name, repositorios[full_name])
-        dados = {"releases": releases, "motivos_ignoradas": motivos}
+        releases, motivos = montar_releases_com_commits(
+            client, full_name, repositorios[full_name], janela
+        )
+        dados = {"janela": chave_janela, "releases": releases, "motivos_ignoradas": motivos}
         caminho = _caminho_cache(cache_dir, full_name)
         caminho.parent.mkdir(parents=True, exist_ok=True)
         caminho.write_text(json.dumps(dados), encoding="utf-8")

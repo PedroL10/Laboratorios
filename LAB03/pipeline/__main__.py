@@ -52,7 +52,7 @@ from pipeline.github_client import (
     status_http,
 )
 from pipeline.metadados import coletar_contribuidores, enriquecer_amostra
-from pipeline.releases import coletar_releases, releases_na_janela, releases_principais
+from pipeline.releases import coletar_releases, releases_principais
 from pipeline.selecao import CANDIDATE_FIELDS, buscar_candidatos, carregar_csv, salvar_csv
 
 LEAD_TIME_FIELDS = [
@@ -258,12 +258,12 @@ def etapa_releases_lead_time_e_cfr(
     todas_releases = coletar_releases(client, full_names, cache_dir, progresso_releases)
 
     inicio, fim = janela.get("inicio"), janela.get("fim")
-    principais_por_repo = {}
-    for full_name, releases in todas_releases.items():
-        principais = releases_principais(releases)
-        if inicio and fim:
-            principais = releases_na_janela(principais, inicio, fim)
-        principais_por_repo[full_name] = principais
+    janela_observacao = Janela(inicio, fim) if inicio and fim else None
+    # Historico completo (sem cortar pela janela): a release anterior a primeira
+    # release da janela e a base do compare e costuma estar fora dela (RQ 02).
+    principais_por_repo = {
+        full_name: releases_principais(releases) for full_name, releases in todas_releases.items()
+    }
 
     print("\n[7] Coletando commits entre releases...")
 
@@ -272,7 +272,7 @@ def etapa_releases_lead_time_e_cfr(
             print(f"    commits entre releases: {feitos}/{total} repositorios")
 
     commits_por_repo = coletar_commits_entre_releases(
-        client, principais_por_repo, cache_dir, progresso_commits
+        client, principais_por_repo, cache_dir, progresso_commits, janela_observacao
     )
 
     linhas_lead_time = []

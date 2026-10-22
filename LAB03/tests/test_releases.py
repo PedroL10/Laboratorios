@@ -65,8 +65,22 @@ def test_releases_na_janela_filtra_pelo_intervalo():
         release_api("dentro", "2024-06-01T00:00:00Z"),
         release_api("depois", "2025-01-01T00:00:00Z"),
     ]
-    janela = releases_na_janela(releases, "2024-01-01T00:00:00Z", "2025-01-01T00:00:00Z")
+    janela = releases_na_janela(releases, "2024-01-01", "2024-12-31")
     assert [r["tag_name"] for r in janela] == ["dentro"]
+
+
+def test_releases_na_janela_inclui_o_primeiro_e_o_ultimo_dia():
+    releases = [
+        release_api("primeiro_dia", "2024-01-01T00:00:00Z"),
+        release_api("ultimo_dia", "2024-12-31T23:59:59Z"),
+    ]
+    janela = releases_na_janela(releases, "2024-01-01", "2024-12-31")
+    assert [r["tag_name"] for r in janela] == ["primeiro_dia", "ultimo_dia"]
+
+
+def test_releases_na_janela_ignora_release_sem_data_de_publicacao():
+    releases = [release_api("rascunho", None, draft=True)]
+    assert releases_na_janela(releases, "2024-01-01", "2024-12-31") == []
 
 
 def test_coletar_releases_usa_cache_e_nao_consulta_de_novo(tmp_path):

@@ -229,6 +229,15 @@ def test_falha_de_rede_repete_com_backoff():
     assert "Falha de rede (ConnectionError)" in relogio.avisos[0]
 
 
+def test_conexao_interrompida_no_meio_da_resposta_repete_com_backoff():
+    client, _, relogio = cliente_com_relogio(
+        [requests.exceptions.ChunkedEncodingError("IncompleteRead"), FakeResponse({"ok": 1})]
+    )
+    assert client.get("/x") == {"ok": 1}
+    assert relogio.esperas == [1.0]
+    assert "Falha de rede (ChunkedEncodingError)" in relogio.avisos[0]
+
+
 def test_falha_de_rede_persistente_propaga_o_erro():
     client, _, relogio = cliente_com_relogio([requests.ConnectionError("queda") for _ in range(6)])
     with pytest.raises(requests.ConnectionError):

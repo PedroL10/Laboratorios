@@ -14,6 +14,10 @@ from pipeline.commits import (
     mensagens_de_commit,
     montar_releases_com_commits,
 )
+from pipeline.criterio_inclusao import Janela
+from metricas.lead_time import lead_time_repositorio
+
+JANELA = Janela("2024-01-01", "2024-12-31")
 
 
 def release(tag: str, published_at: str) -> dict:
@@ -89,6 +93,73 @@ def test_montar_releases_com_commits_ignora_a_primeira_release():
     assert motivos == {MOTIVO_PRIMEIRA_RELEASE: 1, MOTIVO_COMPARE_404: 0}
 
 
+def test_release_anterior_fora_da_janela_e_usada_como_base_do_compare():
+    client = FakeClient(
+        {
+            "v1...v2": [commit_api("2024-01-05T00:00:00Z")],
+            "v2...v3": [commit_api("2024-02-05T00:00:00Z")],
+        }
+    )
+    releases = [
+        release("v1", "2023-12-01T00:00:00Z"),
+        release("v2", "2023-12-20T00:00:00Z"),
+        release("v3", "2024-02-10T00:00:00Z"),
+    ]
+
+    resultado, motivos = montar_releases_com_commits(client, "org/a", releases, JANELA)
+
+    # v1 e v2 estao fora da janela: so v3 e calculada, comparada com v2.
+    assert [(r["tag_anterior"], r["tag_name"]) for r in resultado] == [("v2", "v3")]
+    assert [chave for chave, _ in client.consultas] == ["v2...v3"]
+    # A primeira release da historia (v1) nao esta na janela: nada a ignorar.
+    assert motivos == {MOTIVO_PRIMEIRA_RELEASE: 0, MOTIVO_COMPARE_404: 0}
+
+
+def test_primeira_release_da_historia_dentro_da_janela_e_ignorada_e_contada():
+    client = FakeClient({"v1...v2": [commit_api("2024-03-01T00:00:00Z")]})
+    releases = [release("v1", "2024-02-01T00:00:00Z"), release("v2", "2024-03-10T00:00:00Z")]
+
+    resultado, motivos = montar_releases_com_commits(client, "org/a", releases, JANELA)
+
+    assert [r["tag_name"] for r in resultado] == ["v2"]
+    assert motivos == {MOTIVO_PRIMEIRA_RELEASE: 1, MOTIVO_COMPARE_404: 0}
+
+
+def test_repositorio_com_uma_unica_release_nao_tem_lead_time():
+    client = FakeClient({})
+    releases = [release("v1", "2024-02-01T00:00:00Z")]
+
+    resultado, motivos = montar_releases_com_commits(client, "org/a", releases, JANELA)
+
+    assert resultado == []
+    assert client.consultas == []
+    assert motivos == {MOTIVO_PRIMEIRA_RELEASE: 1, MOTIVO_COMPARE_404: 0}
+
+
+def test_release_sem_commits_novos_entra_com_lista_vazia():
+    client = FakeClient({"v1...v1-republicada": []})
+    releases = [
+        release("v1", "2024-02-01T00:00:00Z"),
+        release("v1-republicada", "2024-02-02T00:00:00Z"),
+    ]
+
+    resultado, _ = montar_releases_com_commits(client, "org/a", releases, JANELA)
+
+    assert resultado[0]["commits"] == []
+    # Sem commits novos, a release fica sem lead time (nao vira zero).
+    assert lead_time_repositorio(resultado)["n_releases_variante_a"] == 0
+
+
+def test_releases_depois_da_janela_nao_sao_comparadas():
+    client = FakeClient({"v1...v2": [commit_api("2024-12-01T00:00:00Z")]})
+    releases = [release("v1", "2024-11-01T00:00:00Z"), release("v2", "2025-01-02T00:00:00Z")]
+
+    resultado, _ = montar_releases_com_commits(client, "org/a", releases, JANELA)
+
+    assert resultado == []
+    assert client.consultas == []
+
+
 def test_montar_releases_com_commits_sem_releases_nao_conta_primeira():
     resultado, motivos = montar_releases_com_commits(FakeClient({}), "org/a", [])
     assert resultado == []
@@ -139,6 +210,22 @@ def test_coletar_commits_entre_releases_usa_cache(tmp_path):
 
     assert client_2.consultas == []
     assert resultado["org/a"]["releases"][0]["tag_name"] == "v2"
+
+
+def test_cache_de_outra_janela_e_refeito(tmp_path):
+    repositorios = {
+        "org/a": [release("v1", "2024-01-01T00:00:00Z"), release("v2", "2024-01-10T00:00:00Z")]
+    }
+    coletar_commits_entre_releases(
+        FakeClient({"v1...v2": []}), repositorios, tmp_path, janela=Janela("2023-01-01", "2023-12-31")
+    )
+
+    client = FakeClient({"v1...v2": [commit_api("2024-01-05T00:00:00Z")]})
+    resultado = coletar_commits_entre_releases(client, repositorios, tmp_path, janela=JANELA)
+
+    assert client.consultas == [("v1...v2", 1)]
+    assert resultado["org/a"]["janela"] == "2024-01-01..2024-12-31"
+    assert resultado["org/a"]["releases"][0]["commits"] == ["2024-01-05T00:00:00Z"]
 
 
 def test_coletar_commits_entre_releases_informa_progresso(tmp_path):
