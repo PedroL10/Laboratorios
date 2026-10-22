@@ -6,6 +6,7 @@ import pytest
 import requests
 
 from pipeline.commits import (
+    CacheCompares,
     MOTIVO_COMPARE_404,
     MOTIVO_PRIMEIRA_RELEASE,
     coletar_commits_entre_releases,
@@ -241,15 +242,70 @@ def test_coletar_commits_entre_releases_informa_progresso(tmp_path):
     assert chamadas == [(1, 2), (2, 2)]
 
 
-def test_cada_variante_tem_o_seu_proprio_cache(tmp_path):
+def test_variantes_reaproveitam_pares_ja_comparados_e_tem_cache_proprio(tmp_path):
     repositorios = {
         "org/a": [release("v1", "2024-01-01T00:00:00Z"), release("v2", "2024-01-10T00:00:00Z")]
     }
-    coletar_commits_entre_releases(FakeClient({"v1...v2": []}), repositorios, tmp_path, janela=JANELA)
-
-    client = FakeClient({"v1...v2": []})
     coletar_commits_entre_releases(
+        FakeClient({"v1...v2": [commit_api("2024-01-05T00:00:00Z")]}), repositorios, tmp_path, janela=JANELA
+    )
+
+    # Mesma lista em outra variante (ex.: tags = releases): nenhum compare novo.
+    client = FakeClient({})
+    resultado = coletar_commits_entre_releases(
         client, repositorios, tmp_path, janela=JANELA, subdir="commits_variante_tag"
     )
-    assert client.consultas == [("v1...v2", 1)]
+    assert client.consultas == []
+    assert resultado["org/a"]["releases"][0]["commits"] == ["2024-01-05T00:00:00Z"]
     assert (tmp_path / "commits_variante_tag" / "org__a.json").exists()
+
+    # Uma pre-release no meio cria pares novos: so eles vao a API.
+    com_pre = {
+        "org/a": [
+            release("v1", "2024-01-01T00:00:00Z"),
+            release("v2-rc1", "2024-01-05T00:00:00Z"),
+            release("v2", "2024-01-10T00:00:00Z"),
+        ]
+    }
+    client = FakeClient({"v1...v2-rc1": [], "v2-rc1...v2": []})
+    coletar_commits_entre_releases(client, com_pre, tmp_path, janela=JANELA, subdir="commits_variante_pre")
+    assert sorted(chave for chave, _ in client.consultas) == ["v1...v2-rc1", "v2-rc1...v2"]
+
+
+def test_compare_404_fica_no_cache_de_pares():
+    compares = CacheCompares()
+    client = FakeClient({"v1...v2": http_error_404()})
+    assert compares.obter(client, "org/a", "v1", "v2") == {"status": 404}
+    assert compares.obter(FakeClient({}), "org/a", "v1", "v2") == {"status": 404}
+    assert len(client.consultas) == 1
+
+
+def test_pares_comparados_sao_gravados_mesmo_se_a_coleta_parar_no_meio(tmp_path):
+    erro = requests.HTTPError("HTTP 500", response=requests.Response())
+    erro.response.status_code = 500
+    client = FakeClient({"v1...v2": [commit_api("2024-01-05T00:00:00Z")], "v2...v3": erro})
+    repositorios = {
+        "org/a": [
+            release("v1", "2024-01-01T00:00:00Z"),
+            release("v2", "2024-01-10T00:00:00Z"),
+            release("v3", "2024-01-20T00:00:00Z"),
+        ]
+    }
+    with pytest.raises(requests.HTTPError):
+        coletar_commits_entre_releases(client, repositorios, tmp_path, janela=JANELA)
+
+    salvo = CacheCompares(tmp_path / "compares" / "org__a.json")
+    assert "v1...v2" in salvo.pares
+
+
+def test_cache_de_pares_e_gravado_periodicamente(tmp_path, monkeypatch):
+    import pipeline.commits as commits_mod
+
+    monkeypatch.setattr(commits_mod, "SALVAR_COMPARES_A_CADA", 2)
+    caminho = tmp_path / "org__a.json"
+    compares = CacheCompares(caminho)
+    client = FakeClient({"v1...v2": [], "v2...v3": []})
+    compares.obter(client, "org/a", "v1", "v2")
+    assert not caminho.exists()
+    compares.obter(client, "org/a", "v2", "v3")
+    assert caminho.exists()

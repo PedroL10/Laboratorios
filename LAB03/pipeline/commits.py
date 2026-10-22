@@ -13,6 +13,12 @@ corretiva).
 O endpoint de comparacao nao pagina oficialmente, mas devolve no maximo 250
 commits por chamada (secao 4 do enunciado); `comparar_commits` insiste com
 `per_page`/`page` ate esgotar.
+
+O compare e a chamada mais cara da coleta (uma por release). As tres unidades de
+deploy da RQ 07 (release, release + pre-release e tag) repetem muitos pares
+`base...head` -- a maioria das tags sao as proprias releases --, entao o
+resultado de cada par fica num cache por repositorio (`cache_dir/compares/`),
+compartilhado entre elas: um par ja comparado nunca e pedido de novo a API.
 """
 
 from __future__ import annotations
@@ -27,6 +33,8 @@ from pipeline.criterio_inclusao import Janela, parse_data
 from pipeline.github_client import GitHubClient
 
 CACHE_SUBDIR = "commits_entre_releases"
+CACHE_COMPARES_SUBDIR = "compares"
+SALVAR_COMPARES_A_CADA = 50  # protege repositorios com muitas releases contra interrupcao
 COMMITS_POR_PAGINA = 250
 
 MOTIVO_PRIMEIRA_RELEASE = "primeira_release"
@@ -35,6 +43,45 @@ MOTIVO_COMPARE_404 = "compare_404"
 
 def _caminho_cache(cache_dir: str | Path, full_name: str, subdir: str = CACHE_SUBDIR) -> Path:
     return Path(cache_dir) / subdir / f"{full_name.replace('/', '__')}.json"
+
+
+class CacheCompares:
+    """Resultado de cada par `base...head` de um repositorio, gravado em disco.
+
+    Guarda as datas de autor e as mensagens dos commits, ou o status HTTP 404
+    quando o par nao pode ser comparado (tag apagada ou reescrita).
+    """
+
+    def __init__(self, caminho: Path | None = None) -> None:
+        self.caminho = caminho
+        self.pares: dict[str, dict] = {}
+        if caminho is not None and caminho.exists():
+            self.pares = json.loads(caminho.read_text(encoding="utf-8"))
+        self._novos = 0
+
+    def obter(self, client: GitHubClient, full_name: str, base: str, head: str) -> dict:
+        chave = f"{base}...{head}"
+        if chave not in self.pares:
+            try:
+                commits = comparar_commits(client, full_name, base, head)
+                self.pares[chave] = {
+                    "datas": datas_de_autor(commits),
+                    "mensagens": mensagens_de_commit(commits),
+                }
+            except requests.HTTPError as exc:
+                if exc.response is None or exc.response.status_code != 404:
+                    raise
+                self.pares[chave] = {"status": 404}
+            self._novos += 1
+            if self._novos % SALVAR_COMPARES_A_CADA == 0:
+                self.salvar()
+        return self.pares[chave]
+
+    def salvar(self) -> None:
+        if self.caminho is None or not self._novos:
+            return
+        self.caminho.parent.mkdir(parents=True, exist_ok=True)
+        self.caminho.write_text(json.dumps(self.pares), encoding="utf-8")
 
 
 def comparar_commits(client: GitHubClient, full_name: str, base: str, head: str) -> list[dict]:
@@ -75,6 +122,7 @@ def montar_releases_com_commits(
     full_name: str,
     releases_ordenadas: list[dict],
     janela: Janela | None = None,
+    compares: CacheCompares | None = None,
 ) -> tuple[list[dict], dict[str, int]]:
     """Monta, para cada release da janela com release anterior, a lista de commits incluidos.
 
@@ -87,7 +135,9 @@ def montar_releases_com_commits(
     Devolve `(releases_com_commits, motivos_ignoradas)`: as releases prontas
     para `metricas.lead_time.lead_time_repositorio` e a contagem de releases
     da janela ignoradas por motivo, usada no funil/ameacas a validade.
+    `compares` reaproveita pares ja comparados (ver `CacheCompares`).
     """
+    compares = compares or CacheCompares()
     resultado: list[dict] = []
     motivos = {MOTIVO_PRIMEIRA_RELEASE: 0, MOTIVO_COMPARE_404: 0}
 
@@ -102,21 +152,17 @@ def montar_releases_com_commits(
     for anterior, atual in zip(releases_ordenadas, releases_ordenadas[1:]):
         if not na_janela(atual):
             continue
-        try:
-            commits = comparar_commits(client, full_name, anterior["tag_name"], atual["tag_name"])
-        except requests.HTTPError as exc:
-            status = exc.response.status_code if exc.response is not None else None
-            if status == 404:
-                motivos[MOTIVO_COMPARE_404] += 1
-                continue
-            raise
+        par = compares.obter(client, full_name, anterior["tag_name"], atual["tag_name"])
+        if par.get("status") == 404:
+            motivos[MOTIVO_COMPARE_404] += 1
+            continue
         resultado.append(
             {
                 "tag_name": atual["tag_name"],
                 "tag_anterior": anterior["tag_name"],
                 "published_at": atual["published_at"],
-                "commits": datas_de_autor(commits),
-                "mensagens_commits": mensagens_de_commit(commits),
+                "commits": par["datas"],
+                "mensagens_commits": par["mensagens"],
             }
         )
 
@@ -156,9 +202,14 @@ def coletar_commits_entre_releases(
         pendentes.append(full_name)
 
     for i, full_name in enumerate(pendentes, start=1):
-        releases, motivos = montar_releases_com_commits(
-            client, full_name, repositorios[full_name], janela
-        )
+        compares = CacheCompares(_caminho_cache(cache_dir, full_name, CACHE_COMPARES_SUBDIR))
+        try:
+            releases, motivos = montar_releases_com_commits(
+                client, full_name, repositorios[full_name], janela, compares
+            )
+        finally:
+            # Grava os pares ja comparados mesmo se a coleta parar no meio do repositorio.
+            compares.salvar()
         dados = {"janela": chave_janela, "releases": releases, "motivos_ignoradas": motivos}
         caminho = _caminho_cache(cache_dir, full_name, subdir)
         caminho.parent.mkdir(parents=True, exist_ok=True)
