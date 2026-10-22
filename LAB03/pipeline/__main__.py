@@ -39,7 +39,7 @@ from pathlib import Path
 
 import requests
 
-from metricas.cfr import cfr_repositorio
+from metricas.cfr import cfr_repositorio, rework_repositorio
 from metricas.cfr_ci import cfr_ci_repositorio
 from metricas.frequencia import deployment_frequency, semanas_da_janela
 from metricas.lead_time import lead_time_repositorio
@@ -96,6 +96,8 @@ CFR_FIELDS = [
     "n_releases_avaliadas",
     "n_releases_falhas",
     "n_releases_censuradas",
+    "rework_rate",
+    "n_releases_corretivas",
 ]
 
 FREQUENCIA_FIELDS = [
@@ -373,7 +375,11 @@ def etapa_releases_lead_time_e_cfr(
         )
         if fim:
             linhas_cfr.append(
-                {"full_name": full_name, **cfr_repositorio(releases_com_commits, fim)}
+                {
+                    "full_name": full_name,
+                    **cfr_repositorio(releases_com_commits, fim),
+                    **rework_repositorio(releases_com_commits),
+                }
             )
 
     caminho_lead_time = dados_dir / "lead_time.csv"

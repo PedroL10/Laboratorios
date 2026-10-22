@@ -138,6 +138,23 @@ def cfr_repositorio(releases: list[dict], fim_janela: str) -> dict:
     }
 
 
+def rework_repositorio(releases: list[dict]) -> dict:
+    """Deployment rework rate (RQ 08, bonus): releases corretivas / releases.
+
+    Metrica acrescentada pelo DORA em 2024: proporcao de deploys nao
+    planejados, feitos para corrigir problemas. Usa a mesma heuristica de
+    release corretiva do CFR (b), mas sem a janela de 7 dias nem a ligacao com
+    a release anterior: conta toda release corretiva. Por isso nao ha censura.
+    `releases` sao as releases da janela com release anterior (as que tem
+    `tag_anterior` e `mensagens_commits`), como no CFR (b).
+    """
+    n_corretivas = sum(1 for r in classificar_releases(releases) if r["corretiva"])
+    return {
+        "rework_rate": n_corretivas / len(releases) if releases else None,
+        "n_releases_corretivas": n_corretivas,
+    }
+
+
 def avaliar_heuristica(rotulos_heuristica: list[bool], rotulos_consenso: list[bool]) -> dict:
     """Precisao, recall e F1 da heuristica de release corretiva frente ao consenso.
 

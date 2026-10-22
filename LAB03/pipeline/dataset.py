@@ -75,6 +75,8 @@ DICIONARIO: list[tuple[str, str, str, str]] = [
     ("n_releases_avaliadas", "inteiro", "releases", "Releases da janela avaliadas no CFR (b) (exclui as censuradas)"),
     ("n_releases_falhas", "inteiro", "releases", "Releases seguidas, em ate 7 dias, por uma release corretiva"),
     ("n_releases_censuradas", "inteiro", "releases", "Releases publicadas nos ultimos 7 dias da janela, fora do denominador do CFR (b)"),
+    ("rework_rate", "proporcao (0 a 1)", "-", "RQ 08 (bonus): releases corretivas pela heuristica do CFR (b) / releases da janela com release anterior (sem janela de 7 dias, sem censura)"),
+    ("n_releases_corretivas", "inteiro", "releases", "Releases da janela classificadas como corretivas pela heuristica (`metricas.cfr.eh_corretiva`)"),
     ("cfr_ci", "proporcao (0 a 1)", "-", "RQ 03 (a): `n_runs_falha / (n_runs_falha + n_runs_sucesso)`, runs de push no default branch na janela"),
     ("n_runs_falha", "inteiro", "runs", "Runs com `conclusion` em failure, timed_out ou startup_failure"),
     ("n_runs_sucesso", "inteiro", "runs", "Runs com `conclusion` = success"),

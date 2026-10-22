@@ -162,3 +162,16 @@ def test_cfr_repositorio_aceita_fim_da_janela_so_com_a_data_do_config():
     resultado = cfr_repositorio(releases, fim_janela="2024-12-31")
     assert resultado["n_releases_avaliadas"] == 1
     assert resultado["n_releases_censuradas"] == 2
+
+
+def test_rework_rate_e_a_proporcao_de_releases_corretivas():
+    from metricas.cfr import rework_repositorio
+
+    releases = [
+        release("2.3.1", "2.3.0", "2024-05-12T00:00:00Z", "fix: crash"),  # patch e fix
+        release("2.4.0", "2.3.1", "2024-06-01T00:00:00Z", "feat: exportacao"),
+        release("2.4.1", "2.4.0", "2024-09-01T00:00:00Z", "docs: readme"),  # so patch
+        release("3.0.0", "2.4.1", "2024-10-01T00:00:00Z", "feat: v3"),
+    ]
+    assert rework_repositorio(releases) == {"rework_rate": 0.5, "n_releases_corretivas": 2}
+    assert rework_repositorio([]) == {"rework_rate": None, "n_releases_corretivas": 0}

@@ -35,6 +35,12 @@ def dataset_sintetico(n: int = 40, seed: int = 1) -> list[dict]:
                 "stargazers_count": rng.randint(1000, 100000),
                 "n_contribuidores": rng.randint(5, 3000),
                 "idade_dias": rng.randint(100, 5000),
+                "deployment_frequency_pre": rng.lognormvariate(0.3, 1),
+                "lead_time_commit_dias_pre": rng.lognormvariate(1.3, 1),
+                "cfr_entrega_pre": rng.uniform(0, 0.4),
+                "deployment_frequency_tag": rng.lognormvariate(0.5, 1),
+                "lead_time_commit_dias_tag": rng.lognormvariate(1.2, 1),
+                "rework_rate": rng.uniform(0, 0.6),
             }
         )
         linha.update(classificacao_c1(linha))
