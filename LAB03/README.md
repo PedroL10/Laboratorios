@@ -75,9 +75,19 @@ as estrelas mudam com o tempo e a busca daria uma amostra ligeiramente diferente
 | [7] Commits, frequência, lead time e CFR (b) | Deployment frequency: releases da janela ÷ semanas da janela (RQ 01); commits entre cada release da janela e a release anterior (mesmo que fora da janela); lead time (RQ 02, variantes a e b) e CFR (b), proxy de entrega (RQ 03) | `cache/commits_entre_releases/*.json`, `dados/frequencia.csv`, `dados/lead_time.csv`, `dados/cfr.csv` |
 | [8] Workflow runs, CFR (a) e recuperação | Runs de push no default branch, consultados mês a mês (um mês com mais de 1.000 runs é dividido ao meio até caber); CFR (a), proxy de CI (RQ 03), e tempo de recuperação por workflow, com episódios censurados (RQ 04) | `cache/workflow_runs/*.json`, `dados/cfr_ci.csv`, `dados/recuperacao.csv` |
 | [9] Variantes da RQ 07 | Frequência, lead time (a e b) e CFR (b) com duas outras unidades de deploy: release + pré-release, e tag (data do commit apontado, listada pela API GraphQL já ordenada por data) | `cache/tags/*.json`, `cache/commits_variante_pre/`, `cache/commits_variante_tag/`, `dados/variantes.csv` |
+| [10] Dataset final | Junta a amostra e todas as métricas, uma linha por repositório, com a classificação DORA de referência (C1); não chama a API | `resultados/amostra_metricas.csv`, `resultados/dicionario_dados.md` |
 
 As pastas `dados/` e `cache/` não são versionadas: são recriadas pelo pipeline. A pasta
-`resultados/` é versionada e guarda a amostra usada pelo grupo.
+`resultados/` é versionada e guarda a amostra e o dataset final usados pelo grupo.
+
+O **dataset final** é `resultados/amostra_metricas.csv`, e cada coluna está documentada
+(tipo, unidade e fórmula/origem) em
+[`resultados/dicionario_dados.md`](resultados/dicionario_dados.md). As análises das RQs
+partem dele. Para remontá-lo a partir dos CSVs de `dados/`, sem token e sem chamar a API:
+
+```bash
+python -m pipeline.dataset --config config.yaml
+```
 
 ### Rate limit, erros temporários e retomada
 
@@ -147,12 +157,13 @@ LAB03/
 │   ├── commits.py          # [7] commits entre releases
 │   ├── workflow_runs.py    # [8] workflow runs, fatiados por mês
 │   ├── tags.py             # [9] tags com data do commit (GraphQL)
+│   ├── dataset.py          # [10] dataset final e dicionário de dados
 │   └── retomada.py         # gravação por repositório e retomada
 ├── metricas/               # funções de cálculo: frequencia, lead_time, cfr (b), cfr_ci (a),
 │                           # recuperacao, classificacao DORA, correlacao (RQ 05) e subgrupos (RQ 06)
 ├── analise/                # scripts de análise das RQs, a partir do CSV final
 ├── tests/                  # testes com pytest
-├── resultados/             # funil e amostra (versionados)
+├── resultados/             # funil, amostra, dataset final e dicionário (versionados)
 ├── config.yaml
 └── requirements.txt
 ```

@@ -17,7 +17,10 @@ Etapas implementadas ate agora:
    (dados/cfr_ci.csv), e do tempo de recuperacao (RQ 04, dados/recuperacao.csv);
 10. variantes da RQ 07: as mesmas metricas de entrega (frequencia, lead time e
    CFR b) com outras unidades de deploy -- release + pre-release e tag (com a
-   data do commit apontado, via GraphQL) -- em dados/variantes.csv.
+   data do commit apontado, via GraphQL) -- em dados/variantes.csv;
+11. dataset final: amostra + todas as metricas + classificacao DORA de referencia
+   (resultados/amostra_metricas.csv) e dicionario de dados (resultados/dicionario_dados.md).
+   Nao chama a API; pode ser refeito sozinho com `python -m pipeline.dataset`.
 A heuristica de release corretiva usada no CFR (b) ainda precisa ser validada contra a
 amostra-ouro (secao 6 do enunciado) antes de entrar nas conclusoes do artigo; ver
 `metricas.cfr.avaliar_heuristica`.
@@ -41,9 +44,14 @@ from metricas.cfr_ci import cfr_ci_repositorio
 from metricas.frequencia import deployment_frequency, semanas_da_janela
 from metricas.lead_time import lead_time_repositorio
 from metricas.recuperacao import recuperacao_repositorio
-from pipeline.commits import coletar_commits_entre_releases
+from pipeline.commits import (
+    MOTIVO_COMPARE_404,
+    MOTIVO_PRIMEIRA_RELEASE,
+    coletar_commits_entre_releases,
+)
 from pipeline.config import load_config
 from pipeline.criterio_inclusao import Janela, aplicar_criterio, incluido
+from pipeline.dataset import gerar_dataset
 from pipeline.filtro_actions import filtrar_actions, usa_actions
 from pipeline.funil import (
     FUNIL_FIELDS,
@@ -78,6 +86,8 @@ LEAD_TIME_FIELDS = [
     "lead_time_commit_dias",
     "n_releases_variante_a",
     "n_commits_variante_b",
+    "n_ignoradas_primeira_release",
+    "n_ignoradas_compare_404",
 ]
 
 CFR_FIELDS = [
@@ -352,8 +362,14 @@ def etapa_releases_lead_time_e_cfr(
     linhas_cfr = []
     for full_name in full_names:
         releases_com_commits = commits_por_repo[full_name]["releases"]
+        motivos = commits_por_repo[full_name]["motivos_ignoradas"]
         linhas_lead_time.append(
-            {"full_name": full_name, **lead_time_repositorio(releases_com_commits)}
+            {
+                "full_name": full_name,
+                **lead_time_repositorio(releases_com_commits),
+                "n_ignoradas_primeira_release": motivos[MOTIVO_PRIMEIRA_RELEASE],
+                "n_ignoradas_compare_404": motivos[MOTIVO_COMPARE_404],
+            }
         )
         if fim:
             linhas_cfr.append(
@@ -534,6 +550,13 @@ def main(argv: list[str] | None = None) -> int:
         )
         etapa_workflow_runs(client, amostra, config["janela"], cache_dir, dados_dir)
         etapa_variantes(client, amostra, config["janela"], cache_dir, dados_dir)
+        print("\n[10] Montando o dataset final e o dicionario de dados...")
+        dataset = gerar_dataset(dados_dir, resultados_dir)
+        print(
+            f"    Dataset de {len(dataset)} repositorios salvo em "
+            f"{resultados_dir / 'amostra_metricas.csv'}; dicionario em "
+            f"{resultados_dir / 'dicionario_dados.md'}"
+        )
     except requests.HTTPError as exc:
         print(f"\nErro: {mensagem_de_erro(exc)}", file=sys.stderr)
         return 1
