@@ -123,8 +123,8 @@ Cada RQ tem um script em `analise/` que lê o dataset final e grava tabelas e fi
 | Comando | RQ | Saída |
 | --- | --- | --- |
 | `python -m analise.rq01_04` | RQ 01 a 04: mediana, IQR, censura e classificação DORA de referência (C1) | `resultados/rq01_04/` (tabelas `.md`/`.csv` e `figuras/`) |
-| `python -m analise.rq05` | RQ 05: correlação de Spearman entre frequência e CFR | terminal |
-| `python -m analise.rq06` | RQ 06: Kruskal-Wallis/Mann-Whitney por fator, com Holm | terminal |
+| `python -m analise.rq05` | RQ 05: correlação de Spearman entre frequência e CFR (a) e (b), com gráfico de dispersão | `resultados/rq05/` |
+| `python -m analise.rq06` | RQ 06: Kruskal-Wallis/Mann-Whitney por fator (linguagem, estrelas, contribuidores, idade), correção de Holm e tamanho de efeito. Com `--rotulos <planilha da amostra-ouro>`, inclui o tipo do projeto | `resultados/rq06/` |
 
 ## 5. Configuração (`config.yaml`)
 

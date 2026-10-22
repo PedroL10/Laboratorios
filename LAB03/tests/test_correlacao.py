@@ -55,3 +55,13 @@ def test_usa_a_variante_de_cfr_pedida_em_chave_cfr():
     resultado_b = spearman_frequencia_cfr(repositorios, chave_cfr="cfr_entrega")
     assert resultado_a["rho"] == 1.0
     assert resultado_b["rho"] != resultado_a["rho"]
+
+
+def test_interpretar_rho_segue_cohen():
+    from metricas.correlacao import interpretar_rho
+
+    assert interpretar_rho(None) is None
+    assert interpretar_rho(0.05) == "desprezivel"
+    assert interpretar_rho(-0.2) == "fraca"
+    assert interpretar_rho(0.3) == "moderada"
+    assert interpretar_rho(-0.7) == "forte"

@@ -10,7 +10,9 @@ from metricas.subgrupos import (
     comparar_grupos,
     corrigir_holm,
     epsilon_quadrado,
+    agrupar_raros,
     interpretar_cliff_delta,
+    interpretar_epsilon_quadrado,
     quartis,
 )
 
@@ -111,3 +113,22 @@ def test_corrigir_holm_marca_significativo_abaixo_de_5_porcento():
     corrigidos = corrigir_holm(resultados)
     assert corrigidos[0]["significativo"] is True
     assert corrigidos[1]["significativo"] is False
+
+
+def test_interpretar_epsilon_quadrado():
+    assert interpretar_epsilon_quadrado(0.005) == "desprezivel"
+    assert interpretar_epsilon_quadrado(0.01) == "pequeno"
+    assert interpretar_epsilon_quadrado(0.08) == "medio"
+    assert interpretar_epsilon_quadrado(0.26) == "grande"
+
+
+def test_kruskal_wallis_traz_a_interpretacao_do_efeito():
+    grupos = {"a": [1, 2, 3], "b": [10, 11, 12], "c": [20, 21, 22]}
+    assert comparar_grupos(grupos)["interpretacao_efeito"] == "grande"
+
+
+def test_agrupar_raros_junta_grupos_pequenos_e_ausentes_em_outras():
+    rotulos = ["Python", "Python", "Go", "Python", None, "", "Go", "Rust"]
+    assert agrupar_raros(rotulos, minimo=2) == [
+        "Python", "Python", "Go", "Python", "Outras", "Outras", "Go", "Outras",
+    ]

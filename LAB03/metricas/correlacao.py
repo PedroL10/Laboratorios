@@ -60,3 +60,17 @@ def spearman_frequencia_cfr(repositorios: list[dict], chave_cfr: str = "cfr") ->
 
     resultado = spearmanr(frequencias, cfrs)
     return {"rho": resultado.statistic, "p_valor": resultado.pvalue, "n": n}
+
+
+def interpretar_rho(rho: float | None) -> str | None:
+    """Forca da correlacao pelo modulo de rho (Cohen, 1988): desprezivel, fraca, moderada ou forte."""
+    if rho is None:
+        return None
+    absoluto = abs(rho)
+    if absoluto < 0.1:
+        return "desprezivel"
+    if absoluto < 0.3:
+        return "fraca"
+    if absoluto < 0.5:
+        return "moderada"
+    return "forte"

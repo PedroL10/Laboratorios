@@ -31,6 +31,10 @@ def dataset_sintetico(n: int = 40, seed: int = 1) -> list[dict]:
                 "n_releases_censuradas": 1,
                 "n_ignoradas_compare_404": 1 if i == 0 else 0,
                 "fatias_no_teto": 2 if i < 3 else 0,
+                "language": rng.choice(["Python"] * 4 + ["TypeScript"] * 3 + ["Go", "Rust", ""]),
+                "stargazers_count": rng.randint(1000, 100000),
+                "n_contribuidores": rng.randint(5, 3000),
+                "idade_dias": rng.randint(100, 5000),
             }
         )
         linha.update(classificacao_c1(linha))

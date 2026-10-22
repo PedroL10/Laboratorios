@@ -18,16 +18,28 @@ Uso (de dentro de LAB03):
 from __future__ import annotations
 
 import argparse
-import csv
 from pathlib import Path
 
-import matplotlib
+from analise.comum import (
+    COR_A,
+    COR_B,
+    CORES_CATEGORIA,
+    GRADE,
+    SUPERFICIE,
+    TEXTO,
+    TEXTO_SECUNDARIO,
+    carregar,
+    estilo_eixo,
+    float_ou_none,
+    fmt,
+    inteiro,
+    markdown,
+    salvar_csv,
+)
+from metricas.classificacao import UMA_POR_MES_EM_SEMANAS
+from metricas.descritiva import CATEGORIAS, distribuicao_categorias, resumo
 
-matplotlib.use("Agg")  # gera arquivos sem precisar de tela
-import matplotlib.pyplot as plt  # noqa: E402
-
-from metricas.classificacao import UMA_POR_MES_EM_SEMANAS  # noqa: E402
-from metricas.descritiva import CATEGORIAS, distribuicao_categorias, resumo  # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402  (depois de analise.comum, que escolhe o backend)
 
 # (coluna, rotulo, unidade, RQ)
 METRICAS = [
@@ -47,12 +59,6 @@ CATEGORIAS_C1 = [
     ("categoria_geral", "Geral (C1)"),
 ]
 
-# Paleta (referencia do skill de dataviz): azul e laranja para variantes a/b;
-# rampa ordinal de azul, escura -> clara, para Elite -> Low.
-COR_A, COR_B = "#2a78d6", "#eb6834"
-CORES_CATEGORIA = {"Elite": "#104281", "High": "#256abf", "Medium": "#5598e7", "Low": "#86b6ef"}
-TEXTO, TEXTO_SECUNDARIO, GRADE, SUPERFICIE = "#0b0b0b", "#52514e", "#e4e3df", "#ffffff"
-
 # Cortes da tabela DORA, desenhados nos boxplots: (valor, categorias que ele separa).
 CORTES = {
     "deployment_frequency": [(7, "Elite / High"), (1, "High / Medium"), (UMA_POR_MES_EM_SEMANAS, "Medium / Low")],
@@ -62,33 +68,10 @@ CORTES = {
 }
 
 
-def _float_ou_none(valor: str | None) -> float | None:
-    if valor is None or valor == "":
-        return None
-    return float(valor)
-
-
-def _inteiro(valor: str | None) -> int:
-    return int(float(valor)) if valor not in (None, "") else 0
-
-
-def carregar(caminho: str | Path) -> list[dict]:
-    with open(caminho, newline="", encoding="utf-8") as arquivo:
-        return list(csv.DictReader(arquivo))
-
-
-def _fmt(valor, casas: int = 2) -> str:
-    if valor is None:
-        return "-"
-    if isinstance(valor, int):
-        return str(valor)
-    return f"{valor:.{casas}f}".replace(".", ",")
-
-
 def tabela_descritiva(repositorios: list[dict]) -> list[dict]:
     linhas = []
     for coluna, rotulo, unidade, rq in METRICAS:
-        estatisticas = resumo([_float_ou_none(r.get(coluna)) for r in repositorios])
+        estatisticas = resumo([float_ou_none(r.get(coluna)) for r in repositorios])
         linhas.append({"rq": rq, "metrica": rotulo, "coluna": coluna, "unidade": unidade, **estatisticas})
     return linhas
 
@@ -96,9 +79,9 @@ def tabela_descritiva(repositorios: list[dict]) -> list[dict]:
 def tabela_censura(repositorios: list[dict]) -> list[tuple[str, str]]:
     """Indicadores de censura e de dados ignorados, para a metodologia e as ameacas."""
     n = len(repositorios)
-    episodios = sum(_inteiro(r.get("n_episodios")) for r in repositorios)
-    censurados = sum(_inteiro(r.get("n_episodios_censurados")) for r in repositorios)
-    proporcoes = [_float_ou_none(r.get("proporcao_censurados")) for r in repositorios]
+    episodios = sum(inteiro(r.get("n_episodios")) for r in repositorios)
+    censurados = sum(inteiro(r.get("n_episodios_censurados")) for r in repositorios)
+    proporcoes = [float_ou_none(r.get("proporcao_censurados")) for r in repositorios]
     total_episodios = episodios + censurados
 
     def contar(condicao) -> int:
@@ -110,21 +93,21 @@ def tabela_censura(repositorios: list[dict]) -> list[tuple[str, str]]:
         ("Episodios censurados - sem recuperacao ate o fim da janela", str(censurados)),
         (
             "Proporcao de episodios censurados (todos os repositorios)",
-            _fmt(censurados / total_episodios if total_episodios else None, 3),
+            fmt(censurados / total_episodios if total_episodios else None, 3),
         ),
-        ("Mediana, por repositorio, da proporcao de episodios censurados", _fmt(resumo(proporcoes)["mediana"], 3)),
+        ("Mediana, por repositorio, da proporcao de episodios censurados", fmt(resumo(proporcoes)["mediana"], 3)),
         ("Workflows que ja comecam a janela falhando (inicio desconhecido)",
-         str(sum(_inteiro(r.get("n_episodios_sem_inicio")) for r in repositorios))),
+         str(sum(inteiro(r.get("n_episodios_sem_inicio")) for r in repositorios))),
         ("Repositorios sem tempo de recuperacao (nenhum episodio encerrado)",
-         str(contar(lambda r: _float_ou_none(r.get("tempo_recuperacao_horas")) is None))),
+         str(contar(lambda r: float_ou_none(r.get("tempo_recuperacao_horas")) is None))),
         ("Releases censuradas no CFR (b) - ultimos 7 dias da janela",
-         str(sum(_inteiro(r.get("n_releases_censuradas")) for r in repositorios))),
+         str(sum(inteiro(r.get("n_releases_censuradas")) for r in repositorios))),
         ("Releases ignoradas no lead time - compare 404 (tag apagada ou reescrita)",
-         str(sum(_inteiro(r.get("n_ignoradas_compare_404")) for r in repositorios))),
+         str(sum(inteiro(r.get("n_ignoradas_compare_404")) for r in repositorios))),
         ("Repositorios cuja primeira release da historia esta na janela",
-         str(sum(_inteiro(r.get("n_ignoradas_primeira_release")) for r in repositorios))),
+         str(sum(inteiro(r.get("n_ignoradas_primeira_release")) for r in repositorios))),
         ("Repositorios com algum dia acima de 1.000 runs (runs incompletos)",
-         str(contar(lambda r: _inteiro(r.get("fatias_no_teto")) > 0))),
+         str(contar(lambda r: inteiro(r.get("fatias_no_teto")) > 0))),
     ]
 
 
@@ -139,30 +122,6 @@ def tabela_classificacao(repositorios: list[dict]) -> list[dict]:
         linha["sem_categoria"] = dist["sem_categoria"]
         linhas.append(linha)
     return linhas
-
-
-def _markdown(cabecalho: list[str], linhas: list[list[str]]) -> str:
-    texto = ["| " + " | ".join(cabecalho) + " |", "| " + " | ".join("---" for _ in cabecalho) + " |"]
-    texto += ["| " + " | ".join(linha) + " |" for linha in linhas]
-    return "\n".join(texto) + "\n"
-
-
-def _salvar_csv(linhas: list[dict], caminho: Path) -> None:
-    with caminho.open("w", newline="", encoding="utf-8") as arquivo:
-        escritor = csv.DictWriter(arquivo, fieldnames=list(linhas[0]))
-        escritor.writeheader()
-        escritor.writerows(linhas)
-
-
-def _estilo_eixo(ax) -> None:
-    ax.set_facecolor(SUPERFICIE)
-    for lado in ("top", "right"):
-        ax.spines[lado].set_visible(False)
-    for lado in ("left", "bottom"):
-        ax.spines[lado].set_color(GRADE)
-    ax.tick_params(colors=TEXTO_SECUNDARIO, labelsize=8)
-    ax.yaxis.grid(True, color=GRADE, linewidth=0.6)
-    ax.set_axisbelow(True)
 
 
 def _boxplot(ax, series: list[list[float]], rotulos: list[str], cores: list[str]) -> None:
@@ -194,11 +153,11 @@ def _cortes(ax, cortes: list[tuple[float, str]]) -> None:
 
 def _positivos(repositorios: list[dict], coluna: str) -> list[float]:
     """Valores > 0 (a escala logaritmica nao representa zero)."""
-    return [v for r in repositorios if (v := _float_ou_none(r.get(coluna))) is not None and v > 0]
+    return [v for r in repositorios if (v := float_ou_none(r.get(coluna))) is not None and v > 0]
 
 
 def _presentes(repositorios: list[dict], coluna: str) -> list[float]:
-    return [v for r in repositorios if (v := _float_ou_none(r.get(coluna))) is not None]
+    return [v for r in repositorios if (v := float_ou_none(r.get(coluna))) is not None]
 
 
 def figura_distribuicoes(repositorios: list[dict], caminho: Path) -> None:
@@ -218,7 +177,7 @@ def figura_distribuicoes(repositorios: list[dict], caminho: Path) -> None:
          CORTES["tempo_recuperacao_horas"], True),
     ]
     for ax, (titulo, series, rotulos, cores, cortes, log) in zip(eixos.flat, paineis):
-        _estilo_eixo(ax)
+        estilo_eixo(ax)
         ax.set_title(titulo, fontsize=10, color=TEXTO, loc="left")
         if not any(series):
             ax.text(0.5, 0.5, "sem dados", ha="center", va="center", color=TEXTO_SECUNDARIO, transform=ax.transAxes)
@@ -237,7 +196,7 @@ def figura_distribuicoes(repositorios: list[dict], caminho: Path) -> None:
 
 def figura_classificacao(classificacao: list[dict], caminho: Path) -> None:
     fig, ax = plt.subplots(figsize=(9, 3.6), facecolor=SUPERFICIE)
-    _estilo_eixo(ax)
+    estilo_eixo(ax)
     ax.yaxis.grid(False)
     ax.xaxis.grid(True, color=GRADE, linewidth=0.6)
     rotulos = [linha["metrica"] for linha in classificacao][::-1]
@@ -268,31 +227,31 @@ def gerar(entrada: str | Path, saida: str | Path) -> dict:
     (saida / "figuras").mkdir(parents=True, exist_ok=True)
 
     descritiva = tabela_descritiva(repositorios)
-    _salvar_csv(descritiva, saida / "descritiva.csv")
+    salvar_csv(descritiva, saida / "descritiva.csv")
     (saida / "descritiva.md").write_text(
         f"# RQ 01 a 04 - estatistica descritiva (n = {len(repositorios)} repositorios)\n\n"
-        + _markdown(
+        + markdown(
             ["RQ", "Metrica", "Unidade", "n", "Mediana", "Q1", "Q3", "IQR", "Min", "Max"],
-            [[d["rq"], d["metrica"], d["unidade"], _fmt(d["n"]), _fmt(d["mediana"]), _fmt(d["q1"]),
-              _fmt(d["q3"]), _fmt(d["iqr"]), _fmt(d["minimo"]), _fmt(d["maximo"])] for d in descritiva],
+            [[d["rq"], d["metrica"], d["unidade"], fmt(d["n"]), fmt(d["mediana"]), fmt(d["q1"]),
+              fmt(d["q3"]), fmt(d["iqr"]), fmt(d["minimo"]), fmt(d["maximo"])] for d in descritiva],
         ),
         encoding="utf-8",
     )
 
     censura = tabela_censura(repositorios)
     (saida / "censura.md").write_text(
-        "# Censura e dados ignorados\n\n" + _markdown(["Indicador", "Valor"], [list(c) for c in censura]),
+        "# Censura e dados ignorados\n\n" + markdown(["Indicador", "Valor"], [list(c) for c in censura]),
         encoding="utf-8",
     )
 
     classificacao = tabela_classificacao(repositorios)
-    _salvar_csv(classificacao, saida / "classificacao_c1.csv")
+    salvar_csv(classificacao, saida / "classificacao_c1.csv")
     (saida / "classificacao_c1.md").write_text(
         "# Classificacao DORA de referencia (C1: release, lead time a, CFR a)\n\n"
         "Percentual sobre os repositorios com valor para a metrica.\n\n"
-        + _markdown(
+        + markdown(
             ["Metrica", *CATEGORIAS, "Sem valor"],
-            [[c["metrica"], *[f"{c[f'{k}_n']} ({_fmt((c[f'{k}_pct'] or 0) * 100, 1)}%)" for k in CATEGORIAS],
+            [[c["metrica"], *[f"{c[f'{k}_n']} ({fmt((c[f'{k}_pct'] or 0) * 100, 1)}%)" for k in CATEGORIAS],
               str(c["sem_categoria"])] for c in classificacao],
         ),
         encoding="utf-8",
@@ -311,7 +270,7 @@ def main(argv: list[str] | None = None) -> None:
 
     resultado = gerar(args.entrada, args.saida)
     for d in resultado["descritiva"]:
-        print(f"{d['rq']} {d['metrica']}: mediana={_fmt(d['mediana'])} IQR={_fmt(d['iqr'])} n={d['n']}")
+        print(f"{d['rq']} {d['metrica']}: mediana={fmt(d['mediana'])} IQR={fmt(d['iqr'])} n={d['n']}")
     print(f"Tabelas e figuras salvas em {args.saida}/")
 
 

@@ -65,6 +65,32 @@ def cliff_delta(u1: float, n1: int, n2: int) -> float:
     return 2 * u1 / (n1 * n2) - 1
 
 
+def interpretar_epsilon_quadrado(e2: float) -> str:
+    """Interpretacao usual do epsilon ao quadrado (Rea & Parker, 1992, via Tomczak & Tomczak, 2014)."""
+    if e2 < 0.01:
+        return "desprezivel"
+    if e2 < 0.08:
+        return "pequeno"
+    if e2 < 0.26:
+        return "medio"
+    return "grande"
+
+
+def agrupar_raros(rotulos: list, minimo: int, rotulo_outros: str = "Outras") -> list:
+    """Junta em `rotulo_outros` os grupos com menos de `minimo` repositorios.
+
+    Usado na linguagem principal: dezenas de linguagens com 1 ou 2 repositorios
+    nao permitem teste (grupos com menos de 2 valores sao descartados) e
+    fragmentam o Kruskal-Wallis. Rotulo ausente (None ou vazio) tambem vai
+    para `rotulo_outros`.
+    """
+    contagem: dict = {}
+    for rotulo in rotulos:
+        if rotulo:
+            contagem[rotulo] = contagem.get(rotulo, 0) + 1
+    return [rotulo if rotulo and contagem[rotulo] >= minimo else rotulo_outros for rotulo in rotulos]
+
+
 def interpretar_cliff_delta(delta: float) -> str:
     """Interpretacao usual (Romano et al., 2006) do modulo de Cliff's delta."""
     absoluto = abs(delta)
@@ -105,11 +131,13 @@ def comparar_grupos(grupos: dict) -> dict:
         }
 
     resultado = kruskal(*amostras)
+    e2 = epsilon_quadrado(resultado.statistic, n)
     return {
         "teste": "kruskal-wallis",
         "estatistica": resultado.statistic,
         "p_valor": resultado.pvalue,
-        "efeito": epsilon_quadrado(resultado.statistic, n),
+        "efeito": e2,
+        "interpretacao_efeito": interpretar_epsilon_quadrado(e2),
         "n": n,
     }
 
