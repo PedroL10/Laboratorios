@@ -72,7 +72,7 @@ as estrelas mudam com o tempo e a busca daria uma amostra ligeiramente diferente
 | [4] Funil e amostra | Tabela com quantos repositórios restaram em cada etapa e por quê; lista da amostra final | `resultados/funil_selecao.md`, `resultados/funil_selecao.csv`, `resultados/amostra.csv` |
 | [5] Metadados | Número de contribuidores (inclusive anônimos) e idade no fim da janela | `dados/contribuidores.csv`, colunas novas em `resultados/amostra.csv` |
 | [6] Releases | Releases de cada repositório da amostra | `cache/releases/*.json` |
-| [7] Commits, lead time e CFR (b) | Commits entre cada release da janela e a release anterior (mesmo que fora da janela); lead time (RQ 02, variantes a e b) e CFR (b), proxy de entrega (RQ 03) | `cache/commits_entre_releases/*.json`, `dados/lead_time.csv`, `dados/cfr.csv` |
+| [7] Commits, frequência, lead time e CFR (b) | Deployment frequency: releases da janela ÷ semanas da janela (RQ 01); commits entre cada release da janela e a release anterior (mesmo que fora da janela); lead time (RQ 02, variantes a e b) e CFR (b), proxy de entrega (RQ 03) | `cache/commits_entre_releases/*.json`, `dados/frequencia.csv`, `dados/lead_time.csv`, `dados/cfr.csv` |
 | [8] Workflow runs, CFR (a) e recuperação | Runs de push no default branch, consultados mês a mês (um mês com mais de 1.000 runs é dividido ao meio até caber); CFR (a), proxy de CI (RQ 03), e tempo de recuperação por workflow, com episódios censurados (RQ 04) | `cache/workflow_runs/*.json`, `dados/cfr_ci.csv`, `dados/recuperacao.csv` |
 
 As pastas `dados/` e `cache/` não são versionadas: são recriadas pelo pipeline. A pasta
@@ -146,8 +146,8 @@ LAB03/
 │   ├── commits.py          # [7] commits entre releases
 │   ├── workflow_runs.py    # [8] workflow runs, fatiados por mês
 │   └── retomada.py         # gravação por repositório e retomada
-├── metricas/               # funções de cálculo: lead_time, cfr (b), cfr_ci (a), recuperacao,
-│                           # correlacao (RQ 05) e subgrupos (RQ 06)
+├── metricas/               # funções de cálculo: frequencia, lead_time, cfr (b), cfr_ci (a),
+│                           # recuperacao, classificacao DORA, correlacao (RQ 05) e subgrupos (RQ 06)
 ├── analise/                # scripts de análise das RQs, a partir do CSV final
 ├── tests/                  # testes com pytest
 ├── resultados/             # funil e amostra (versionados)

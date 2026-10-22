@@ -9,7 +9,8 @@ Etapas implementadas ate agora:
    a resultados/amostra.csv;
 6. coleta de releases (cache/releases/*.json) e commits entre releases
    (cache/commits_entre_releases/*.json) dos repositorios da amostra;
-7. calculo do lead time (RQ 02, variantes a e b) por repositorio (dados/lead_time.csv);
+7. calculo da deployment frequency (RQ 01, dados/frequencia.csv) e do lead time
+   (RQ 02, variantes a e b) por repositorio (dados/lead_time.csv);
 8. calculo do CFR variante (b), proxy de entrega (RQ 03) por repositorio (dados/cfr.csv);
 9. coleta de workflow runs de push no default branch, fatiada por mes
    (cache/workflow_runs/*.json), e calculo do CFR variante (a), proxy de CI
@@ -34,6 +35,7 @@ import requests
 
 from metricas.cfr import cfr_repositorio
 from metricas.cfr_ci import cfr_ci_repositorio
+from metricas.frequencia import deployment_frequency, semanas_da_janela
 from metricas.lead_time import lead_time_repositorio
 from metricas.recuperacao import recuperacao_repositorio
 from pipeline.commits import coletar_commits_entre_releases
@@ -56,7 +58,7 @@ from pipeline.github_client import (
     status_http,
 )
 from pipeline.metadados import coletar_contribuidores, enriquecer_amostra
-from pipeline.releases import coletar_releases, releases_principais
+from pipeline.releases import coletar_releases, releases_na_janela, releases_principais
 from pipeline.selecao import CANDIDATE_FIELDS, buscar_candidatos, carregar_csv, salvar_csv
 from pipeline.workflow_runs import coletar_workflow_runs
 
@@ -74,6 +76,13 @@ CFR_FIELDS = [
     "n_releases_avaliadas",
     "n_releases_falhas",
     "n_releases_censuradas",
+]
+
+FREQUENCIA_FIELDS = [
+    "full_name",
+    "deployment_frequency",
+    "n_releases_janela",
+    "semanas_janela",
 ]
 
 CFR_CI_FIELDS = [
@@ -297,6 +306,23 @@ def etapa_releases_lead_time_e_cfr(
     commits_por_repo = coletar_commits_entre_releases(
         client, principais_por_repo, cache_dir, progresso_commits, janela_observacao
     )
+
+    linhas_frequencia = []
+    if janela_observacao:
+        semanas = semanas_da_janela(inicio, fim)
+        for full_name in full_names:
+            n_releases = len(releases_na_janela(principais_por_repo[full_name], inicio, fim))
+            linhas_frequencia.append(
+                {
+                    "full_name": full_name,
+                    "deployment_frequency": deployment_frequency(n_releases, semanas),
+                    "n_releases_janela": n_releases,
+                    "semanas_janela": semanas,
+                }
+            )
+        caminho_frequencia = dados_dir / "frequencia.csv"
+        salvar_csv(linhas_frequencia, caminho_frequencia, FREQUENCIA_FIELDS)
+        print(f"    Deployment frequency de {len(linhas_frequencia)} repositorios salva em {caminho_frequencia}")
 
     linhas_lead_time = []
     linhas_cfr = []

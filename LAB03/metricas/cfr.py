@@ -29,7 +29,7 @@ Esta heuristica precisa ser validada contra a amostra rotulada manualmente
 from __future__ import annotations
 
 import re
-from datetime import datetime
+from datetime import date, datetime, time, timezone
 
 PALAVRAS_CHAVE_CORRETIVA = ("revert", "hotfix", "fix")
 
@@ -41,6 +41,14 @@ _SEMVER_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)")
 
 def _parse(data_iso: str) -> datetime:
     return datetime.fromisoformat(data_iso.replace("Z", "+00:00"))
+
+
+def _fim_da_janela(fim_janela: str) -> datetime:
+    """Fim da janela em UTC; uma data sem horario (AAAA-MM-DD, como no config.yaml)
+    vale ate o fim daquele dia, como em `pipeline.criterio_inclusao.Janela`."""
+    if len(fim_janela) == 10:
+        return datetime.combine(date.fromisoformat(fim_janela), time.max, tzinfo=timezone.utc)
+    return _parse(fim_janela)
 
 
 def _parse_semver(tag_name: str) -> tuple[int, int, int] | None:
@@ -100,7 +108,7 @@ def cfr_repositorio(releases: list[dict], fim_janela: str) -> dict:
     denominador; `n_censuradas` conta quantas foram essas.
     """
     classificadas = classificar_releases(releases)
-    limite_censura = _parse(fim_janela)
+    limite_censura = _fim_da_janela(fim_janela)
 
     n_avaliadas = 0
     n_falhas = 0

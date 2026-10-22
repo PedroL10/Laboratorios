@@ -150,3 +150,15 @@ def test_avaliar_heuristica_tamanhos_diferentes_leva_a_erro():
 def test_avaliar_heuristica_sem_positivos_devolve_none():
     resultado = avaliar_heuristica([False, False], [False, False])
     assert resultado == {"precisao": None, "recall": None, "f1": None}
+
+
+def test_cfr_repositorio_aceita_fim_da_janela_so_com_a_data_do_config():
+    # O config.yaml traz so a data (AAAA-MM-DD): vale ate o fim desse dia, em UTC.
+    releases = [
+        release("1.0.0", None, "2024-12-24T00:00:00Z"),  # 7,99 dias antes do fim: avaliada
+        release("1.1.0", "1.0.0", "2024-12-25T00:00:00Z"),  # 6,99 dias antes: censurada
+        release("1.2.0", "1.1.0", "2024-12-31T23:00:00Z"),  # ultimo dia: censurada
+    ]
+    resultado = cfr_repositorio(releases, fim_janela="2024-12-31")
+    assert resultado["n_releases_avaliadas"] == 1
+    assert resultado["n_releases_censuradas"] == 2
