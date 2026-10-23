@@ -1,0 +1,101 @@
+full_name,link_repositorio,tipo_projeto,releases_representam_entrega_real,tag_name,link_release,corretiva
+thedotmack/claude-mem,https://github.com/thedotmack/claude-mem,ferramenta CLI,sim,v7.2.0,https://github.com/thedotmack/claude-mem/releases/tag/v7.2.0,nao
+thedotmack/claude-mem,https://github.com/thedotmack/claude-mem,ferramenta CLI,sim,v7.2.4,https://github.com/thedotmack/claude-mem/releases/tag/v7.2.4,nao
+thedotmack/claude-mem,https://github.com/thedotmack/claude-mem,ferramenta CLI,sim,v7.0.6,https://github.com/thedotmack/claude-mem/releases/tag/v7.0.6,sim
+thedotmack/claude-mem,https://github.com/thedotmack/claude-mem,ferramenta CLI,sim,v8.2.8,https://github.com/thedotmack/claude-mem/releases/tag/v8.2.8,sim
+thedotmack/claude-mem,https://github.com/thedotmack/claude-mem,ferramenta CLI,sim,v7.3.1,https://github.com/thedotmack/claude-mem/releases/tag/v7.3.1,sim
+DietrichGebert/ponytail,https://github.com/DietrichGebert/ponytail,outro,sim,v4.3.0,https://github.com/DietrichGebert/ponytail/releases/tag/v4.3.0,nao
+DietrichGebert/ponytail,https://github.com/DietrichGebert/ponytail,outro,sim,v4.8.0,https://github.com/DietrichGebert/ponytail/releases/tag/v4.8.0,nao
+DietrichGebert/ponytail,https://github.com/DietrichGebert/ponytail,outro,sim,v1.0.0,https://github.com/DietrichGebert/ponytail/releases/tag/v1.0.0,nao
+DietrichGebert/ponytail,https://github.com/DietrichGebert/ponytail,outro,sim,v4.0.0,https://github.com/DietrichGebert/ponytail/releases/tag/v4.0.0,nao
+DietrichGebert/ponytail,https://github.com/DietrichGebert/ponytail,outro,sim,v4.8.2,https://github.com/DietrichGebert/ponytail/releases/tag/v4.8.2,nao
+nocodb/nocodb,https://github.com/nocodb/nocodb,aplicacao/servico,sim,2026.04.2,https://github.com/nocodb/nocodb/releases/tag/2026.04.2,nao
+nocodb/nocodb,https://github.com/nocodb/nocodb,aplicacao/servico,sim,0.301.2,https://github.com/nocodb/nocodb/releases/tag/0.301.2,sim
+nocodb/nocodb,https://github.com/nocodb/nocodb,aplicacao/servico,sim,2026.04.1,https://github.com/nocodb/nocodb/releases/tag/2026.04.1,sim
+nocodb/nocodb,https://github.com/nocodb/nocodb,aplicacao/servico,sim,2026.04.3,https://github.com/nocodb/nocodb/releases/tag/2026.04.3,sim
+nocodb/nocodb,https://github.com/nocodb/nocodb,aplicacao/servico,sim,0.301.5,https://github.com/nocodb/nocodb/releases/tag/0.301.5,nao
+expressjs/express,https://github.com/expressjs/express,biblioteca/framework,sim,v4.22.2,https://github.com/expressjs/express/releases/tag/v4.22.2,sim
+expressjs/express,https://github.com/expressjs/express,biblioteca/framework,sim,4.22.0,https://github.com/expressjs/express/releases/tag/4.22.0,sim
+expressjs/express,https://github.com/expressjs/express,biblioteca/framework,sim,v4.22.1,https://github.com/expressjs/express/releases/tag/v4.22.1,sim
+expressjs/express,https://github.com/expressjs/express,biblioteca/framework,sim,v5.2.1,https://github.com/expressjs/express/releases/tag/v5.2.1,sim
+expressjs/express,https://github.com/expressjs/express,biblioteca/framework,sim,v5.2.0,https://github.com/expressjs/express/releases/tag/v5.2.0,sim
+openbq-org/OpenBB,https://github.com/openbq-org/OpenBB,biblioteca/framework,sim,openbb-v5.0.0,https://github.com/openbq-org/OpenBB/releases/tag/openbb-v5.0.0,nao
+openbq-org/OpenBB,https://github.com/openbq-org/OpenBB,biblioteca/framework,sim,Open-Data-Platform-v1.0.2,https://github.com/openbq-org/OpenBB/releases/tag/Open-Data-Platform-v1.0.2,nao
+openbq-org/OpenBB,https://github.com/openbq-org/OpenBB,biblioteca/framework,sim,v4.7.0,https://github.com/openbq-org/OpenBB/releases/tag/v4.7.0,nao
+openbq-org/OpenBB,https://github.com/openbq-org/OpenBB,biblioteca/framework,sim,ODP,https://github.com/openbq-org/OpenBB/releases/tag/ODP,nao
+openbq-org/OpenBB,https://github.com/openbq-org/OpenBB,biblioteca/framework,sim,Open-Data-Platform-v1.0.0,https://github.com/openbq-org/OpenBB/releases/tag/Open-Data-Platform-v1.0.0,nao
+louislam/uptime-kuma,https://github.com/louislam/uptime-kuma,aplicacao/servico,sim,2.0.1,https://github.com/louislam/uptime-kuma/releases/tag/2.0.1,sim
+louislam/uptime-kuma,https://github.com/louislam/uptime-kuma,aplicacao/servico,sim,1.23.17,https://github.com/louislam/uptime-kuma/releases/tag/1.23.17,sim
+louislam/uptime-kuma,https://github.com/louislam/uptime-kuma,aplicacao/servico,sim,2.5.3,https://github.com/louislam/uptime-kuma/releases/tag/2.5.3,sim
+louislam/uptime-kuma,https://github.com/louislam/uptime-kuma,aplicacao/servico,sim,2.1.2,https://github.com/louislam/uptime-kuma/releases/tag/2.1.2,nao
+louislam/uptime-kuma,https://github.com/louislam/uptime-kuma,aplicacao/servico,sim,2.3.0,https://github.com/louislam/uptime-kuma/releases/tag/2.3.0,nao
+pytorch/pytorch,https://github.com/pytorch/pytorch,biblioteca/framework,sim,v2.12.1,https://github.com/pytorch/pytorch/releases/tag/v2.12.1,sim
+pytorch/pytorch,https://github.com/pytorch/pytorch,biblioteca/framework,sim,v2.9.1,https://github.com/pytorch/pytorch/releases/tag/v2.9.1,sim
+pytorch/pytorch,https://github.com/pytorch/pytorch,biblioteca/framework,sim,v2.11.0,https://github.com/pytorch/pytorch/releases/tag/v2.11.0,nao
+pytorch/pytorch,https://github.com/pytorch/pytorch,biblioteca/framework,sim,v2.13.0,https://github.com/pytorch/pytorch/releases/tag/v2.13.0,nao
+pytorch/pytorch,https://github.com/pytorch/pytorch,biblioteca/framework,sim,v2.10.0,https://github.com/pytorch/pytorch/releases/tag/v2.10.0,nao
+sxyazi/yazi,https://github.com/sxyazi/yazi,ferramenta CLI,sim,v25.12.29,https://github.com/sxyazi/yazi/releases/tag/v25.12.29,nao
+sxyazi/yazi,https://github.com/sxyazi/yazi,ferramenta CLI,sim,v26.9.1,https://github.com/sxyazi/yazi/releases/tag/v26.9.1,sim
+sxyazi/yazi,https://github.com/sxyazi/yazi,ferramenta CLI,sim,v26.1.22,https://github.com/sxyazi/yazi/releases/tag/v26.1.22,nao
+sxyazi/yazi,https://github.com/sxyazi/yazi,ferramenta CLI,sim,v26.1.4,https://github.com/sxyazi/yazi/releases/tag/v26.1.4,sim
+sxyazi/yazi,https://github.com/sxyazi/yazi,ferramenta CLI,sim,v26.8.15,https://github.com/sxyazi/yazi/releases/tag/v26.8.15,nao
+microsoft/TypeScript,https://github.com/microsoft/TypeScript,ferramenta CLI,sim,v5.9.2,https://github.com/microsoft/TypeScript/releases/tag/v5.9.2,nao
+microsoft/TypeScript,https://github.com/microsoft/TypeScript,ferramenta CLI,sim,v6.0.3,https://github.com/microsoft/TypeScript/releases/tag/v6.0.3,sim
+microsoft/TypeScript,https://github.com/microsoft/TypeScript,ferramenta CLI,sim,vscode-typescript/v1.0.1,https://github.com/microsoft/TypeScript/releases/tag/vscode-typescript/v1.0.1,sim
+microsoft/TypeScript,https://github.com/microsoft/TypeScript,ferramenta CLI,sim,v5.8.3,https://github.com/microsoft/TypeScript/releases/tag/v5.8.3,sim
+microsoft/TypeScript,https://github.com/microsoft/TypeScript,ferramenta CLI,sim,v6.0.2,https://github.com/microsoft/TypeScript/releases/tag/v6.0.2,nao
+huginn/huginn,https://github.com/huginn/huginn,aplicacao/servico,sim,v2026.09.21,https://github.com/huginn/huginn/releases/tag/v2026.09.21,nao
+huginn/huginn,https://github.com/huginn/huginn,aplicacao/servico,sim,v2026.09.22,https://github.com/huginn/huginn/releases/tag/v2026.09.22,sim
+huginn/huginn,https://github.com/huginn/huginn,aplicacao/servico,sim,v2026.09.08,https://github.com/huginn/huginn/releases/tag/v2026.09.08,sim
+huginn/huginn,https://github.com/huginn/huginn,aplicacao/servico,sim,v2026.08.27,https://github.com/huginn/huginn/releases/tag/v2026.08.27,sim
+huginn/huginn,https://github.com/huginn/huginn,aplicacao/servico,sim,v2026.09.09,https://github.com/huginn/huginn/releases/tag/v2026.09.09,sim
+langflow-ai/langflow,https://github.com/langflow-ai/langflow,aplicacao/servico,sim,v1.8.0,https://github.com/langflow-ai/langflow/releases/tag/v1.8.0,nao
+langflow-ai/langflow,https://github.com/langflow-ai/langflow,aplicacao/servico,sim,v1.9.0,https://github.com/langflow-ai/langflow/releases/tag/v1.9.0,nao
+langflow-ai/langflow,https://github.com/langflow-ai/langflow,aplicacao/servico,sim,1.7.1,https://github.com/langflow-ai/langflow/releases/tag/1.7.1,sim
+langflow-ai/langflow,https://github.com/langflow-ai/langflow,aplicacao/servico,sim,v1.12.3,https://github.com/langflow-ai/langflow/releases/tag/v1.12.3,sim
+langflow-ai/langflow,https://github.com/langflow-ai/langflow,aplicacao/servico,sim,1.7.3,https://github.com/langflow-ai/langflow/releases/tag/1.7.3,sim
+open-webui/open-webui,https://github.com/open-webui/open-webui,aplicacao/servico,sim,v0.10.0,https://github.com/open-webui/open-webui/releases/tag/v0.10.0,nao
+open-webui/open-webui,https://github.com/open-webui/open-webui,aplicacao/servico,sim,v0.8.0,https://github.com/open-webui/open-webui/releases/tag/v0.8.0,nao
+open-webui/open-webui,https://github.com/open-webui/open-webui,aplicacao/servico,sim,v0.8.8,https://github.com/open-webui/open-webui/releases/tag/v0.8.8,nao
+open-webui/open-webui,https://github.com/open-webui/open-webui,aplicacao/servico,sim,v0.8.10,https://github.com/open-webui/open-webui/releases/tag/v0.8.10,nao
+open-webui/open-webui,https://github.com/open-webui/open-webui,aplicacao/servico,sim,v0.9.1,https://github.com/open-webui/open-webui/releases/tag/v0.9.1,sim
+axios/axios,https://github.com/axios/axios,biblioteca/framework,sim,v0.31.0,https://github.com/axios/axios/releases/tag/v0.31.0,sim
+axios/axios,https://github.com/axios/axios,biblioteca/framework,sim,v1.16.0,https://github.com/axios/axios/releases/tag/v1.16.0,nao
+axios/axios,https://github.com/axios/axios,biblioteca/framework,sim,v1.15.0,https://github.com/axios/axios/releases/tag/v1.15.0,sim
+axios/axios,https://github.com/axios/axios,biblioteca/framework,sim,v1.19.0,https://github.com/axios/axios/releases/tag/v1.19.0,nao
+axios/axios,https://github.com/axios/axios,biblioteca/framework,sim,v1.13.3,https://github.com/axios/axios/releases/tag/v1.13.3,sim
+typicode/json-server,https://github.com/typicode/json-server,ferramenta CLI,sim,v1.0.0-beta.12,https://github.com/typicode/json-server/releases/tag/v1.0.0-beta.12,nao
+typicode/json-server,https://github.com/typicode/json-server,ferramenta CLI,sim,v1.0.0-beta.14,https://github.com/typicode/json-server/releases/tag/v1.0.0-beta.14,nao
+typicode/json-server,https://github.com/typicode/json-server,ferramenta CLI,sim,v1.0.0-beta.4,https://github.com/typicode/json-server/releases/tag/v1.0.0-beta.4,nao
+typicode/json-server,https://github.com/typicode/json-server,ferramenta CLI,sim,v1.0.0-beta.7,https://github.com/typicode/json-server/releases/tag/v1.0.0-beta.7,nao
+typicode/json-server,https://github.com/typicode/json-server,ferramenta CLI,sim,v1.0.0-beta.15,https://github.com/typicode/json-server/releases/tag/v1.0.0-beta.15,sim
+moby/moby,https://github.com/moby/moby,aplicacao/servico,sim,docker-v29.0.0,https://github.com/moby/moby/releases/tag/docker-v29.0.0,nao
+moby/moby,https://github.com/moby/moby,aplicacao/servico,sim,docker-v29.1.2,https://github.com/moby/moby/releases/tag/docker-v29.1.2,sim
+moby/moby,https://github.com/moby/moby,aplicacao/servico,sim,docker-v29.0.1,https://github.com/moby/moby/releases/tag/docker-v29.0.1,sim
+moby/moby,https://github.com/moby/moby,aplicacao/servico,sim,docker-v29.4.2,https://github.com/moby/moby/releases/tag/docker-v29.4.2,sim
+moby/moby,https://github.com/moby/moby,aplicacao/servico,sim,api/v1.54.2,https://github.com/moby/moby/releases/tag/api/v1.54.2,nao
+herdrdev/herdr,https://github.com/herdrdev/herdr,ferramenta CLI,sim,v0.7.0,https://github.com/herdrdev/herdr/releases/tag/v0.7.0,nao
+herdrdev/herdr,https://github.com/herdrdev/herdr,ferramenta CLI,sim,v0.9.3,https://github.com/herdrdev/herdr/releases/tag/v0.9.3,sim
+herdrdev/herdr,https://github.com/herdrdev/herdr,ferramenta CLI,sim,v0.5.1,https://github.com/herdrdev/herdr/releases/tag/v0.5.1,nao
+herdrdev/herdr,https://github.com/herdrdev/herdr,ferramenta CLI,sim,v0.6.7,https://github.com/herdrdev/herdr/releases/tag/v0.6.7,nao
+herdrdev/herdr,https://github.com/herdrdev/herdr,ferramenta CLI,sim,v0.1.0,https://github.com/herdrdev/herdr/releases/tag/v0.1.0,nao
+huggingface/transformers,https://github.com/huggingface/transformers,biblioteca/framework,sim,v5.13.1,https://github.com/huggingface/transformers/releases/tag/v5.13.1,sim
+huggingface/transformers,https://github.com/huggingface/transformers,biblioteca/framework,sim,v5.10.1,https://github.com/huggingface/transformers/releases/tag/v5.10.1,nao
+huggingface/transformers,https://github.com/huggingface/transformers,biblioteca/framework,sim,v5.6.1,https://github.com/huggingface/transformers/releases/tag/v5.6.1,sim
+huggingface/transformers,https://github.com/huggingface/transformers,biblioteca/framework,sim,v5.16.1,https://github.com/huggingface/transformers/releases/tag/v5.16.1,nao
+huggingface/transformers,https://github.com/huggingface/transformers,biblioteca/framework,sim,v5.4.0,https://github.com/huggingface/transformers/releases/tag/v5.4.0,nao
+tinyhumansai/openhuman,https://github.com/tinyhumansai/openhuman,aplicacao/servico,sim,v0.64.3,https://github.com/tinyhumansai/openhuman/releases/tag/v0.64.3,sim
+tinyhumansai/openhuman,https://github.com/tinyhumansai/openhuman,aplicacao/servico,sim,v0.57.18,https://github.com/tinyhumansai/openhuman/releases/tag/v0.57.18,nao
+tinyhumansai/openhuman,https://github.com/tinyhumansai/openhuman,aplicacao/servico,sim,v0.57.10,https://github.com/tinyhumansai/openhuman/releases/tag/v0.57.10,nao
+tinyhumansai/openhuman,https://github.com/tinyhumansai/openhuman,aplicacao/servico,sim,v0.63.1,https://github.com/tinyhumansai/openhuman/releases/tag/v0.63.1,sim
+tinyhumansai/openhuman,https://github.com/tinyhumansai/openhuman,aplicacao/servico,sim,v0.51.8,https://github.com/tinyhumansai/openhuman/releases/tag/v0.51.8,nao
+unslothai/unsloth,https://github.com/unslothai/unsloth,aplicacao/servico,sim,v0.1.811-beta,https://github.com/unslothai/unsloth/releases/tag/v0.1.811-beta,nao
+unslothai/unsloth,https://github.com/unslothai/unsloth,aplicacao/servico,sim,v0.1.701-beta,https://github.com/unslothai/unsloth/releases/tag/v0.1.701-beta,sim
+unslothai/unsloth,https://github.com/unslothai/unsloth,aplicacao/servico,sim,v0.1.801-beta,https://github.com/unslothai/unsloth/releases/tag/v0.1.801-beta,nao
+unslothai/unsloth,https://github.com/unslothai/unsloth,aplicacao/servico,sim,v0.1.810-beta,https://github.com/unslothai/unsloth/releases/tag/v0.1.810-beta,nao
+unslothai/unsloth,https://github.com/unslothai/unsloth,aplicacao/servico,sim,February-2026,https://github.com/unslothai/unsloth/releases/tag/February-2026,nao
+pandas-dev/pandas,https://github.com/pandas-dev/pandas,biblioteca/framework,sim,v3.0.4,https://github.com/pandas-dev/pandas/releases/tag/v3.0.4,sim
+pandas-dev/pandas,https://github.com/pandas-dev/pandas,biblioteca/framework,sim,v3.0.6,https://github.com/pandas-dev/pandas/releases/tag/v3.0.6,sim
+pandas-dev/pandas,https://github.com/pandas-dev/pandas,biblioteca/framework,sim,v3.0.3,https://github.com/pandas-dev/pandas/releases/tag/v3.0.3,sim
+pandas-dev/pandas,https://github.com/pandas-dev/pandas,biblioteca/framework,sim,v3.0.5,https://github.com/pandas-dev/pandas/releases/tag/v3.0.5,sim
+pandas-dev/pandas,https://github.com/pandas-dev/pandas,biblioteca/framework,sim,v3.0.2,https://github.com/pandas-dev/pandas/releases/tag/v3.0.2,sim
