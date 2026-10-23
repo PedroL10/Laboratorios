@@ -2,11 +2,16 @@
 
 Uma release R e considerada **falha** se for seguida, em ate 7 dias, por uma
 **release corretiva**. A heuristica automatica de release corretiva (secao 3,
-RQ 03) combina duas pistas:
+RQ 03) combina duas pistas (versao v2, ver `artigo/versoes_heuristica_cfr.md`):
 
 - a versao muda apenas no numero de *patch* do Versionamento Semantico
-  (`2.3.0 -> 2.3.1`); e/ou
-- ha commits com `revert`, `hotfix` ou `fix` na mensagem entre as duas releases.
+  (`2.3.0 -> 2.3.1`); ou
+- a **maioria** (>= 50%) dos commits entre as duas releases tem `fix`, `revert`
+  ou `hotfix` (como palavra inteira) no titulo.
+
+A v1 marcava a release como corretiva se *algum* commit tivesse a palavra-chave;
+na validacao manual ela marcou 93 de 100 releases (precisao 0,49), porque quase
+toda release tem ao menos um commit de correcao.
 
 Cada release e representada por um dicionario:
 
@@ -32,6 +37,9 @@ import re
 from datetime import date, datetime, time, timezone
 
 PALAVRAS_CHAVE_CORRETIVA = ("revert", "hotfix", "fix")
+# Palavra inteira (e variacoes): "prefix" e "fixture" nao contam.
+_PALAVRA_CORRETIVA_RE = re.compile(r"\b(fix|fixes|fixed|bugfix|hotfix|revert|reverts|reverted)\b", re.IGNORECASE)
+FRACAO_MINIMA_CORRETIVA = 0.5
 
 JANELA_CORRECAO_DIAS = 7
 JANELA_CENSURA_DIAS = 7
@@ -82,21 +90,25 @@ def tem_commit_com_palavra_chave(mensagens_commits: list[str]) -> bool:
     aparecem, e guardar o corpo de cada commit tornava os caches grandes demais
     para a memoria (gigabytes em repositorios como o ClickHouse).
     """
-    return any(
-        palavra in titulo(mensagem).lower()
-        for mensagem in mensagens_commits
-        for palavra in PALAVRAS_CHAVE_CORRETIVA
-    )
+    return any(_PALAVRA_CORRETIVA_RE.search(titulo(mensagem)) for mensagem in mensagens_commits)
+
+
+def fracao_commits_corretivos(mensagens_commits: list[str]) -> float:
+    """Proporcao de commits com `fix`/`revert`/`hotfix` (palavra inteira) no titulo; 0 sem commits."""
+    if not mensagens_commits:
+        return 0.0
+    corretivos = sum(1 for m in mensagens_commits if _PALAVRA_CORRETIVA_RE.search(titulo(m)))
+    return corretivos / len(mensagens_commits)
 
 
 def eh_corretiva(release: dict) -> bool:
-    """Classifica uma release como corretiva pela heuristica automatica.
+    """Classifica uma release como corretiva pela heuristica automatica (v2).
 
-    Combina as duas pistas da secao 3: patch-only no SemVer e/ou palavra-chave
-    nas mensagens de commit. Basta uma das duas ser verdadeira.
+    Corretiva se a versao muda so no patch do SemVer, ou se a maioria dos
+    commits da release (`FRACAO_MINIMA_CORRETIVA`) sao correcoes pelo titulo.
     """
     return eh_patch_only(release.get("tag_anterior"), release["tag_name"]) or (
-        tem_commit_com_palavra_chave(release.get("mensagens_commits") or [])
+        fracao_commits_corretivos(release.get("mensagens_commits") or []) >= FRACAO_MINIMA_CORRETIVA
     )
 
 

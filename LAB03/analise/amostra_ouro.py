@@ -27,7 +27,14 @@ from collections import Counter
 from pathlib import Path
 
 from analise.comum import carregar, fmt, markdown
-from metricas.cfr import avaliar_heuristica, eh_corretiva, eh_patch_only, tem_commit_com_palavra_chave
+from metricas.cfr import (
+    FRACAO_MINIMA_CORRETIVA,
+    avaliar_heuristica,
+    eh_corretiva,
+    eh_patch_only,
+    fracao_commits_corretivos,
+    tem_commit_com_palavra_chave,
+)
 
 REPETICOES_BOOTSTRAP = 2000
 
@@ -101,7 +108,11 @@ def avaliar(dados: list[dict], avaliadores: dict[str, list[dict]]) -> dict:
     referencia = [i["referencia"] == "sim" for i in avaliados]
     heuristica = [eh_corretiva(i["dados"]) for i in avaliados]
     so_patch = [eh_patch_only(i["dados"]["tag_anterior"], i["dados"]["tag_name"]) for i in avaliados]
-    so_palavra = [tem_commit_com_palavra_chave(i["dados"]["mensagens_commits"]) for i in avaliados]
+    so_palavra = [
+        fracao_commits_corretivos(i["dados"]["mensagens_commits"]) >= FRACAO_MINIMA_CORRETIVA for i in avaliados
+    ]
+    # v1: patch-only OU ao menos um commit com palavra-chave (versao anterior, para o historico).
+    v1 = [p or tem_commit_com_palavra_chave(i["dados"]["mensagens_commits"]) for p, i in zip(so_patch, avaliados)]
 
     repos = {}
     for nome in nomes:
@@ -129,6 +140,9 @@ def avaliar(dados: list[dict], avaliadores: dict[str, list[dict]]) -> dict:
         "heuristica": avaliar_heuristica(heuristica, referencia) if avaliados else None,
         "intervalo": intervalo_bootstrap(heuristica, referencia) if avaliados else None,
         "confusao": matriz_confusao(heuristica, referencia),
+        "v1": avaliar_heuristica(v1, referencia) if avaliados else None,
+        "n_marcadas_v1": sum(v1),
+        "n_marcadas": sum(heuristica),
         "so_patch": avaliar_heuristica(so_patch, referencia) if avaliados else None,
         "so_palavra": avaliar_heuristica(so_palavra, referencia) if avaliados else None,
         "tipos": Counter(t or "(sem rotulo)" for t in tipos),
@@ -157,12 +171,14 @@ def relatorio(r: dict) -> str:
         markdown(
             ["Heuristica", "Precisao", "Recall", "F1"],
             [
-                linha("Completa: patch-only OU palavra-chave", r["heuristica"], r["intervalo"]),
+                linha(f"v2 (em uso): patch-only OU maioria dos commits corretivos [{r['n_marcadas']} marcadas]",
+                      r["heuristica"], r["intervalo"]),
+                linha(f"v1: patch-only OU algum commit corretivo [{r['n_marcadas_v1']} marcadas]", r["v1"]),
                 linha("So patch-only no SemVer", r["so_patch"]),
-                linha("So palavra-chave (revert/hotfix/fix)", r["so_palavra"]),
+                linha("So maioria dos commits corretivos", r["so_palavra"]),
             ],
         ),
-        "\n## Matriz de confusao (heuristica completa)\n",
+        "\n## Matriz de confusao (v2)\n",
         markdown(
             ["", "Referencia: corretiva", "Referencia: nao corretiva"],
             [["Heuristica: corretiva", str(c["vp"]), str(c["fp"])],

@@ -183,3 +183,23 @@ def test_palavra_chave_so_no_corpo_do_commit_nao_conta():
     assert tem_commit_com_palavra_chave(["feat: x\n\nfix typo no corpo"]) is False
     assert tem_commit_com_palavra_chave(['Revert "feat: x"\n\nThis reverts commit abc']) is True
     assert tem_commit_com_palavra_chave([""]) is False
+
+
+def test_palavra_chave_e_palavra_inteira():
+    from metricas.cfr import tem_commit_com_palavra_chave
+
+    assert tem_commit_com_palavra_chave(["fix: crash"]) is True
+    assert tem_commit_com_palavra_chave(["Fixes #12"]) is True
+    assert tem_commit_com_palavra_chave(["add prefix option", "use fixture"]) is False
+
+
+def test_v2_exige_maioria_de_commits_corretivos_quando_nao_e_patch():
+    from metricas.cfr import fracao_commits_corretivos
+
+    assert fracao_commits_corretivos(["fix: a", "feat: b", "fix: c", "docs"]) == 0.5
+    assert fracao_commits_corretivos([]) == 0.0
+    # Minor com 1 fix em 4 commits: na v1 seria corretiva; na v2 nao.
+    assert eh_corretiva(release("2.4.0", "2.3.0", "2024-06-01T00:00:00Z",
+                                "fix: a", "feat: b", "feat: c", "docs: d")) is False
+    # Minor com maioria de correcoes: corretiva.
+    assert eh_corretiva(release("2.4.0", "2.3.0", "2024-06-01T00:00:00Z", "fix: a", "Revert x", "feat: c")) is True

@@ -45,6 +45,7 @@ def test_um_avaliador_e_a_referencia():
     assert r["confusao"] == {"vp": 1, "fp": 1, "fn": 0, "vn": 2}
     assert r["heuristica"]["precisao"] == 0.5 and r["heuristica"]["recall"] == 1.0
     assert r["so_patch"]["recall"] == 0.0 and r["so_palavra"]["f1"] == 1.0
+    assert r["n_marcadas"] == 2 and r["n_marcadas_v1"] == 2
     assert r["kappas"] is None
     assert "kappa de Fleiss) nao pode ser calculada" in relatorio(r)
 
