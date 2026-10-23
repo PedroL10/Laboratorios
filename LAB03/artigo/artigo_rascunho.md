@@ -109,8 +109,9 @@ entrega: uma release falha se for seguida, em até 7 dias, por uma release
 corretiva; releases publicadas nos últimos 7 dias da janela não podem ser
 avaliadas e ficam fora do denominador (censura). Uma release é considerada
 **corretiva** quando a versão muda apenas no número de *patch* do SemVer
-(ex.: 2.3.0 → 2.3.1) **ou** quando há, entre ela e a release anterior, commits
-com `revert`, `hotfix` ou `fix` na mensagem.
+(ex.: 2.3.0 → 2.3.1) **ou** quando a maioria (≥ 50%) dos commits entre ela e a
+release anterior tem `fix`, `revert` ou `hotfix` (palavra inteira) no título.
+Essa é a versão v2 da heurística, adotada após a validação (Seção 2.8).
 
 **RQ 04 – Tempo de recuperação.** As execuções de cada workflow são ordenadas
 pelo início. Um episódio de falha começa na primeira falha após um sucesso e
@@ -165,16 +166,28 @@ contribuidores e quartis de idade —, com Kruskal-Wallis (ou Mann-Whitney, para
 dois grupos), correção de Holm sobre os 16 testes e tamanho de efeito (ε² e
 Cliff's δ).
 
-### 2.8. Validação manual (amostra-ouro)
+### 2.8. Validação da heurística de release corretiva (amostra-ouro)
 
-[PENDENTE — decisão do grupo. O protocolo previsto pela disciplina é: sortear
-60 repositórios (semente 42) e 5 releases de cada; três avaliadores rotulam de
-forma independente o tipo do projeto, se as releases são entregas reais e se
-cada release é corretiva; mede-se a concordância pelo kappa de Fleiss; chega-se
-a um consenso; e avalia-se a heurística de release corretiva por precisão,
-recall e F1. Descrever aqui o que foi efetivamente feito. Se a rotulagem não for
-realizada, declarar explicitamente que a heurística do CFR (b) não foi validada
-e tratar isso nas ameaças à validade.]
+O protocolo da disciplina prevê 60 repositórios rotulados por três avaliadores.
+Por restrição de tempo adotamos uma versão
+reduzida: 20 repositórios sorteados com semente fixa (42) — os 20 primeiros do
+sorteio de 60 — e 5 releases de cada, totalizando 100 releases. Os rótulos foram
+produzidos a partir das release notes, dos títulos dos commits e
+da descrição de cada repositório, **sem acesso à saída da heurística**. Para cada
+repositório rotulou-se o tipo do projeto e se as releases representam entregas
+reais; para cada release, se ela é corretiva. Com um único anotador, a
+concordância entre avaliadores (kappa de Fleiss) não pôde ser calculada.
+
+Das 100 releases, 47 foram rotuladas como corretivas. A primeira versão da
+heurística (v1: *patch* **ou** algum commit com palavra-chave) obteve precisão
+0,49, recall 0,98 e F1 0,66: marcou 93 das 100 releases, porque quase toda
+release tem ao menos um commit de correção. Refinada para exigir a maioria dos
+commits (v2), obteve precisão 0,62 (IC 95%: 0,49–0,75), recall 0,68 (0,55–0,80) e
+F1 0,65 (0,53–0,75), com erros mais equilibrados. Nenhuma variante testada
+atingiu F1 ≥ 0,70 (`artigo/versoes_heuristica_cfr.md`). Quanto ao tipo, os 20
+repositórios se dividem em 8 aplicações/serviços, 6 bibliotecas/frameworks, 5
+ferramentas CLI e 1 "outro"; em todos, as releases foram consideradas entregas
+reais ao usuário.
 
 ---
 
@@ -263,11 +276,12 @@ Para cada hipótese, confrontar o esperado com o observado e explicar a diferen�
 - *Falha de CI não é falha em produção.* O CFR (a) conta testes quebrados e
   falhas de infraestrutura, que nunca chegaram a usuários.
 - *Heurística de release corretiva.* Atualizações de dependências, de
-  documentação ou de infraestrutura também saem como *patch*; o termo `fix`
-  aparece em mensagens que não corrigem defeitos; e correções lançadas em
-  versões *minor* ou *major* escapam ao critério de SemVer. [Se a validação
-  manual não for feita: a heurística não foi validada, e o CFR (b) e o rework
-  rate devem ser lidos como aproximações não verificadas.]
+  documentação ou de infraestrutura também saem como *patch*, e correções
+  lançadas em versões *minor* ou *major* escapam ao critério. Na validação, a
+  heurística final teve F1 = 0,65 (abaixo da meta de 0,70): o CFR (b) e o rework
+  rate são aproximações com erro de cerca de um terço das classificações. Os
+  rótulos de referência vêm de um único anotador automatizado (IA), em amostra
+  reduzida (100 releases), e as variantes foram comparadas na mesma amostra.
 - *Data do commit.* `commit.author.date` registra quando a mudança foi escrita;
   *rebases* e *squash merges* podem deslocá-la, encurtando ou alongando o lead time.
 - *Tags.* Na variante C3, todas as tags do repositório são consideradas; em

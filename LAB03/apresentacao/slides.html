@@ -201,7 +201,7 @@
     <div class="cartao"><h3>Lead time (RQ 02)</h3>
       <p><strong>(a) por release:</strong> release − commit mais antigo dela.<br><strong>(b) por commit:</strong> mediana de todos os commits.<br>Um commit "esquecido" faz (a) explodir e quase não mexe em (b).</p></div>
     <div class="cartao"><h3>Change failure rate (RQ 03)</h3>
-      <p><strong>(a) CI:</strong> falhas ÷ (falhas + sucessos); <code>cancelled</code> ignorado.<br><strong>(b) entrega:</strong> release seguida, em até 7 dias, por uma release corretiva (patch-only no SemVer ou commit com fix/revert/hotfix).</p></div>
+      <p><strong>(a) CI:</strong> falhas ÷ (falhas + sucessos); <code>cancelled</code> ignorado.<br><strong>(b) entrega:</strong> release seguida, em até 7 dias, por uma release corretiva (patch-only no SemVer ou maioria dos commits com fix/revert/hotfix).</p></div>
     <div class="cartao"><h3>Tempo de recuperação (RQ 04)</h3>
       <p>Por workflow: da primeira falha após um sucesso até o próximo sucesso. Falhas não recuperadas até o fim da janela são <strong>censuradas</strong> e contadas, não descartadas.</p></div>
     <div class="cartao"><h3>Combinações da RQ 07</h3>
@@ -287,11 +287,15 @@
         <li>Rotulagem manual com página própria: release notes e commits lado a lado, <strong>sem mostrar a resposta da heurística</strong>.</li>
         <li>Mede-se precisão, recall e F1, com intervalo de confiança por bootstrap.</li>
       </ul>
-      <p class="nota">Adaptação declarada: amostra reduzida de 60 para 20 repositórios e um único avaliador (sem kappa de Fleiss).</p>
+      <p class="nota">Adaptação autorizada pelo professor: 20 repositórios em vez de 60 e rótulos produzidos por IA (Claude), sem acesso à saída da heurística — portanto sem kappa de Fleiss.</p>
     </div>
-    <div class="cartao" style="align-self:start">
-      <h3>Status</h3>
-      <p>[Em andamento — preencher com precisão, recall e F1 de <code>resultados/amostra_ouro/validacao.md</code>]</p>
+    <div>
+      <table>
+        <tr><th>Heurística</th><th>Marcadas</th><th>P</th><th>R</th><th>F1</th></tr>
+        <tr><td>v1: patch <em>ou</em> algum commit "fix"</td><td class="n">93</td><td class="n">0,49</td><td class="n">0,98</td><td class="n">0,66</td></tr>
+        <tr><td><strong>v2: patch <em>ou</em> maioria "fix"</strong></td><td class="n">52</td><td class="n">0,62</td><td class="n">0,68</td><td class="n"><strong>0,65</strong></td></tr>
+      </table>
+      <p class="nota">47 das 100 releases são corretivas pela referência. Nenhuma variante chegou a F1 ≥ 0,70: o sinal mais forte está nas release notes, que o pipeline não coleta (trabalho futuro).</p>
     </div>
   </div>
   <div class="rodape"><span>Validação</span><span></span></div>
@@ -301,7 +305,7 @@
 <section class="slide">
   <h2>Ameaças à validade</h2>
   <div class="grade2">
-    <div class="cartao"><h3>Construto</h3><p>Release ≠ deploy (bibliotecas). Falha de CI ≠ falha em produção. Heurística de correção imperfeita. Rebase e squash alteram a data do commit.</p></div>
+    <div class="cartao"><h3>Construto</h3><p>Release ≠ deploy (bibliotecas). Falha de CI ≠ falha em produção. Heurística de correção com F1 = 0,65. Rebase e squash alteram a data do commit.</p></div>
     <div class="cartao"><h3>Interna</h3><p>49 repositórios criados dentro da janela. Workflows auxiliares (docs, lint) pesam como testes. Censura de episódios e releases.</p></div>
     <div class="cartao"><h3>Externa</h3><p>Só repositórios muito populares (&gt; 41 mil estrelas) e ativos; não representam projetos corporativos, contexto das pesquisas DORA.</p></div>
     <div class="cartao"><h3>Conclusão</h3><p>16 testes na RQ 06 (Holm reduz o poder). Linguagens raras agrupadas. RQ 05 é correlacional.</p></div>
@@ -324,7 +328,7 @@
     <div>
       <h3 style="font-size:20px;margin:0 0 10px">Próximos passos</h3>
       <ul>
-        <li>Concluir a validação manual da heurística</li>
+        <li>Heurística de correção baseada nas release notes (F1 atual 0,65)</li>
         <li>Replicação cruzada do pipeline por outro grupo</li>
         <li>Artigo completo no template SBC</li>
       </ul>
