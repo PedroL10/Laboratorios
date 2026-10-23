@@ -128,6 +128,22 @@ Cada RQ tem um script em `analise/` que lê o dataset final e grava tabelas e fi
 | `python -m analise.rq07` | RQ 07: classificação DORA nas combinações C1, C2 e C3; % que muda de categoria e kappa ponderado por par | `resultados/rq07/` |
 | `python -m analise.rq08` | RQ 08 (bônus): rework rate comparado ao CFR (b) | `resultados/rq08/` |
 
+### Validação manual (amostra-ouro)
+
+1. Gerar a página de rotulagem (sorteio com semente 42; os `--n-repos` primeiros do sorteio de 60):
+   ```bash
+   python -m pipeline.amostra_ouro --config config.yaml --n-repos 20 --avaliador pedro
+   ```
+   Saída: `resultados/amostra_ouro/pagina_rotulagem.html` (abrir no navegador) e
+   `dados_rotulagem.json`. A página mostra release notes e commits, mas não a resposta
+   da heurística.
+2. Rotular na página e baixar o CSV para `resultados/amostra_ouro_<avaliador>.csv`.
+3. Avaliar a heurística (precisão, recall e F1; kappa de Fleiss se houver 3 avaliadores):
+   ```bash
+   python -m analise.amostra_ouro --rotulos resultados/amostra_ouro_pedro.csv
+   ```
+4. Usar o tipo do projeto na RQ 06: `python -m analise.rq06 --rotulos resultados/amostra_ouro_pedro.csv`.
+
 ## 5. Configuração (`config.yaml`)
 
 | Campo | Valor atual | Significado |

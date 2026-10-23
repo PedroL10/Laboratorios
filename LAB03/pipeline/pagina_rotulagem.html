@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rotulagem da amostra-ouro</title>
+<style>
+  :root {
+    --fundo: #f6f6f4; --cartao: #ffffff; --texto: #1a1a19; --texto2: #52514e;
+    --borda: #e2e1dc; --azul: #256abf; --azul-claro: #e8f1fc; --verde: #1b7a4a; --codigo: #f3f2ef;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fundo); color: var(--texto);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--cartao); border-bottom: 1px solid var(--borda);
+           padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+  header h1 { font-size: 17px; margin: 0; }
+  .progresso { flex: 1; min-width: 200px; }
+  .barra { height: 8px; background: var(--borda); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+  .barra > div { height: 100%; background: var(--azul); width: 0; transition: width .2s; }
+  button { font: inherit; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto);
+           padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+  button.primario { background: var(--azul); border-color: var(--azul); color: #fff; }
+  button:disabled { opacity: .45; cursor: default; }
+  main { max-width: 980px; margin: 0 auto; padding: 20px 16px 80px; }
+  details.guia { background: var(--cartao); border: 1px solid var(--borda); border-radius: 8px; padding: 10px 16px; margin-bottom: 20px; }
+  details.guia summary { cursor: pointer; font-weight: 600; }
+  .repo { background: var(--cartao); border: 1px solid var(--borda); border-radius: 10px; padding: 16px 20px; }
+  .repo h2 { margin: 0 0 4px; font-size: 20px; }
+  .repo h2 a { color: var(--azul); text-decoration: none; }
+  .pergunta { margin: 14px 0; }
+  .pergunta > .rotulo { font-weight: 600; margin-bottom: 6px; }
+  .opcoes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opcoes label { border: 1px solid var(--borda); border-radius: 6px; padding: 5px 12px; cursor: pointer; user-select: none; }
+  .opcoes input { margin-right: 6px; }
+  .opcoes label:has(input:checked) { background: var(--azul-claro); border-color: var(--azul); }
+  .release { border-top: 1px solid var(--borda); margin-top: 18px; padding-top: 14px; }
+  .release h3 { margin: 0; font-size: 16px; }
+  .meta { color: var(--texto2); font-size: 13px; }
+  .colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
+  @media (max-width: 760px) { .colunas { grid-template-columns: 1fr; } }
+  .caixa { background: var(--codigo); border-radius: 6px; padding: 10px 12px; max-height: 300px; overflow: auto;
+           font: 12.5px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
+  .caixa ul { margin: 0; padding-left: 18px; white-space: normal; }
+  .titulo-caixa { font-size: 13px; font-weight: 600; color: var(--texto2); margin-bottom: 4px; }
+  nav.rodape { position: fixed; bottom: 0; left: 0; right: 0; background: var(--cartao); border-top: 1px solid var(--borda);
+               padding: 10px 20px; display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  .feito { color: var(--verde); font-weight: 600; }
+  textarea { width: 100%; height: 140px; font: 12px ui-monospace, Menlo, Consolas, monospace; margin-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Rotulagem da amostra-ouro — __AVALIADOR__</h1>
+  <div class="progresso"><span id="texto-progresso"></span><div class="barra"><div id="barra"></div></div></div>
+  <button class="primario" id="baixar">Baixar CSV de rótulos</button>
+</header>
+<main>
+  <details class="guia" open>
+    <summary>Como rotular (leia antes de começar)</summary>
+    <p>Rotule com base no que você lê aqui e nos links. <strong>Não consulte colegas nem a saída do pipeline.</strong>
+       O progresso fica salvo neste navegador: pode fechar e voltar depois.</p>
+    <p><strong>Tipo do projeto</strong> (uma vez por repositório):</p>
+    <ul>
+      <li><em>biblioteca/framework</em>: usado como dependência por outro código (pacote npm/PyPI/crate, SDK, framework).</li>
+      <li><em>aplicação/serviço</em>: usado diretamente pelo usuário final (app web/desktop/mobile, servidor, plataforma, banco de dados).</li>
+      <li><em>ferramenta CLI</em>: usado principalmente pelo terminal (compilador, linter, ferramenta de build, utilitário).</li>
+      <li><em>outro</em>: listas, documentação, modelos, conjuntos de dados, configurações.</li>
+    </ul>
+    <p><strong>As releases representam entregas reais ao usuário?</strong> <em>sim</em> se cada release entrega algo
+       utilizável (versão do app, pacote publicado, binário); <em>não</em> se são automáticas/nightly/internas ou não
+       mudam o que o usuário recebe; <em>incerto</em> se não dá para saber.</p>
+    <p><strong>Esta release é corretiva?</strong> <em>sim</em> se o objetivo <u>principal</u> é corrigir um defeito
+       recente: correção de bug, falha de segurança, revert de uma mudança que quebrou algo, hotfix.
+       <em>não</em> se é principalmente funcionalidade nova, release programada com várias mudanças,
+       só atualização de dependências, documentação ou manutenção. Em release mista, decida pelo que predomina
+       ou pelo que as notas destacam primeiro. O número da versão é uma pista, não a regra.</p>
+  </details>
+
+  <div id="repo"></div>
+
+  <details class="guia" style="margin-top:20px">
+    <summary>Se o botão de download não funcionar</summary>
+    <p>Copie o texto abaixo e salve como <code>amostra_ouro_pedro.csv</code> dentro de <code>LAB03/resultados/</code>.</p>
+    <button id="mostrar-csv">Mostrar CSV</button>
+    <textarea id="csv" readonly hidden></textarea>
+  </details>
+</main>
+<nav class="rodape">
+  <button id="anterior">← Repositório anterior</button>
+  <span id="posicao"></span>
+  <button id="proximo" class="primario">Próximo repositório →</button>
+</nav>
+
+<script id="dados" type="application/json">__DADOS__</script>
+<script>
+(function () {
+  const releases = JSON.parse(document.getElementById("dados").textContent);
+  const avaliador = "__AVALIADOR__";
+  const chave = "rotulagem-amostra-ouro-" + avaliador;
+  const repos = [...new Set(releases.map(r => r.full_name))];
+
+  const TIPOS = ["biblioteca/framework", "aplicacao/servico", "ferramenta CLI", "outro"];
+  const ROTULO_TIPO = {"biblioteca/framework": "biblioteca/framework", "aplicacao/servico": "aplicação/serviço",
+                       "ferramenta CLI": "ferramenta CLI", "outro": "outro"};
+  const ENTREGA = ["sim", "nao", "incerto"];
+  const ROTULO_ENTREGA = {"sim": "sim", "nao": "não", "incerto": "incerto"};
+
+  let estado = { repos: {}, releases: {}, atual: 0 };
+  try { estado = Object.assign(estado, JSON.parse(localStorage.getItem(chave) || "{}")); } catch (e) {}
+  function salvar() { try { localStorage.setItem(chave, JSON.stringify(estado)); } catch (e) {} atualizarProgresso(); }
+
+  function idRelease(r) { return r.full_name + "@" + r.tag_name; }
+  function el(tag, props, filhos) {
+    const n = document.createElement(tag);
+    Object.assign(n, props || {});
+    (filhos || []).forEach(f => n.append(f));
+    return n;
+  }
+  function grupo(nome, valores, rotulos, atual, aoMudar) {
+    const caixa = el("div", { className: "opcoes" });
+    valores.forEach(v => {
+      const input = el("input", { type: "radio", name: nome, value: v, checked: atual === v });
+      input.addEventListener("change", () => aoMudar(v));
+      caixa.append(el("label", {}, [input, rotulos[v]]));
+    });
+    return caixa;
+  }
+
+  function totalPerguntas() { return repos.length * 2 + releases.length; }
+  function respondidas() {
+    let n = 0;
+    repos.forEach(r => { const e = estado.repos[r] || {}; if (e.tipo) n++; if (e.entrega) n++; });
+    releases.forEach(r => { if (estado.releases[idRelease(r)]) n++; });
+    return n;
+  }
+  function atualizarProgresso() {
+    const feitas = respondidas(), total = totalPerguntas();
+    document.getElementById("texto-progresso").textContent =
+      feitas === total ? "Tudo rotulado! Baixe o CSV." : `${feitas} de ${total} respostas`;
+    document.getElementById("barra").style.width = (100 * feitas / total) + "%";
+  }
+
+  function mostrar() {
+    const nome = repos[estado.atual];
+    const alvo = document.getElementById("repo");
+    alvo.replaceChildren();
+    const doRepo = releases.filter(r => r.full_name === nome);
+    const eRepo = estado.repos[nome] || (estado.repos[nome] = {});
+
+    const cartao = el("section", { className: "repo" });
+    cartao.append(el("h2", {}, [el("a", { href: "https://github.com/" + nome, target: "_blank", rel: "noopener", textContent: nome })]));
+    cartao.append(el("div", { className: "meta", textContent: "Abra o link para ver o README e entender o projeto." }));
+
+    cartao.append(el("div", { className: "pergunta" }, [
+      el("div", { className: "rotulo", textContent: "Tipo do projeto" }),
+      grupo("tipo", TIPOS, ROTULO_TIPO, eRepo.tipo, v => { eRepo.tipo = v; salvar(); })
+    ]));
+    cartao.append(el("div", { className: "pergunta" }, [
+      el("div", { className: "rotulo", textContent: "As releases representam entregas reais ao usuário?" }),
+      grupo("entrega", ENTREGA, ROTULO_ENTREGA, eRepo.entrega, v => { eRepo.entrega = v; salvar(); })
+    ]));
+
+    doRepo.forEach((r, i) => {
+      const id = idRelease(r);
+      const bloco = el("div", { className: "release" });
+      bloco.append(el("h3", {}, [
+        el("a", { href: r.link_release, target: "_blank", rel: "noopener", textContent: `Release ${i + 1}/${doRepo.length}: ${r.tag_name}` })
+      ]));
+      bloco.append(el("div", { className: "meta",
+        textContent: `Publicada em ${r.published_at.slice(0, 10)} · versão anterior: ${r.tag_anterior || "(nenhuma)"} · ${r.n_commits} commit(s)` }));
+
+      const notas = el("div", { className: "caixa", textContent: r.notas.trim() || "(release sem notas)" });
+      if (r.notas_cortadas) notas.append("\n\n[… notas cortadas: veja o link da release]");
+      const commits = el("div", { className: "caixa" });
+      if (!r.compare_ok) {
+        commits.textContent = "(não foi possível listar os commits desta release)";
+      } else if (r.commits.length === 0) {
+        commits.textContent = "(nenhum commit novo)";
+      } else {
+        const lista = el("ul");
+        r.commits.forEach(c => lista.append(el("li", { textContent: c })));
+        commits.append(lista);
+        if (r.n_commits > r.commits.length) commits.append(el("div", { textContent: `… e mais ${r.n_commits - r.commits.length} commits` }));
+      }
+      bloco.append(el("div", { className: "colunas" }, [
+        el("div", {}, [el("div", { className: "titulo-caixa", textContent: "Release notes" }), notas]),
+        el("div", {}, [el("div", { className: "titulo-caixa", textContent: "Commits (primeira linha)" }), commits]),
+      ]));
+      bloco.append(el("div", { className: "pergunta" }, [
+        el("div", { className: "rotulo", textContent: "Esta release é corretiva?" }),
+        grupo("corretiva-" + i, ["sim", "nao"], { sim: "sim", nao: "não" }, estado.releases[id],
+              v => { estado.releases[id] = v; salvar(); })
+      ]));
+      cartao.append(bloco);
+    });
+    alvo.append(cartao);
+
+    document.getElementById("posicao").textContent = `Repositório ${estado.atual + 1} de ${repos.length}`;
+    document.getElementById("anterior").disabled = estado.atual === 0;
+    document.getElementById("proximo").disabled = estado.atual === repos.length - 1;
+    salvar();
+    window.scrollTo(0, 0);
+  }
+
+  function csv() {
+    const campos = ["full_name", "link_repositorio", "tipo_projeto", "releases_representam_entrega_real",
+                    "tag_name", "link_release", "corretiva"];
+    const esc = v => { v = v == null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    const linhas = [campos.join(",")];
+    releases.forEach(r => {
+      const e = estado.repos[r.full_name] || {};
+      linhas.push([r.full_name, "https://github.com/" + r.full_name, e.tipo || "", e.entrega || "",
+                   r.tag_name, r.link_release, estado.releases[idRelease(r)] || ""].map(esc).join(","));
+    });
+    return linhas.join("\n") + "\n";
+  }
+
+  document.getElementById("anterior").addEventListener("click", () => { estado.atual--; mostrar(); });
+  document.getElementById("proximo").addEventListener("click", () => { estado.atual++; mostrar(); });
+  document.getElementById("baixar").addEventListener("click", () => {
+    const blob = new Blob([csv()], { type: "text/csv;charset=utf-8" });
+    const a = el("a", { href: URL.createObjectURL(blob), download: "amostra_ouro_" + avaliador + ".csv" });
+    document.body.append(a); a.click(); a.remove();
+  });
+  document.getElementById("mostrar-csv").addEventListener("click", () => {
+    const t = document.getElementById("csv"); t.value = csv(); t.hidden = false; t.select();
+  });
+
+  estado.atual = Math.min(estado.atual || 0, repos.length - 1);
+  mostrar();
+})();
+</script>
+</body>
+</html>
