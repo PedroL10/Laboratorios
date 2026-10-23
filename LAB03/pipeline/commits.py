@@ -29,6 +29,7 @@ from typing import Callable
 
 import requests
 
+from metricas.cfr import titulo
 from pipeline.criterio_inclusao import Janela, parse_data
 from pipeline.github_client import GitHubClient
 from pipeline.retomada import TRABALHADORES_PADRAO, gravar_json, processar_em_paralelo
@@ -106,15 +107,24 @@ def datas_de_autor(commits: list[dict]) -> list[str]:
     return [c["commit"]["author"]["date"] for c in commits]
 
 
+MAX_CARACTERES_TITULO = 200
+
+
+def resumir_mensagem(mensagem: str) -> str:
+    """Titulo (primeira linha) da mensagem, com no maximo `MAX_CARACTERES_TITULO` caracteres."""
+    return titulo(mensagem)[:MAX_CARACTERES_TITULO]
+
+
 def mensagens_de_commit(commits: list[dict]) -> list[str]:
-    """Extrai `commit.message` de cada commit retornado pelo compare.
+    """Extrai o titulo de `commit.message` de cada commit retornado pelo compare.
 
     Usada pela heuristica de release corretiva (`metricas.cfr`), que procura
-    `revert`/`hotfix`/`fix` nas mensagens. `.get` com default vazio porque
-    commits muito antigos no cache (coletados antes desta mensagem existir)
-    podem nao ter o campo.
+    `revert`/`hotfix`/`fix` no titulo dos commits. So o titulo e guardado: com
+    o corpo, o cache de repositorios grandes chegava a gigabytes e esgotava a
+    memoria. `.get` com default vazio porque commits muito antigos no cache
+    (coletados antes desta mensagem existir) podem nao ter o campo.
     """
-    return [c.get("commit", {}).get("message", "") for c in commits]
+    return [resumir_mensagem(c.get("commit", {}).get("message", "")) for c in commits]
 
 
 def montar_releases_com_commits(

@@ -71,6 +71,11 @@ def test_comparar_commits_segue_paginacao_ate_esgotar(monkeypatch):
     assert client.consultas == [("v1...v2", 1), ("v1...v2", 2)]
 
 
+def test_mensagens_de_commit_guarda_so_o_titulo_limitado():
+    commits = [commit_api("d", "fix: crash\n\ncorpo longo"), commit_api("d", "x" * 500)]
+    assert mensagens_de_commit(commits) == ["fix: crash", "x" * 200]
+
+
 def test_mensagens_de_commit_extrai_a_mensagem_do_commit():
     commits = [commit_api("2024-01-01T00:00:00Z", "fix: crash"), commit_api("2024-01-02T00:00:00Z", "feat: x")]
     assert mensagens_de_commit(commits) == ["fix: crash", "feat: x"]

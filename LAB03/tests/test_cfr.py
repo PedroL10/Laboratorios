@@ -175,3 +175,11 @@ def test_rework_rate_e_a_proporcao_de_releases_corretivas():
     ]
     assert rework_repositorio(releases) == {"rework_rate": 0.5, "n_releases_corretivas": 2}
     assert rework_repositorio([]) == {"rework_rate": None, "n_releases_corretivas": 0}
+
+
+def test_palavra_chave_so_no_corpo_do_commit_nao_conta():
+    from metricas.cfr import tem_commit_com_palavra_chave
+
+    assert tem_commit_com_palavra_chave(["feat: x\n\nfix typo no corpo"]) is False
+    assert tem_commit_com_palavra_chave(['Revert "feat: x"\n\nThis reverts commit abc']) is True
+    assert tem_commit_com_palavra_chave([""]) is False

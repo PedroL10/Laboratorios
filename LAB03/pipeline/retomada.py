@@ -15,7 +15,7 @@ from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
-TRABALHADORES_PADRAO = 8  # repositorios processados ao mesmo tempo nas coletas longas
+TRABALHADORES_PADRAO = 4  # repositorios ao mesmo tempo: ja passa da cota de 5.000/h sem esgotar a memoria
 
 
 def gravar_json(caminho: Path, dados: Any) -> None:

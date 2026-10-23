@@ -70,10 +70,20 @@ def eh_patch_only(tag_anterior: str | None, tag_atual: str) -> bool:
     return anterior[0] == atual[0] and anterior[1] == atual[1] and anterior[2] != atual[2]
 
 
+def titulo(mensagem: str) -> str:
+    """Primeira linha (titulo) de uma mensagem de commit."""
+    return mensagem.split("\n", 1)[0] if mensagem else ""
+
+
 def tem_commit_com_palavra_chave(mensagens_commits: list[str]) -> bool:
-    """True se alguma mensagem de commit contem `revert`, `hotfix` ou `fix`."""
+    """True se o titulo (primeira linha) de algum commit contem `revert`, `hotfix` ou `fix`.
+
+    So o titulo e considerado: e onde convencoes como `fix:` e `Revert "..."`
+    aparecem, e guardar o corpo de cada commit tornava os caches grandes demais
+    para a memoria (gigabytes em repositorios como o ClickHouse).
+    """
     return any(
-        palavra in mensagem.lower()
+        palavra in titulo(mensagem).lower()
         for mensagem in mensagens_commits
         for palavra in PALAVRAS_CHAVE_CORRETIVA
     )
