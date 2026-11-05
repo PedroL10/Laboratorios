@@ -3,8 +3,8 @@
 Estudo por simulação que compara dois testes de hipótese em um cenário de Engenharia de
 Software, usando uma pequena amostra de dados reais para calibrar a simulação.
 
-> **Em construção.** Hoje o repositório tem a estrutura do projeto, a semente fixa e a
-> amostra real coletada. A simulação e o dashboard ainda não foram implementados.
+> **Em construção.** Hoje o repositório tem a amostra real coletada e a análise da forma
+> da distribuição. A simulação e o dashboard ainda não foram implementados.
 
 Enunciado completo: [LAB04.pdf](LAB04.pdf).
 
@@ -60,6 +60,7 @@ python -m pytest
 | --- | --- |
 | [dados/](dados/) | Amostra real e registro de como foi coletada |
 | [lab04/](lab04/) | Código do estudo |
+| [resultados/](resultados/) | Tabelas geradas pelo código |
 | [tests/](tests/) | Testes automatizados |
 
 ## Reprodutibilidade

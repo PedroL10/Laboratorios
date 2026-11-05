@@ -56,6 +56,62 @@ atuação do Copilot. Uma segunda execução da coleta gerou um arquivo idêntic
   real é maior que a da amostra.
 - **Um único repositório.** Os resultados não valem automaticamente para outros projetos.
 
+## Forma da distribuição
+
+Gerado por `python -m lab04`. As tabelas completas estão em
+[forma_distribuicao.csv](../resultados/forma_distribuicao.csv) e
+[ajustes_distribuicao.csv](../resultados/ajustes_distribuicao.csv).
+
+| Medida | `sem_bot` | `com_bot` | Todos |
+| --- | --- | --- | --- |
+| Média (h) | 40,4 | 68,0 | 54,2 |
+| Mediana (h) | 39,1 | 45,1 | 41,8 |
+| Desvio padrão (h) | 34,0 | 65,5 | 53,6 |
+| Coeficiente de variação | 0,84 | 0,96 | 0,99 |
+| Assimetria | 0,93 | 1,86 | 2,15 |
+| Outliers (Tukey) | 0 | 1 | 3 |
+| Shapiro-Wilk, p em horas | 0,018 | 0,0002 | < 0,0001 |
+| Shapiro-Wilk, p no log | 0,007 | 0,743 | 0,012 |
+
+Diferença de AIC para o melhor ajuste de cada grupo (0 é o melhor; acima de 2 já indica
+ajuste pior):
+
+| Distribuição | `sem_bot` | `com_bot` | Todos |
+| --- | --- | --- | --- |
+| Gamma | 0,2 | 0,0 | 0,0 |
+| Weibull | 0,0 | 0,3 | 0,0 |
+| Lognormal | 6,4 | 0,1 | 7,2 |
+| Normal | 14,1 | 22,7 | 48,1 |
+
+O que os dados mostram:
+
+- **Não são normais.** A assimetria é positiva nos dois grupos, e o Shapiro-Wilk rejeita a
+  normalidade em ambos. A normal é o pior ajuste em todos os casos.
+- **A lognormal não é a melhor opção.** O log de `sem_bot` continua assimétrico, agora para
+  a esquerda, e o Shapiro-Wilk rejeita a normalidade do log.
+- **Gamma e Weibull empatam.** As duas ajustam bem os grupos e a amostra inteira. As formas
+  ficam perto de 1, ou seja, próximas de uma exponencial.
+- **`com_bot` tem mais dispersão.** O desvio padrão é quase o dobro, mas a média também
+  cresce e o coeficiente de variação fica parecido. Esse padrão combina com uma mudança de
+  escala, em que os tempos são multiplicados por um fator.
+- **Há poucos outliers.** O limite de 30 dias corta a cauda da amostra.
+
+O teste de Kolmogorov-Smirnov não foi usado para escolher a distribuição, porque fica
+permissivo demais quando os parâmetros são estimados da própria amostra.
+
+### Parâmetros sugeridos para a simulação
+
+| Item | Sugestão | Base |
+| --- | --- | --- |
+| Distribuição | Gamma | Melhor ou empatada nos três ajustes |
+| Forma | 1,04 | Ajuste de `sem_bot` |
+| Escala | 38,69 h | Ajuste de `sem_bot` |
+| Efeito | Multiplicar a escala de um grupo por um fator | Padrão de mudança de escala |
+| Violação para a Q3 | Lognormal com desvio no log de cerca de 1,2 | Cauda mais pesada, com valor observado na amostra |
+
+Com 30 observações por grupo, esses ajustes têm bastante incerteza. Eles servem para deixar
+a simulação realista, e não para afirmar qual distribuição gerou os dados.
+
 ## Formato de `prs.csv`
 
 | Coluna | Descrição |

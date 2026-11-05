@@ -1,0 +1,13 @@
+grupo,distribuicao,forma,escala,aic,delta_aic
+com_bot,gamma,1.2474,54.5224,316.3230,0.0000
+com_bot,lognormal,1.0211,43.2955,316.4712,0.1482
+com_bot,weibull,1.1127,70.9204,316.6232,0.3002
+com_bot,normal,,64.3630,339.0086,22.6856
+sem_bot,weibull,1.0691,41.3519,285.6991,0.0000
+sem_bot,gamma,1.0436,38.6884,285.8562,0.1571
+sem_bot,lognormal,1.2646,23.2844,292.0882,6.3891
+sem_bot,normal,,33.4692,299.7738,14.0747
+todos,gamma,1.0712,50.5928,602.9282,0.0000
+todos,weibull,1.0393,55.0515,602.9600,0.0318
+todos,lognormal,1.1904,31.7507,610.1387,7.2105
+todos,normal,,53.1258,650.9922,48.0641
