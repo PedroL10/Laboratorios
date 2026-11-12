@@ -1,3 +1,3 @@
-teste,estatistica,p_valor
-welch,-4.3061,0.0001
-mann_whitney,204.0000,0.0003
+teste,estatistica,graus_liberdade,estatistica_padronizada,p_valor,rejeita_h0,interpretacao
+welch,-4.3061,44.9664,-4.3061,0.0001,True,"O t de Welch compara as médias: 27.2 h sem bot e 60.1 h com bot (t = -4.31). Como p = 0.0001 < 0.05, o teste rejeita H₀."
+mann_whitney,204.0000,,-3.6370,0.0003,True,"O Mann-Whitney compara as posições dos tempos ordenados: um PR sem bot demorou mais que um PR com bot em 23% dos pares, contra 50% esperados sob H₀ (U = 204). Como p = 0.0003 < 0.05, o teste rejeita H₀."
