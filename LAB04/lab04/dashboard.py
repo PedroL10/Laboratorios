@@ -14,9 +14,9 @@ from scipy import stats
 from plotly.offline import get_plotlyjs_version
 
 from lab04.config import ALFA, N_SIMULACOES, SEMENTE
-from lab04.erro_tipo1 import grafico_erro_tipo1
+from lab04.erro_tipo1 import construir_situacoes, grafico_erro_tipo1
 from lab04.graficos import NOMES_TESTES, grafico_dados, grafico_estatistica_h0
-from lab04.poder import grafico_poder
+from lab04.poder import FATORES_EFEITO, grafico_poder
 from lab04.simulacao import ajustar_melhor_distribuicao
 from lab04.testes import aplicar_mannwhitney, aplicar_welch
 
@@ -209,6 +209,39 @@ def porcentagem(valor: float, casas: int = 1) -> str:
     return numero(100 * valor, casas) + "%"
 
 
+def metodo_simulacao() -> str:
+    """Descreve o gerador comum das Q1–Q3 a partir da configuração usada nas simulações."""
+    situacoes = construir_situacoes()
+    linhas = "".join(
+        f"<tr><th>{escape(situacao)}</th>"
+        f"<td>{escape(descrever_distribuicao(config['distribuicao'], config['parametros']))}</td>"
+        f"<td>{config['n']}</td></tr>"
+        for situacao, config in situacoes.items()
+    )
+    fatores = "; ".join(numero(fator, 2) for fator in FATORES_EFEITO)
+    forma = pd.read_csv(PASTA_RESULTADOS / "forma_distribuicao.csv").set_index("grupo")
+    razao_medias = forma.loc["com_bot", "media_h"] / forma.loc["sem_bot", "media_h"]
+    return f"""<h3>Como simulamos Q1, Q2 e Q3</h3>
+<p class="texto">O ajuste da amostra real inteira fornece uma distribuição comum aos dois
+grupos, para que a diferença de interesse seja controlada pela simulação. Em cada situação,
+geramos duas amostras independentes dessa mesma distribuição: com fator 1, H₀ é verdadeira
+(Q1); multiplicando os tempos do segundo grupo pelos fatores {fatores}, introduzimos efeitos
+crescentes para medir o poder (Q2). Repetimos os dois procedimentos também com amostra pequena
+e cauda pesada (Q3), com {inteiro(N_SIMULACOES)} repetições por situação e fator, semente
+{SEMENTE} e α = {numero(ALFA, 2)}.</p>
+<table>
+<tr><th>Situação</th><th>Distribuição base dos dois grupos, antes do efeito</th><th>n por grupo</th></tr>
+{linhas}</table>
+<p class="texto">Escolhemos um efeito multiplicativo porque o desvio padrão cresce junto com
+a média nos dados reais: os coeficientes de variação são
+{numero(forma.loc['sem_bot', 'coef_variacao'], 2)} sem bot e
+{numero(forma.loc['com_bot', 'coef_variacao'], 2)} com bot, com razão entre médias de
+{numero(razao_medias, 2)}. O fator 1 significa efeito zero e o fator 2, tempo duas vezes maior;
+a mudança de escala também altera a dispersão. Na amostra pequena, a aproximação do t de
+Welch fica mais frágil; na lognormal, a assimetria e os outliers são deliberadamente mais
+extremos que os reais, para testar a robustez dos dois testes.</p>"""
+
+
 def secao_erro_tipo1() -> str:
     """Seção 4: G3 e se cada teste ficou perto de 5% em cada situação."""
     tabela = pd.read_csv(PASTA_RESULTADOS / "erro_tipo1.csv")
@@ -216,7 +249,8 @@ def secao_erro_tipo1() -> str:
     real, pequena, pesada = tabela["situacao"].unique()
     margem = 1.96 * np.sqrt(ALFA * (1 - ALFA) / N_SIMULACOES)
     mann_whitney = taxa.xs("mann_whitney", level="teste")
-    return f"""{figura_html(grafico_erro_tipo1(tabela))}
+    return f"""{metodo_simulacao()}
+{figura_html(grafico_erro_tipo1(tabela))}
 <div class="texto">
 <p>Cada barra é o erro tipo I: a proporção de rejeições de H₀ em {inteiro(N_SIMULACOES)}
 simulações em que H₀ era verdadeira, com a margem da simulação (±{numero(100 * margem, 1)} ponto
@@ -310,8 +344,9 @@ def secao_conclusao() -> str:
     linhas = [
         (
             "Erro tipo I",
-            "Os dois testes perto de 5%, com o t de Welch conservador na cauda pesada.",
-            f"Confirmado. O t de Welch cai para {porcentagem(erro[pesada, 'welch'])} na cauda pesada; "
+            "Resultado já conhecido ao registrar a expectativa: os dois testes perto de 5%, "
+            "com o t de Welch conservador na cauda pesada.",
+            f"O t de Welch cai para {porcentagem(erro[pesada, 'welch'])} na cauda pesada; "
             f"o Mann-Whitney fica entre {porcentagem(mann_whitney.min())} e "
             f"{porcentagem(mann_whitney.max())} em todas as situações.",
         ),
@@ -339,8 +374,13 @@ def secao_conclusao() -> str:
     tabela = "".join(
         f"<tr><th>{escape(a)}</th><td>{escape(b)}</td><td>{escape(c)}</td></tr>" for a, b, c in linhas
     )
-    return f"""<table>
-<tr><th></th><th>O que esperávamos antes de simular</th><th>O que encontramos</th></tr>
+    return f"""<p class="texto">O registro disponível da expectativa foi commitado em
+12/11/2026, depois dos resultados de erro tipo I e antes do código das simulações de poder.
+Essa ordem não comprova a ausência de execuções locais anteriores; por isso, o registro não
+é tratado como uma previsão anterior a todas as simulações. A linha de erro tipo I abaixo
+resume um resultado que já era conhecido ao registrar a expectativa.</p>
+<table>
+<tr><th></th><th>Registro anterior ao commit do poder</th><th>O que encontramos</th></tr>
 {tabela}</table>
 <div class="texto">
 <p>A expectativa sobre o poder errou porque os tempos reais seguem uma Gamma de forma perto de
