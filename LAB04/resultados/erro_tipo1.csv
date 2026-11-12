@@ -1,0 +1,7 @@
+situacao,teste,taxa_erro_tipo1
+ajuste real (n=30),welch,0.0475
+ajuste real (n=30),mann_whitney,0.0504
+amostra pequena (n=10),welch,0.0393
+amostra pequena (n=10),mann_whitney,0.0431
+"cauda pesada (lognormal, forma=2.5)",welch,0.0137
+"cauda pesada (lognormal, forma=2.5)",mann_whitney,0.0459
