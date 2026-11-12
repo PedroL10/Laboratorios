@@ -17,6 +17,7 @@ from lab04.config import ALFA, N_SIMULACOES, SEMENTE
 from lab04.erro_tipo1 import grafico_erro_tipo1
 from lab04.graficos import NOMES_TESTES, grafico_dados, grafico_estatistica_h0
 from lab04.poder import grafico_poder
+from lab04.simulacao import ajustar_melhor_distribuicao
 from lab04.testes import aplicar_mannwhitney, aplicar_welch
 
 RAIZ = Path(__file__).parent.parent
@@ -82,6 +83,25 @@ def carregar_reais() -> dict[str, np.ndarray]:
     return {g: d["horas_ate_merge"].to_numpy() for g, d in dados.groupby("grupo")}
 
 
+def descrever_distribuicao(distribuicao, parametros: tuple) -> str:
+    """Expõe os parâmetros do próprio gerador, com unidades e nomes legíveis."""
+    origem, escala = parametros[-2:]
+    if distribuicao.name == "norm":
+        return f"Normal: média {numero(origem, 2)} h; desvio padrão {numero(escala, 2)} h"
+    if distribuicao.name == "lognorm":
+        return (
+            f"Lognormal: σ do log {numero(parametros[0], 2)}; "
+            f"escala (mediana com origem zero) {numero(escala, 2)} h; "
+            f"origem {numero(origem, 0)} h"
+        )
+    nomes = {"gamma": "Gamma", "weibull_min": "Weibull"}
+    nome = nomes.get(distribuicao.name, distribuicao.name)
+    return (
+        f"{nome}: forma {numero(parametros[0], 2)}; escala {numero(escala, 2)} h; "
+        f"origem {numero(origem, 0)} h"
+    )
+
+
 def secao(identificador: str, titulo: str, conteudo: str) -> str:
     return f'<section id="{identificador}"><h2>{escape(titulo)}</h2>{conteudo}</section>'
 
@@ -116,7 +136,13 @@ def secao_dados() -> str:
     ajustes = pd.read_csv(PASTA_RESULTADOS / "ajustes_distribuicao.csv")
     melhor = ajustes.loc[ajustes.groupby("grupo")["aic"].idxmin()].set_index("grupo")["distribuicao"]
     com = forma.loc["com_bot"]
-    figura = grafico_dados(carregar_reais(), {g: simulados[g].to_numpy() for g in simulados})
+    reais = carregar_reais()
+    figura = grafico_dados(reais, {g: simulados[g].to_numpy() for g in simulados})
+    linhas = ""
+    for grupo, nome in (("sem_bot", "Sem bot (antes)"), ("com_bot", "Com bot (depois)")):
+        _, distribuicao, parametros = ajustar_melhor_distribuicao(reais[grupo])
+        descricao = descrever_distribuicao(distribuicao, parametros)
+        linhas += f"<tr><th>{nome}</th><td>{escape(descricao)}</td><td>{len(reais[grupo])}</td></tr>"
     return f"""{figura_html(figura)}
 <div class="texto">
 <p>Os dados reais são assimétricos à direita: a maioria dos PRs é mergeada em poucos dias,
@@ -126,7 +152,15 @@ da mediana ({numero(com["mediana_h"])} h). Há poucos outliers
 PRs mergeados em até 30 dias. Os dados simulados vêm da distribuição de menor AIC em cada grupo
 ({melhor["sem_bot"].capitalize()} sem bot e {melhor["com_bot"].capitalize()} com bot) e reproduzem
 essa assimetria; a normal foi o pior ajuste nos dois grupos.</p>
-</div>"""
+</div>
+<h3>Gerador do G1 e do conjunto simulado de exemplo</h3>
+<table>
+<tr><th>Grupo</th><th>Distribuição e parâmetros ajustados aos dados reais</th><th>PRs simulados</th></tr>
+{linhas}</table>
+<p class="texto">Os parâmetros foram estimados por máxima verossimilhança e o menor AIC
+selecionou a distribuição de cada grupo. Esses ajustes separados preservam a diferença
+observada entre os períodos; para medir erro tipo I e poder, usamos o gerador comum descrito
+na seção 4.</p>"""
 
 
 def secao_testes() -> str:

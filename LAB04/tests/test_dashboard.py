@@ -1,3 +1,4 @@
+from lab04 import dashboard
 from lab04.dashboard import gerar_dashboard, link_ou_aviso, montar_pagina, montar_secoes
 
 
@@ -32,7 +33,8 @@ def test_pagina_tem_links_no_topo_antes_das_secoes():
     assert pagina.index("Repositório") < pagina.index('<section id="cenario">')
 
 
-def test_gerar_dashboard_cria_o_arquivo():
+def test_gerar_dashboard_cria_o_arquivo(tmp_path, monkeypatch):
+    monkeypatch.setattr(dashboard, "PASTA_DASHBOARD", tmp_path)
     arquivo = gerar_dashboard()
     assert arquivo.name == "index.html"
     assert arquivo.read_text(encoding="utf-8").startswith("<!DOCTYPE html>")
@@ -72,3 +74,11 @@ def test_topo_tem_links_do_repositorio_do_projects_e_do_dashboard():
     assert "a definir" not in pagina
     assert "github.com/users/PedroL10/projects/6" in pagina
     assert "pedrol10.github.io/Laboratorios" in pagina
+
+
+def test_dados_expoem_os_parametros_dos_ajustes_de_cada_grupo():
+    dados = dashboard.secao_dados()
+    assert "Weibull: forma 1,07; escala 41,35 h" in dados
+    assert "Gamma: forma 1,25; escala 54,52 h" in dados
+    assert "Gerador do G1 e do conjunto simulado de exemplo" in dados
+    assert "gerador comum descrito" in dados
