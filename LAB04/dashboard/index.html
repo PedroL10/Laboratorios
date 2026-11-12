@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAB04 Testes de Hipótese</title>
+<script src="https://cdn.plot.ly/plotly-4.1.1.min.js" charset="utf-8"></script>
+<style>
+:root {
+  --fundo: #f7f8fa; --cartao: #ffffff; --texto: #1d2330; --suave: #5b6475;
+  --borda: #e2e5ea; --destaque: #1f4e8c; --aviso: #fff6e0;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--fundo); color: var(--texto);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+header { background: var(--destaque); color: #fff; padding: 28px 16px; }
+header h1 { margin: 0 0 6px; font-size: 1.7rem; }
+header p { margin: 0; opacity: 0.9; }
+.links { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.links a { color: #fff; font-weight: 600; }
+.links span { opacity: 0.75; }
+nav { background: var(--cartao); border-bottom: 1px solid var(--borda); padding: 10px 16px;
+  position: sticky; top: 0; z-index: 10; overflow-x: auto; white-space: nowrap; }
+nav a { color: var(--destaque); text-decoration: none; margin-right: 18px; font-size: 0.95rem; }
+main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; }
+section { background: var(--cartao); border: 1px solid var(--borda); border-radius: 10px;
+  padding: 20px 22px; margin-bottom: 22px; }
+section h2 { margin-top: 0; color: var(--destaque); font-size: 1.3rem; }
+.texto { max-width: 760px; }
+.pendente { background: var(--aviso); border-radius: 6px; padding: 10px 14px; color: var(--suave); }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 0.95rem; }
+th, td { border: 1px solid var(--borda); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { background: var(--fundo); }
+footer { text-align: center; color: var(--suave); font-size: 0.85rem; padding-bottom: 24px; }
+</style>
+</head>
+<body>
+<header>
+<h1>Testes de hipótese por dentro: t de Welch × Mann-Whitney</h1>
+<p>Tempo até o merge de PRs, antes e depois de um bot de revisão.</p>
+<div class="links"><a href="https://github.com/PedroL10/Laboratorios/tree/master/LAB04">Repositório</a><span>GitHub Projects: a definir</span><span>Dashboard publicado: a definir</span></div>
+</header>
+<nav><a href="#cenario">1. Cenário</a><a href="#dados">2. Os dados</a><a href="#testes">3. Como os testes funcionam</a><a href="#erro-tipo-1">4. Erro tipo I</a><a href="#poder">5. Poder</a><a href="#dados-reais">6. Dados reais</a><a href="#conclusao">7. Conclusão</a></nav>
+<main><section id="cenario"><h2>1. Cenário</h2>
+<div class="texto">
+<p><strong>Pergunta:</strong> o tempo até o merge dos PRs do HPX mudou depois que o
+projeto adotou o bot de revisão CodeRabbit?</p>
+<table>
+<tr><th></th><th>t de Welch</th><th>Mann-Whitney</th></tr>
+<tr><th>H₀</th><td>As médias do tempo até o merge são iguais antes e depois do bot.</td>
+<td>Um PR de um período tem a mesma chance de demorar mais ou menos que um PR do outro.</td></tr>
+<tr><th>H₁</th><td>As médias são diferentes.</td>
+<td>Os PRs de um período tendem a demorar mais que os do outro.</td></tr>
+</table>
+<p>O teste é bicaudal, com α = 0.05, porque o bot pode tanto acelerar quanto atrasar o
+merge. Os dados reais são 60 PRs mergeados do repositório
+<a href="https://github.com/TheHPXProject/hpx">TheHPXProject/hpx</a>, coletados pela API do
+GitHub: 30 abertos antes da adoção do bot (março a maio de 2026) e
+30 depois (julho a setembro de 2026).</p>
+</div></section><section id="dados"><h2>2. Os dados</h2><p class="pendente">Em construção: G1, dados reais ao lado dos simulados.</p></section><section id="testes"><h2>3. Como os testes funcionam</h2><p class="pendente">Em construção: G2, distribuição da estatística sob H₀.</p></section><section id="erro-tipo-1"><h2>4. Erro tipo I</h2><p class="pendente">Em construção: G3, erro tipo I em cada situação.</p></section><section id="poder"><h2>5. Poder</h2><p class="pendente">Em construção: G4, curvas de poder.</p></section><section id="dados-reais"><h2>6. Dados reais</h2><p class="pendente">Em construção: tabela com os testes aplicados aos dados reais.</p></section><section id="conclusao"><h2>7. Conclusão</h2><p class="pendente">Em construção: expectativa × resultado e recomendação.</p></section></main>
+<footer>Gerado por <code>python -m lab04</code> · semente 42 ·
+10.000 simulações por configuração</footer>
+</body>
+</html>

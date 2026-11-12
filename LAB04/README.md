@@ -3,10 +3,12 @@
 Estudo por simulação que compara dois testes de hipótese em um cenário de Engenharia de
 Software, usando uma pequena amostra de dados reais para calibrar a simulação.
 
-> **Em construção.** Hoje o repositório tem a amostra real coletada e a análise da forma
-> da distribuição. A simulação e o dashboard ainda não foram implementados.
+> **Em construção.** Hoje o repositório tem a amostra real, a análise da forma da
+> distribuição, o cenário, a simulação do erro tipo I e do poder e a base do dashboard. Faltam
+> os gráficos e os textos do dashboard.
 
-Enunciado completo: [LAB04.pdf](LAB04.pdf).
+Enunciado completo: [LAB04.pdf](LAB04.pdf). Pergunta, hipóteses, parâmetros da simulação e
+expectativa do grupo: [cenario.md](cenario.md).
 
 ## Decisões do grupo
 
@@ -41,6 +43,9 @@ Um único comando roda o projeto do início ao fim:
 python -m lab04
 ```
 
+O comando leva poucos segundos e gera o dashboard em `dashboard/index.html`. Para ver, abra
+esse arquivo no navegador (é preciso internet para carregar a biblioteca de gráficos).
+
 A amostra real já está versionada em [dados/prs.csv](dados/prs.csv), então esse comando
 não acessa a internet. Para refazer a coleta (cerca de 1 minuto):
 
@@ -58,6 +63,7 @@ python -m pytest
 
 | Caminho | Conteúdo |
 | --- | --- |
+| [dashboard/](dashboard/) | Dashboard gerado pelo código |
 | [dados/](dados/) | Amostra real e registro de como foi coletada |
 | [lab04/](lab04/) | Código do estudo |
 | [resultados/](resultados/) | Tabelas geradas pelo código |
