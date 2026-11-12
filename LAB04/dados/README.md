@@ -99,15 +99,35 @@ O que os dados mostram:
 O teste de Kolmogorov-Smirnov não foi usado para escolher a distribuição, porque fica
 permissivo demais quando os parâmetros são estimados da própria amostra.
 
-### Parâmetros sugeridos para a simulação
+### Da sugestão inicial à simulação final
 
-| Item | Sugestão | Base |
+Na análise inicial, sugerimos a Gamma de `sem_bot` (forma 1,04; escala 38,69 h) como base
+e uma lognormal com desvio no log de cerca de 1,2 para a Q3. Esses valores eram sugestões
+de planejamento e não são a configuração final executada por `python -m lab04`.
+
+| Uso final | Distribuição e parâmetros | Base da escolha |
 | --- | --- | --- |
-| Distribuição | Gamma | Melhor ou empatada nos três ajustes |
-| Forma | 1,04 | Ajuste de `sem_bot` |
-| Escala | 38,69 h | Ajuste de `sem_bot` |
-| Efeito | Multiplicar a escala de um grupo por um fator | Padrão de mudança de escala |
-| Violação para a Q3 | Lognormal com desvio no log de cerca de 1,2 | Cauda mais pesada, com valor observado na amostra |
+| G1 e teste de exemplo, `sem_bot` | Weibull: forma 1,07; escala 41,35 h | Menor AIC do grupo `sem_bot` |
+| G1 e teste de exemplo, `com_bot` | Gamma: forma 1,25; escala 54,52 h | Menor AIC do grupo `com_bot` |
+| Q1 e Q2, referência e amostra pequena | Gamma: forma 1,07; escala 50,59 h | Menor AIC da amostra inteira, reunindo os 60 PRs |
+| Q3, cauda pesada | Lognormal: σ do log = 2,5; mediana 41,8 h | Mediana da amostra inteira com dispersão ampliada para um teste de estresse |
+
+O G1 reproduz cada grupo separadamente. Nas simulações de erro tipo I e poder, os dois
+grupos partem da mesma distribuição ajustada à amostra inteira, para garantir H₀
+verdadeira antes de introduzir o efeito. Usar ajustes distintos por grupo nessa etapa
+confundiria diferenças do gerador com o efeito controlado.
+
+As simulações usam 30 observações por grupo na referência e na cauda pesada, e 10 na
+situação de amostra pequena. Os tempos de um grupo são multiplicados pelos fatores 1;
+1,25; 1,5; 1,75; 2 e 2,5: fator 1 significa ausência de efeito. São 10.000 repetições por
+combinação, semente 42 e α = 0,05. O fator multiplicativo foi motivado pelos coeficientes
+de variação próximos dos grupos reais (0,84 e 0,96).
+
+A lognormal final de Q3 não pretende ajustar o HPX: σ do log = 2,5 é deliberadamente mais
+extremo que o valor próximo de 1,2 observado na amostra inteira. Os parâmetros positivos
+têm localização fixada em zero. Os números da tabela são arredondados; o código reajusta
+e usa os valores completos. Detalhes do cenário e da cronologia das expectativas estão
+em [cenario.md](../cenario.md).
 
 Com 30 observações por grupo, esses ajustes têm bastante incerteza. Eles servem para deixar
 a simulação realista, e não para afirmar qual distribuição gerou os dados.

@@ -3,7 +3,7 @@
 Estudo por simulação que compara dois testes de hipótese em um cenário de Engenharia de
 Software, usando uma pequena amostra de dados reais para calibrar a simulação.
 
-- **Dashboard publicado:** https://pedrol10.github.io/Laboratorios/
+- **Endereço do dashboard:** https://pedrol10.github.io/Laboratorios/
 - **GitHub Projects:** https://github.com/users/PedroL10/projects/6
 
 ## Resultado em uma frase
@@ -69,10 +69,27 @@ python -m pytest
 
 ## Publicação
 
-A cada push que altere a pasta `LAB04`, o workflow
+Um administrador deve habilitar a publicação uma única vez em
+[Settings → Pages](https://github.com/PedroL10/Laboratorios/settings/pages), escolhendo
+**GitHub Actions** em **Source**. Também pode fazer isso pela CLI, autenticado com uma
+conta que tenha permissão para administrar o Pages:
+
+```bash
+gh api --method POST repos/PedroL10/Laboratorios/pages -f build_type=workflow
+```
+
+Depois dessa configuração, a cada push na `master` que altere a pasta `LAB04`, o workflow
 [lab04-dashboard.yml](../.github/workflows/lab04-dashboard.yml) roda os testes, executa
-`python -m lab04` e publica a pasta `dashboard/` no GitHub Pages. Também dá para rodá-lo à mão
-na aba **Actions** do repositório.
+`python -m lab04` e publica a pasta `dashboard/`.
+Para publicar sem um novo commit, execute:
+
+```bash
+gh workflow run lab04-dashboard.yml --repo PedroL10/Laboratorios --ref master
+```
+
+O endereço só deve ser considerado publicado depois que a etapa `publicar` concluir com
+sucesso e o link abrir. A execução local continua disponível enquanto o Pages não estiver
+habilitado. A regularização está na [issue #86](https://github.com/PedroL10/Laboratorios/issues/86).
 
 ## Estrutura
 
@@ -93,3 +110,6 @@ Nunca use `numpy.random.seed` nem crie outro gerador no código.
 ## Commits
 
 A correção só considera commits que citam a Issue: `#NUMERO Verbo + objeto curto`.
+
+Escopos de sprint, responsáveis e evidências de contribuição estão em
+[CONTRIBUICOES.md](CONTRIBUICOES.md) e nas issues do GitHub Projects.
