@@ -1,7 +1,13 @@
-"""Gera dados simulados a partir da distribuição real que melhor se ajusta a cada grupo."""
+"""Gera dados simulados calibrados pelos dados reais.
+
+- `gerar_simulados_por_grupo`: um conjunto que imita cada grupo real (G1 e teste de exemplo).
+- `gerar_pares`: muitos pares de grupos da mesma distribuição, com um efeito controlado
+  (erro tipo I e poder).
+"""
 
 import numpy as np
 
+from lab04.config import N_SIMULACOES
 from lab04.distribuicao import CANDIDATAS, carregar_grupos, comparar_ajustes
 
 
@@ -27,3 +33,22 @@ def gerar_simulados_por_grupo(rng: np.random.Generator) -> dict[str, np.ndarray]
         for nome, horas in grupos.items()
         if nome != "todos"
     }
+
+
+def gerar_pares(
+    distribuicao,
+    parametros: tuple,
+    n: int,
+    fator_efeito: float,
+    rng: np.random.Generator,
+    n_simulacoes: int = N_SIMULACOES,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Gera n_simulacoes pares de grupos com n valores cada, um par por linha.
+
+    Os dois grupos vêm da mesma distribuição, e os tempos do segundo grupo são multiplicados
+    por fator_efeito. Com fator 1, H0 é verdadeira; com fator 2, o segundo grupo demora o
+    dobro. Multiplicar os valores equivale a multiplicar a escala da distribuição.
+    """
+    grupo_a = distribuicao.rvs(*parametros, size=(n_simulacoes, n), random_state=rng)
+    grupo_b = distribuicao.rvs(*parametros, size=(n_simulacoes, n), random_state=rng)
+    return grupo_a, grupo_b * fator_efeito
