@@ -17,7 +17,7 @@ from lab04.config import ALFA, N_SIMULACOES, criar_rng
 from lab04.distribuicao import carregar_grupos
 from lab04.graficos import CORES, NOMES_TESTES
 from lab04.simulacao import ajustar_melhor_distribuicao
-from lab04.testes import aplicar_mannwhitney, aplicar_welch
+from lab04.testes import taxas_rejeicao
 
 RAIZ = Path(__file__).parent.parent
 PASTA_RESULTADOS = RAIZ / "resultados"
@@ -62,15 +62,15 @@ def simular_taxa_erro_tipo1(
     n_simulacoes: int = N_SIMULACOES,
 ) -> dict[str, float]:
     """Gera n_simulacoes pares de amostras sob H0 e retorna a proporção de rejeições de cada teste."""
-    rejeicoes = {"welch": 0, "mann_whitney": 0}
-    for _ in range(n_simulacoes):
-        grupo_a = distribuicao.rvs(*parametros, size=n, random_state=rng)
-        grupo_b = distribuicao.rvs(*parametros, size=n, random_state=rng)
-        if aplicar_welch(grupo_a, grupo_b)["p_valor"] < ALFA:
-            rejeicoes["welch"] += 1
-        if aplicar_mannwhitney(grupo_a, grupo_b)["p_valor"] < ALFA:
-            rejeicoes["mann_whitney"] += 1
-    return {teste: contagem / n_simulacoes for teste, contagem in rejeicoes.items()}
+    return taxas_rejeicao(distribuicao, parametros, n, 1.0, rng, n_simulacoes)
+
+
+def extrair_erro_tipo1(tabela_poder: pd.DataFrame) -> pd.DataFrame:
+    """Separa, da simulação de poder, as linhas sem efeito (fator 1), que medem o erro tipo I."""
+    sem_efeito = tabela_poder[tabela_poder["fator_efeito"] == 1.0]
+    return sem_efeito.rename(columns={"taxa_rejeicao": "taxa_erro_tipo1"})[
+        ["situacao", "teste", "taxa_erro_tipo1"]
+    ].reset_index(drop=True)
 
 
 def calcular_erro_tipo1(rng: np.random.Generator) -> pd.DataFrame:
@@ -117,12 +117,15 @@ def grafico_erro_tipo1(tabela: pd.DataFrame) -> go.Figure:
 
 
 def main() -> None:
-    tabela = calcular_erro_tipo1(criar_rng())
+    # Usa a mesma simulação do poder, para que o G3 e o G4 mostrem os mesmos números.
+    from lab04.poder import calcular_poder
+
+    tabela = extrair_erro_tipo1(calcular_poder(criar_rng()))
     PASTA_RESULTADOS.mkdir(exist_ok=True)
     tabela.to_csv(PASTA_RESULTADOS / "erro_tipo1.csv", index=False, float_format="%.4f")
 
     figura = grafico_erro_tipo1(tabela)
-    figura.write_html(PASTA_RESULTADOS / "g3_erro_tipo1.html")
+    figura.write_html(PASTA_RESULTADOS / "g3_erro_tipo1.html", include_plotlyjs="cdn")
 
     print(tabela.to_string(index=False))
 

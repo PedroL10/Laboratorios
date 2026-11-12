@@ -1,0 +1,3 @@
+# Mantém o fim de linha LF nos arquivos gerados, mesmo quando rodados no Windows.
+*.csv text eol=lf
+*.html text eol=lf
