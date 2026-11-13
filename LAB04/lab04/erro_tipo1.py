@@ -86,23 +86,29 @@ def calcular_erro_tipo1(rng: np.random.Generator) -> pd.DataFrame:
 
 
 def grafico_erro_tipo1(tabela: pd.DataFrame) -> go.Figure:
-    """G3: taxa de erro tipo I dos dois testes em cada situação simulada, com linha em 5%."""
+    """G3: taxa de erro tipo I dos dois testes em cada situação simulada, com linha em 5%.
+
+    As barras de erro mostram a margem de Monte Carlo (IC 95% de uma proporção estimada com
+    N_SIMULACOES repetições): um desvio maior que ela não é ruído da simulação.
+    """
     figura = go.Figure()
     for teste in ["welch", "mann_whitney"]:
         dados_teste = tabela[tabela["teste"] == teste]
+        taxa = dados_teste["taxa_erro_tipo1"]
         figura.add_trace(
             go.Bar(
                 x=dados_teste["situacao"],
-                y=dados_teste["taxa_erro_tipo1"],
+                y=taxa,
                 name=NOMES_TESTES[teste],
                 marker_color=CORES[teste],
+                error_y={"type": "data", "array": 1.96 * np.sqrt(taxa * (1 - taxa) / N_SIMULACOES)},
             )
         )
     figura.add_hline(
         y=ALFA,
         line_dash="dash",
         line_color="black",
-        annotation_text=f"alfa = {ALFA:.0%}",
+        annotation_text=f"α = {ALFA:.0%}",
         annotation_position="top left",
     )
     figura.update_layout(

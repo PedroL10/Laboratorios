@@ -4,6 +4,7 @@ Roda o estudo do início ao fim e gera o dashboard em dashboard/index.html.
 """
 
 from lab04.config import ALFA, N_SIMULACOES, SEMENTE, criar_rng
+from lab04.dados_reais import analisar_dados_reais
 from lab04.dashboard import gerar_dashboard
 from lab04.distribuicao import PASTA_RESULTADOS, analisar
 from lab04.erro_tipo1 import extrair_erro_tipo1
@@ -26,6 +27,9 @@ def main() -> None:
     erro_tipo1 = extrair_erro_tipo1(poder)
     erro_tipo1.to_csv(PASTA_RESULTADOS / "erro_tipo1.csv", index=False, float_format="%.4f")
     print(erro_tipo1.to_string(index=False))
+
+    analisar_dados_reais()
+    print(f"Testes nos dados reais salvos em {PASTA_RESULTADOS / 'dados_reais.csv'}")
 
     print(f"Dashboard gerado em {gerar_dashboard()}")
 

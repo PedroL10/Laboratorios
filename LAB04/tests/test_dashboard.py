@@ -44,3 +44,12 @@ def test_secoes_2_e_3_trazem_g1_g2_e_o_exemplo_simulado():
     assert "G2" in secoes["testes"] and "Em construção" not in secoes["testes"]
     assert "conjunto simulado" in secoes["testes"]
     assert "não é a probabilidade de H₀ ser verdadeira" in secoes["testes"]
+
+
+def test_secoes_4_a_6_trazem_g3_g4_e_a_tabela_dos_dados_reais():
+    secoes = {identificador: conteudo for identificador, _, conteudo in montar_secoes()}
+    assert "G3" in secoes["erro-tipo-1"]
+    assert "G4" in secoes["poder"]
+    assert "Tamanho do efeito" in secoes["dados-reais"]
+    for identificador in ("erro-tipo-1", "poder", "dados-reais"):
+        assert "Em construção" not in secoes[identificador]

@@ -14,7 +14,9 @@ from scipy import stats
 from plotly.offline import get_plotlyjs_version
 
 from lab04.config import ALFA, N_SIMULACOES, SEMENTE
+from lab04.erro_tipo1 import grafico_erro_tipo1
 from lab04.graficos import NOMES_TESTES, grafico_dados, grafico_estatistica_h0
+from lab04.poder import grafico_poder
 from lab04.testes import aplicar_mannwhitney, aplicar_welch
 
 RAIZ = Path(__file__).parent.parent
@@ -174,15 +176,113 @@ Por isso, aqui H₀ é falsa, e o esperado é que os testes a rejeitem.</p>
 <table><tr><th>Teste</th><th>Estatística</th><th>p-valor</th><th>Interpretação</th></tr>{linhas}</table>"""
 
 
+def inteiro(valor: int) -> str:
+    """Formata um inteiro com ponto como separador de milhar."""
+    return f"{valor:,}".replace(",", ".")
+
+
+def porcentagem(valor: float, casas: int = 1) -> str:
+    return numero(100 * valor, casas) + "%"
+
+
+def secao_erro_tipo1() -> str:
+    """Seção 4: G3 e se cada teste ficou perto de 5% em cada situação."""
+    tabela = pd.read_csv(PASTA_RESULTADOS / "erro_tipo1.csv")
+    taxa = tabela.set_index(["situacao", "teste"])["taxa_erro_tipo1"]
+    real, pequena, pesada = tabela["situacao"].unique()
+    margem = 1.96 * np.sqrt(ALFA * (1 - ALFA) / N_SIMULACOES)
+    mann_whitney = taxa.xs("mann_whitney", level="teste")
+    return f"""{figura_html(grafico_erro_tipo1(tabela))}
+<div class="texto">
+<p>Cada barra é a proporção de vezes em que o teste rejeitou H₀ em
+{inteiro(N_SIMULACOES)} simulações em que H₀ era verdadeira, ou seja, o erro tipo I. As barras de
+erro mostram a margem da simulação (cerca de ±{numero(100 * margem, 1)} ponto percentual).</p>
+<p>Com dados parecidos com os reais, os dois testes ficam perto de 5%: o t de Welch fica em
+{porcentagem(taxa[real, "welch"])} com 30 PRs por grupo e em {porcentagem(taxa[pequena, "welch"])}
+com 10, um pouco conservador. Com cauda pesada, o t de Welch cai para
+{porcentagem(taxa[pesada, "welch"])} e fica bem conservador, porque os outliers inflam o desvio
+padrão e encolhem a estatística t. O Mann-Whitney, que só usa a ordem dos valores, fica entre
+{porcentagem(mann_whitney.min())} e {porcentagem(mann_whitney.max())} em todas as situações.</p>
+</div>"""
+
+
+def secao_poder() -> str:
+    """Seção 5: G4 e qual teste detecta melhor o efeito em cada situação."""
+    tabela = pd.read_csv(PASTA_RESULTADOS / "poder.csv")
+    taxa = tabela.set_index(["situacao", "fator_efeito", "teste"])["taxa_rejeicao"]
+    real, pequena, pesada = tabela["situacao"].unique()
+    maior_fator = tabela["fator_efeito"].max()
+    return f"""{figura_html(grafico_poder(tabela))}
+<div class="texto">
+<p>Cada curva mostra a proporção de rejeições de H₀ quando o tempo até o merge do grupo com
+bot é multiplicado por um fator. No fator 1 não há efeito, e a curva começa no erro tipo I.</p>
+<p>Com dados parecidos com os reais, o t de Welch detecta o efeito com mais frequência em todos
+os fatores: quando o tempo dobra, ele rejeita H₀ em {porcentagem(taxa[real, 2.0, "welch"], 0)}
+das vezes, contra {porcentagem(taxa[real, 2.0, "mann_whitney"], 0)} do Mann-Whitney. Com cauda
+pesada, a vantagem muda de lado: no fator {numero(maior_fator, 1)}, o Mann-Whitney detecta
+{porcentagem(taxa[pesada, maior_fator, "mann_whitney"], 0)} e o t de Welch só
+{porcentagem(taxa[pesada, maior_fator, "welch"], 0)}. Com 10 PRs por grupo, os dois têm pouco
+poder (no máximo {porcentagem(taxa[pequena].max(), 0)}) e ficam praticamente empatados.</p>
+</div>"""
+
+
+def secao_dados_reais() -> str:
+    """Seção 6: estatística, p-valor, tamanho do efeito e conclusão de cada teste nos dados reais."""
+    tabela = pd.read_csv(PASTA_RESULTADOS / "dados_reais.csv").set_index("teste")
+    forma = pd.read_csv(PASTA_RESULTADOS / "forma_distribuicao.csv").set_index("grupo")
+    welch, mann_whitney = tabela.loc["welch"], tabela.loc["mann_whitney"]
+
+    def conclusao(linha) -> str:
+        return "Rejeita H₀" if linha["rejeita_h0"] else "Não rejeita H₀"
+
+    efeito_welch = (
+        f"{welch['efeito']}: {numero(welch['valor_efeito'])} h (IC 95%: "
+        f"{numero(welch['ic_inferior'])} a {numero(welch['ic_superior'])} h). "
+        f"{welch['efeito_padronizado']} = {numero(welch['valor_padronizado'], 2)} ({welch['tamanho_efeito']})."
+    )
+    efeito_mann_whitney = (
+        f"{mann_whitney['efeito']}: {porcentagem(mann_whitney['valor_efeito'], 0)}. "
+        f"{mann_whitney['efeito_padronizado']} = {numero(mann_whitney['valor_padronizado'], 2)} "
+        f"({mann_whitney['tamanho_efeito']})."
+    )
+    linhas = "".join(
+        f"<tr><td>{NOMES_TESTES[teste]}</td><td>{estatistica}</td>"
+        f"<td>{numero(linha['p_valor'], 3)}</td><td>{escape(efeito)}</td><td>{conclusao(linha)}</td></tr>"
+        for teste, estatistica, linha, efeito in (
+            ("welch", f"t = {numero(welch['estatistica'], 2)}", welch, efeito_welch),
+            (
+                "mann_whitney",
+                f"U = {mann_whitney['estatistica']:.0f} pares em que o PR com bot demorou mais",
+                mann_whitney,
+                efeito_mann_whitney,
+            ),
+        )
+    )
+    diferenca_medianas = forma.loc["com_bot", "mediana_h"] - forma.loc["sem_bot", "mediana_h"]
+    return f"""<table>
+<tr><th>Teste</th><th>Estatística</th><th>p-valor</th><th>Tamanho do efeito</th><th>Conclusão (α = {numero(ALFA, 2)})</th></tr>
+{linhas}</table>
+<div class="texto">
+<p>Nos dados reais, os testes discordam: o t de Welch rejeita H₀ (p = {numero(welch["p_valor"], 3)}) e
+o Mann-Whitney não (p = {numero(mann_whitney["p_valor"], 3)}). Mesmo assim, os dois apontam na
+mesma direção: os PRs abertos depois do bot demoraram mais.</p>
+<p>A diferença de {numero(welch["valor_efeito"])} h na média é pouco mais de um dia, mas o
+intervalo de confiança vai de {numero(welch["ic_inferior"])} h a {numero(welch["ic_superior"])} h, então
+o efeito pode ser desprezível ou grande. As medianas diferem só {numero(diferenca_medianas)} h,
+sinal de que parte da diferença vem de poucos PRs muito demorados. Como a comparação é antes ×
+depois, mesmo um efeito real não prova que o bot foi a causa.</p>
+</div>"""
+
+
 def montar_secoes() -> list[tuple[str, str, str]]:
     """Retorna as seções do dashboard na ordem do enunciado: (id, título, conteúdo HTML)."""
     return [
         ("cenario", "1. Cenário", secao_cenario()),
         ("dados", "2. Os dados", secao_dados()),
         ("testes", "3. Como os testes funcionam", secao_testes()),
-        ("erro-tipo-1", "4. Erro tipo I", pendente("G3, erro tipo I em cada situação.")),
-        ("poder", "5. Poder", pendente("G4, curvas de poder.")),
-        ("dados-reais", "6. Dados reais", pendente("tabela com os testes aplicados aos dados reais.")),
+        ("erro-tipo-1", "4. Erro tipo I", secao_erro_tipo1()),
+        ("poder", "5. Poder", secao_poder()),
+        ("dados-reais", "6. Dados reais", secao_dados_reais()),
         ("conclusao", "7. Conclusão", pendente("expectativa × resultado e recomendação.")),
     ]
 
@@ -198,7 +298,6 @@ def montar_pagina(secoes: list[tuple[str, str, str]]) -> str:
             link_ou_aviso("Dashboard publicado", LINK_DASHBOARD),
         ]
     )
-    simulacoes = f"{N_SIMULACOES:,}".replace(",", ".")
     return f"""<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -217,7 +316,7 @@ def montar_pagina(secoes: list[tuple[str, str, str]]) -> str:
 <nav>{menu}</nav>
 <main>{corpo}</main>
 <footer>Gerado por <code>python -m lab04</code> · semente {SEMENTE} ·
-{simulacoes} simulações por configuração</footer>
+{inteiro(N_SIMULACOES)} simulações por configuração</footer>
 </body>
 </html>
 """

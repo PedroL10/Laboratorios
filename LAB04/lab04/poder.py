@@ -64,7 +64,7 @@ def grafico_poder(tabela: pd.DataFrame) -> go.Figure:
         y=ALFA,
         line_dash="dash",
         line_color="black",
-        annotation_text=f"alfa = {ALFA:.0%}",
+        annotation_text=f"α = {ALFA:.0%}",
         annotation_position="bottom right",
     )
     figura.update_layout(
