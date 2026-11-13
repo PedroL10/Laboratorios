@@ -29,11 +29,13 @@ def aplicar_mannwhitney(sem_bot, com_bot) -> dict:
     """Aplica o teste de Mann-Whitney e retorna U, sua versão padronizada (z) e o p-valor.
 
     U conta os pares (PR sem bot, PR com bot) em que o PR sem bot demorou mais. Sob H0, U
-    tem média n1·n2/2, e o z mede quantos desvios padrão U está longe dessa média.
+    tem média n1·n2/2, e o z mede quantos desvios padrão U está longe dessa média. O z usa a
+    mesma correção de continuidade do SciPy, para que 2·P(Z > |z|) seja o p-valor retornado.
     """
     resultado = stats.mannwhitneyu(sem_bot, com_bot, alternative="two-sided")
     n1, n2 = len(sem_bot), len(com_bot)
-    z = (resultado.statistic - n1 * n2 / 2) / np.sqrt(n1 * n2 * (n1 + n2 + 1) / 12)
+    distancia = resultado.statistic - n1 * n2 / 2
+    z = np.sign(distancia) * (abs(distancia) - 0.5) / np.sqrt(n1 * n2 * (n1 + n2 + 1) / 12)
     return {
         "teste": "mann_whitney",
         "estatistica": resultado.statistic,
@@ -52,18 +54,24 @@ def interpretar(resultado: dict, alfa: float = ALFA) -> str:
     return f"{nome}: p-valor={resultado['p_valor']:.4f}, alfa={alfa} -> {situacao}."
 
 
+def _virgula(valor: float, casas: int) -> str:
+    """Formata um número com vírgula decimal."""
+    return f"{valor:.{casas}f}".replace(".", ",")
+
+
 def explicar(resultado: dict, sem_bot, com_bot, alfa: float = ALFA) -> str:
     """Explica o resultado em linguagem simples: o que o teste comparou, em que direção e a decisão."""
-    p = resultado["p_valor"]
+    p = _virgula(resultado["p_valor"], 4)
+    a = _virgula(alfa, 2)
     decisao = (
-        f"Como p = {p:.4f} < {alfa}, o teste rejeita H₀."
-        if p < alfa
-        else f"Como p = {p:.4f} ≥ {alfa}, o teste não rejeita H₀."
+        f"Como p = {p} < {a}, o teste rejeita H₀."
+        if resultado["p_valor"] < alfa
+        else f"Como p = {p} ≥ {a}, o teste não rejeita H₀."
     )
     if resultado["teste"] == "welch":
         comparacao = (
-            f"O t de Welch compara as médias: {np.mean(sem_bot):.1f} h sem bot e "
-            f"{np.mean(com_bot):.1f} h com bot (t = {resultado['estatistica']:.2f})."
+            f"O t de Welch compara as médias: {_virgula(np.mean(sem_bot), 1)} h sem bot e "
+            f"{_virgula(np.mean(com_bot), 1)} h com bot (t = {_virgula(resultado['estatistica'], 2)})."
         )
     else:
         chance = resultado["estatistica"] / (len(sem_bot) * len(com_bot))

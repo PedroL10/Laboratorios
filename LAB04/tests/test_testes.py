@@ -60,7 +60,7 @@ def test_explicar_diz_o_que_cada_teste_comparou_e_a_decisao():
     sem_bot, com_bot = [1.0, 2, 3, 4], [10.0, 20, 30, 40]
     welch = explicar(aplicar_welch(sem_bot, com_bot), sem_bot, com_bot)
     mann_whitney = explicar(aplicar_mannwhitney(sem_bot, com_bot), sem_bot, com_bot)
-    assert "médias" in welch and "2.5 h sem bot" in welch
+    assert "médias" in welch and "2,5 h sem bot" in welch
     assert "0% dos pares" in mann_whitney
     assert "rejeita H₀" in welch
 
@@ -85,3 +85,14 @@ def test_taxas_rejeicao_com_efeito_grande_detecta_quase_sempre():
     taxas = taxas_rejeicao(stats.gamma, (1.1, 0, 50), 30, 4.0, criar_rng(), n_simulacoes=2000)
     assert taxas["welch"] > 0.9
     assert taxas["mann_whitney"] > 0.9
+
+
+def test_estatisticas_padronizadas_reproduzem_o_p_valor():
+    rng = criar_rng()
+    sem_bot, com_bot = rng.gamma(1.1, 40, 30), rng.gamma(1.1, 60, 30)
+    welch = aplicar_welch(sem_bot, com_bot)
+    mann_whitney = aplicar_mannwhitney(sem_bot, com_bot)
+    p_welch = 2 * stats.t.sf(abs(welch["estatistica_padronizada"]), welch["graus_liberdade"])
+    p_mann_whitney = 2 * stats.norm.sf(abs(mann_whitney["estatistica_padronizada"]))
+    assert p_welch == pytest.approx(welch["p_valor"])
+    assert p_mann_whitney == pytest.approx(mann_whitney["p_valor"])

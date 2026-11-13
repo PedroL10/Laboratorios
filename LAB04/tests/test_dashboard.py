@@ -36,3 +36,11 @@ def test_gerar_dashboard_cria_o_arquivo():
     arquivo = gerar_dashboard()
     assert arquivo.name == "index.html"
     assert arquivo.read_text(encoding="utf-8").startswith("<!DOCTYPE html>")
+
+
+def test_secoes_2_e_3_trazem_g1_g2_e_o_exemplo_simulado():
+    secoes = {identificador: conteudo for identificador, _, conteudo in montar_secoes()}
+    assert "G1" in secoes["dados"] and "Em construção" not in secoes["dados"]
+    assert "G2" in secoes["testes"] and "Em construção" not in secoes["testes"]
+    assert "conjunto simulado" in secoes["testes"]
+    assert "não é a probabilidade de H₀ ser verdadeira" in secoes["testes"]
