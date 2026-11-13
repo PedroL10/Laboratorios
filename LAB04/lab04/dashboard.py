@@ -25,14 +25,13 @@ ARQUIVO_DADOS = RAIZ / "dados" / "prs.csv"
 PASTA_RESULTADOS = RAIZ / "resultados"
 
 LINK_REPOSITORIO = "https://github.com/PedroL10/Laboratorios/tree/master/LAB04"
-# Preencher com os links do quadro do GitHub Projects e do dashboard publicado.
-LINK_PROJECTS = ""
-LINK_DASHBOARD = ""
+LINK_PROJECTS = "https://github.com/users/PedroL10/projects/6"
+LINK_DASHBOARD = "https://pedrol10.github.io/Laboratorios/"
 
 ESTILO = """
 :root {
   --fundo: #f7f8fa; --cartao: #ffffff; --texto: #1d2330; --suave: #5b6475;
-  --borda: #e2e5ea; --destaque: #1f4e8c; --aviso: #fff6e0;
+  --borda: #e2e5ea; --destaque: #1f4e8c;
 }
 * { box-sizing: border-box; }
 body {
@@ -54,7 +53,6 @@ section { background: var(--cartao); border: 1px solid var(--borda); border-radi
 section h2 { margin-top: 0; color: var(--destaque); font-size: 1.3rem; }
 section h3 { font-size: 1.05rem; margin: 24px 0 4px; }
 .texto { max-width: 760px; }
-.pendente { background: var(--aviso); border-radius: 6px; padding: 10px 14px; color: var(--suave); }
 table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 0.95rem; }
 th, td { border: 1px solid var(--borda); padding: 8px 10px; text-align: left; vertical-align: top; }
 th { background: var(--fundo); }
@@ -86,10 +84,6 @@ def carregar_reais() -> dict[str, np.ndarray]:
 
 def secao(identificador: str, titulo: str, conteudo: str) -> str:
     return f'<section id="{identificador}"><h2>{escape(titulo)}</h2>{conteudo}</section>'
-
-
-def pendente(o_que_falta: str) -> str:
-    return f'<p class="pendente">Em construção: {escape(o_que_falta)}</p>'
 
 
 def secao_cenario() -> str:
@@ -126,13 +120,12 @@ def secao_dados() -> str:
     return f"""{figura_html(figura)}
 <div class="texto">
 <p>Os dados reais são assimétricos à direita: a maioria dos PRs é mergeada em poucos dias,
-mas alguns levam semanas. No grupo com bot, a média ({numero(com["media_h"])} h) fica bem acima
-da mediana ({numero(com["mediana_h"])} h), sinal da cauda longa. Há poucos outliers
-({int(forma.loc["todos", "outliers_tukey"])} pelo critério de Tukey), porque a coleta só
-incluiu PRs mergeados em até 30 dias.</p>
-<p>Os dados simulados vêm da distribuição de menor AIC em cada grupo
-({melhor["sem_bot"].capitalize()} sem bot e {melhor["com_bot"].capitalize()} com bot) e
-reproduzem essa assimetria. A normal foi o pior ajuste nos dois grupos, por isso não foi usada.</p>
+mas alguns levam semanas, e no grupo com bot a média ({numero(com["media_h"])} h) fica bem acima
+da mediana ({numero(com["mediana_h"])} h). Há poucos outliers
+({int(forma.loc["todos", "outliers_tukey"])} pelo critério de Tukey), porque a coleta só incluiu
+PRs mergeados em até 30 dias. Os dados simulados vêm da distribuição de menor AIC em cada grupo
+({melhor["sem_bot"].capitalize()} sem bot e {melhor["com_bot"].capitalize()} com bot) e reproduzem
+essa assimetria; a normal foi o pior ajuste nos dois grupos.</p>
 </div>"""
 
 
@@ -158,17 +151,14 @@ def secao_testes() -> str:
     )
     return f"""{figura_html(grafico_estatistica_h0(resultados))}
 <div class="texto">
-<p>O t de Welch compara as médias dos dois grupos, sem supor variâncias iguais. O
-Mann-Whitney compara as posições dos 60 tempos quando eles são ordenados, sem usar os valores
-em horas. Sob H₀, a estatística de cada teste segue a curva do gráfico. Como o teste é
-bicaudal, a região de rejeição são as duas caudas que somam 5%: |t| &gt; {numero(t_critico, 2)}
-e |z| &gt; {numero(z_critico, 2)}.</p>
-<p>O exemplo são os dados reais. O t de Welch deu t = {numero(welch["estatistica"], 2)} e
-p = {numero(welch["p_valor"], 3)}, {decisao(welch)} da região de rejeição. O Mann-Whitney deu
-z = {numero(mann_whitney["estatistica_padronizada"], 2)} e
-p = {numero(mann_whitney["p_valor"], 3)}, {decisao(mann_whitney)} dela. O p-valor é a área das
-duas caudas além do valor observado: a chance de ver uma diferença pelo menos tão grande se
-H₀ fosse verdadeira. Ele não é a probabilidade de H₀ ser verdadeira.</p>
+<p>O t de Welch compara as médias dos dois grupos; o Mann-Whitney compara as posições dos 60
+tempos ordenados, sem usar os valores em horas. Sob H₀, cada estatística segue a curva do
+gráfico e, como o teste é bicaudal, a região de rejeição são as duas caudas que somam 5%
+(|t| &gt; {numero(t_critico, 2)} e |z| &gt; {numero(z_critico, 2)}). No exemplo, que são os dados
+reais, o t de Welch deu p = {numero(welch["p_valor"], 3)}, {decisao(welch)} da região de rejeição,
+e o Mann-Whitney deu p = {numero(mann_whitney["p_valor"], 3)}, {decisao(mann_whitney)} dela. O
+p-valor é a área hachurada: a chance de ver uma diferença pelo menos tão grande se H₀ fosse
+verdadeira, e não a probabilidade de H₀ ser verdadeira.</p>
 </div>
 <h3>Os testes aplicados a um conjunto simulado</h3>
 <p class="texto">Conjunto gerado a partir dos ajustes de cada grupo, que têm médias diferentes.
@@ -194,14 +184,13 @@ def secao_erro_tipo1() -> str:
     mann_whitney = taxa.xs("mann_whitney", level="teste")
     return f"""{figura_html(grafico_erro_tipo1(tabela))}
 <div class="texto">
-<p>Cada barra é a proporção de vezes em que o teste rejeitou H₀ em
-{inteiro(N_SIMULACOES)} simulações em que H₀ era verdadeira, ou seja, o erro tipo I. As barras de
-erro mostram a margem da simulação (cerca de ±{numero(100 * margem, 1)} ponto percentual).</p>
-<p>Com dados parecidos com os reais, os dois testes ficam perto de 5%: o t de Welch fica em
-{porcentagem(taxa[real, "welch"])} com 30 PRs por grupo e em {porcentagem(taxa[pequena, "welch"])}
-com 10, um pouco conservador. Com cauda pesada, o t de Welch cai para
-{porcentagem(taxa[pesada, "welch"])} e fica bem conservador, porque os outliers inflam o desvio
-padrão e encolhem a estatística t. O Mann-Whitney, que só usa a ordem dos valores, fica entre
+<p>Cada barra é o erro tipo I: a proporção de rejeições de H₀ em {inteiro(N_SIMULACOES)}
+simulações em que H₀ era verdadeira, com a margem da simulação (±{numero(100 * margem, 1)} ponto
+percentual) nas barras de erro. Com dados parecidos com os reais, os dois testes ficam perto de
+5%, com o t de Welch um pouco conservador ({porcentagem(taxa[real, "welch"])} com 30 PRs por grupo
+e {porcentagem(taxa[pequena, "welch"])} com 10). Com cauda pesada, o t de Welch cai para
+{porcentagem(taxa[pesada, "welch"])}, porque os outliers inflam o desvio padrão e encolhem a
+estatística t. O Mann-Whitney, que só usa a ordem dos valores, fica entre
 {porcentagem(mann_whitney.min())} e {porcentagem(mann_whitney.max())} em todas as situações.</p>
 </div>"""
 
@@ -215,14 +204,14 @@ def secao_poder() -> str:
     return f"""{figura_html(grafico_poder(tabela))}
 <div class="texto">
 <p>Cada curva mostra a proporção de rejeições de H₀ quando o tempo até o merge do grupo com
-bot é multiplicado por um fator. No fator 1 não há efeito, e a curva começa no erro tipo I.</p>
-<p>Com dados parecidos com os reais, o t de Welch detecta o efeito com mais frequência em todos
-os fatores: quando o tempo dobra, ele rejeita H₀ em {porcentagem(taxa[real, 2.0, "welch"], 0)}
-das vezes, contra {porcentagem(taxa[real, 2.0, "mann_whitney"], 0)} do Mann-Whitney. Com cauda
-pesada, a vantagem muda de lado: no fator {numero(maior_fator, 1)}, o Mann-Whitney detecta
+bot é multiplicado por um fator; no fator 1, sem efeito, é o erro tipo I. Com dados parecidos
+com os reais, o t de Welch detecta mais em todos os fatores: quando o tempo dobra, ele rejeita H₀
+em {porcentagem(taxa[real, 2.0, "welch"], 0)} das vezes, contra
+{porcentagem(taxa[real, 2.0, "mann_whitney"], 0)} do Mann-Whitney. Com cauda pesada, a vantagem
+muda de lado: no fator {numero(maior_fator, 1)}, o Mann-Whitney detecta
 {porcentagem(taxa[pesada, maior_fator, "mann_whitney"], 0)} e o t de Welch só
-{porcentagem(taxa[pesada, maior_fator, "welch"], 0)}. Com 10 PRs por grupo, os dois têm pouco
-poder (no máximo {porcentagem(taxa[pequena].max(), 0)}) e ficam praticamente empatados.</p>
+{porcentagem(taxa[pesada, maior_fator, "welch"], 0)}. Com 10 PRs por grupo, os dois ficam
+praticamente empatados e com pouco poder (no máximo {porcentagem(taxa[pequena].max(), 0)}).</p>
 </div>"""
 
 
@@ -263,14 +252,75 @@ def secao_dados_reais() -> str:
 <tr><th>Teste</th><th>Estatística</th><th>p-valor</th><th>Tamanho do efeito</th><th>Conclusão (α = {numero(ALFA, 2)})</th></tr>
 {linhas}</table>
 <div class="texto">
-<p>Nos dados reais, os testes discordam: o t de Welch rejeita H₀ (p = {numero(welch["p_valor"], 3)}) e
-o Mann-Whitney não (p = {numero(mann_whitney["p_valor"], 3)}). Mesmo assim, os dois apontam na
-mesma direção: os PRs abertos depois do bot demoraram mais.</p>
-<p>A diferença de {numero(welch["valor_efeito"])} h na média é pouco mais de um dia, mas o
-intervalo de confiança vai de {numero(welch["ic_inferior"])} h a {numero(welch["ic_superior"])} h, então
-o efeito pode ser desprezível ou grande. As medianas diferem só {numero(diferenca_medianas)} h,
-sinal de que parte da diferença vem de poucos PRs muito demorados. Como a comparação é antes ×
-depois, mesmo um efeito real não prova que o bot foi a causa.</p>
+<p>Nos dados reais, os testes discordam: o t de Welch rejeita H₀
+(p = {numero(welch["p_valor"], 3)}) e o Mann-Whitney não (p = {numero(mann_whitney["p_valor"], 3)}),
+mas os dois apontam na mesma direção: os PRs abertos depois do bot demoraram mais. A diferença
+de {numero(welch["valor_efeito"])} h na média é pouco mais de um dia, mas o intervalo de confiança
+vai de {numero(welch["ic_inferior"])} h a {numero(welch["ic_superior"])} h, então o efeito pode ser
+desprezível ou grande. As medianas diferem só {numero(diferenca_medianas)} h, sinal de que parte
+da diferença vem de poucos PRs muito demorados. Como a comparação é antes × depois, mesmo um
+efeito real não prova que o bot foi a causa.</p>
+</div>"""
+
+
+def secao_conclusao() -> str:
+    """Seção 7: expectativa × resultado e a recomendação de qual teste usar."""
+    erro = pd.read_csv(PASTA_RESULTADOS / "erro_tipo1.csv").set_index(["situacao", "teste"])[
+        "taxa_erro_tipo1"
+    ]
+    poder = pd.read_csv(PASTA_RESULTADOS / "poder.csv")
+    taxa = poder.set_index(["situacao", "fator_efeito", "teste"])["taxa_rejeicao"]
+    real, pequena, pesada = poder["situacao"].unique()
+    maior_fator = poder["fator_efeito"].max()
+    mann_whitney = erro.xs("mann_whitney", level="teste")
+    linhas = [
+        (
+            "Erro tipo I",
+            "Os dois testes perto de 5%, com o t de Welch conservador na cauda pesada.",
+            f"Confirmado. O t de Welch cai para {porcentagem(erro[pesada, 'welch'])} na cauda pesada; "
+            f"o Mann-Whitney fica entre {porcentagem(mann_whitney.min())} e "
+            f"{porcentagem(mann_whitney.max())} em todas as situações.",
+        ),
+        (
+            "Poder com dados realistas",
+            "O Mann-Whitney com mais poder, porque os dados são assimétricos.",
+            f"Não confirmado. O t de Welch tem mais poder: quando o tempo dobra, rejeita H₀ em "
+            f"{porcentagem(taxa[real, 2.0, 'welch'], 0)} das vezes, contra "
+            f"{porcentagem(taxa[real, 2.0, 'mann_whitney'], 0)}.",
+        ),
+        (
+            "Cauda pesada",
+            "A maior vantagem do Mann-Whitney.",
+            f"Confirmado. No fator {numero(maior_fator, 1)}, o Mann-Whitney detecta "
+            f"{porcentagem(taxa[pesada, maior_fator, 'mann_whitney'], 0)} e o t de Welch, "
+            f"{porcentagem(taxa[pesada, maior_fator, 'welch'], 0)}.",
+        ),
+        (
+            "Amostra pequena (n = 10)",
+            "Os dois perdem poder, e a diferença entre eles diminui.",
+            f"Confirmado. Os dois empatam, com no máximo "
+            f"{porcentagem(taxa[pequena].max(), 0)} de poder.",
+        ),
+    ]
+    tabela = "".join(
+        f"<tr><th>{escape(a)}</th><td>{escape(b)}</td><td>{escape(c)}</td></tr>" for a, b, c in linhas
+    )
+    return f"""<table>
+<tr><th></th><th>O que esperávamos antes de simular</th><th>O que encontramos</th></tr>
+{tabela}</table>
+<div class="texto">
+<p>A expectativa sobre o poder errou porque os tempos reais seguem uma Gamma de forma perto de
+1: a cauda é longa, mas não pesada. Nesse caso, a média resume bem uma mudança de escala, e o
+Mann-Whitney perde informação ao usar só a ordem dos valores.</p>
+<p><strong>Recomendação:</strong> usar o t de Welch neste cenário. Ele mantém o erro tipo I
+abaixo de 5% e tem mais poder com dados como os do HPX, e o resultado nos dados reais é
+consistente com isso: ele detectou a diferença, e o Mann-Whitney não. A escolha mudaria para o
+Mann-Whitney se os tempos tivessem cauda muito pesada, por exemplo sem o limite de 30 dias da
+coleta, quando PRs que levam meses dominariam a média, ou se a pergunta fosse sobre o PR típico,
+e não sobre o tempo médio.</p>
+<p><strong>Principal limitação:</strong> a comparação é antes × depois, em um único repositório,
+com 30 PRs por grupo e vários do mesmo autor. O estudo indica qual teste usar, mas não prova
+que o bot mudou o tempo até o merge.</p>
 </div>"""
 
 
@@ -283,7 +333,7 @@ def montar_secoes() -> list[tuple[str, str, str]]:
         ("erro-tipo-1", "4. Erro tipo I", secao_erro_tipo1()),
         ("poder", "5. Poder", secao_poder()),
         ("dados-reais", "6. Dados reais", secao_dados_reais()),
-        ("conclusao", "7. Conclusão", pendente("expectativa × resultado e recomendação.")),
+        ("conclusao", "7. Conclusão", secao_conclusao()),
     ]
 
 

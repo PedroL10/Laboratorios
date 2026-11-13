@@ -1,0 +1,48 @@
+# Publica o dashboard do LAB04 no GitHub Pages: roda os testes, gera o dashboard com
+# `python -m lab04` e publica a pasta LAB04/dashboard.
+name: lab04-dashboard
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "LAB04/**"
+      - ".github/workflows/lab04-dashboard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: LAB04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - run: python -m lab04
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: LAB04/dashboard
+
+  publicar:
+    needs: gerar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    steps:
+      - id: publicacao
+        uses: actions/deploy-pages@v4

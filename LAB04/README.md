@@ -3,9 +3,14 @@
 Estudo por simulação que compara dois testes de hipótese em um cenário de Engenharia de
 Software, usando uma pequena amostra de dados reais para calibrar a simulação.
 
-> **Em construção.** Hoje o repositório tem a amostra real, a análise da forma da
-> distribuição, o cenário, a simulação do erro tipo I e do poder e a base do dashboard. Faltam
-> os gráficos e os textos do dashboard.
+- **Dashboard publicado:** https://pedrol10.github.io/Laboratorios/
+- **GitHub Projects:** https://github.com/users/PedroL10/projects/6
+
+## Resultado em uma frase
+
+Com tempos até o merge parecidos com os reais, o t de Welch tem mais poder que o
+Mann-Whitney e mantém o erro tipo I abaixo de 5%, por isso é o teste recomendado; a vantagem
+passa para o Mann-Whitney quando os dados têm cauda muito pesada.
 
 Enunciado completo: [LAB04.pdf](LAB04.pdf). Pergunta, hipóteses, parâmetros da simulação e
 expectativa do grupo: [cenario.md](cenario.md).
@@ -46,6 +51,9 @@ python -m lab04
 O comando leva poucos segundos e gera o dashboard em `dashboard/index.html`. Para ver, abra
 esse arquivo no navegador (é preciso internet para carregar a biblioteca de gráficos).
 
+O dashboard tem as 7 seções pedidas no enunciado: cenário, dados (G1), como os testes
+funcionam (G2), erro tipo I (G3), poder (G4), dados reais e conclusão.
+
 A amostra real já está versionada em [dados/prs.csv](dados/prs.csv), então esse comando
 não acessa a internet. Para refazer a coleta (cerca de 1 minuto):
 
@@ -59,12 +67,20 @@ python -m lab04.coleta
 python -m pytest
 ```
 
+## Publicação
+
+A cada push que altere a pasta `LAB04`, o workflow
+[lab04-dashboard.yml](../.github/workflows/lab04-dashboard.yml) roda os testes, executa
+`python -m lab04` e publica a pasta `dashboard/` no GitHub Pages. Também dá para rodá-lo à mão
+na aba **Actions** do repositório.
+
 ## Estrutura
 
 | Caminho | Conteúdo |
 | --- | --- |
 | [dashboard/](dashboard/) | Dashboard gerado pelo código |
 | [dados/](dados/) | Amostra real e registro de como foi coletada |
+| [cenario.md](cenario.md) | Pergunta, hipóteses, parâmetros da simulação e expectativa do grupo |
 | [lab04/](lab04/) | Código do estudo |
 | [resultados/](resultados/) | Tabelas geradas pelo código |
 | [tests/](tests/) | Testes automatizados |

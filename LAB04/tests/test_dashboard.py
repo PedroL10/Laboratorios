@@ -43,7 +43,7 @@ def test_secoes_2_e_3_trazem_g1_g2_e_o_exemplo_simulado():
     assert "G1" in secoes["dados"] and "Em construção" not in secoes["dados"]
     assert "G2" in secoes["testes"] and "Em construção" not in secoes["testes"]
     assert "conjunto simulado" in secoes["testes"]
-    assert "não é a probabilidade de H₀ ser verdadeira" in secoes["testes"]
+    assert "não a probabilidade de H₀ ser verdadeira" in secoes["testes"]
 
 
 def test_secoes_4_a_6_trazem_g3_g4_e_a_tabela_dos_dados_reais():
@@ -53,3 +53,22 @@ def test_secoes_4_a_6_trazem_g3_g4_e_a_tabela_dos_dados_reais():
     assert "Tamanho do efeito" in secoes["dados-reais"]
     for identificador in ("erro-tipo-1", "poder", "dados-reais"):
         assert "Em construção" not in secoes[identificador]
+
+
+def test_conclusao_compara_expectativa_e_resultado_e_recomenda_um_teste():
+    _, _, conclusao = montar_secoes()[-1]
+    assert "O que esperávamos antes de simular" in conclusao
+    assert "Recomendação" in conclusao
+    assert "Principal limitação" in conclusao
+
+
+def test_nenhuma_secao_esta_em_construcao():
+    for _, _, conteudo in montar_secoes():
+        assert "Em construção" not in conteudo
+
+
+def test_topo_tem_links_do_repositorio_do_projects_e_do_dashboard():
+    pagina = montar_pagina(montar_secoes())
+    assert "a definir" not in pagina
+    assert "github.com/users/PedroL10/projects/6" in pagina
+    assert "pedrol10.github.io/Laboratorios" in pagina
