@@ -10,7 +10,8 @@ Divisão de tarefas da Sprint 1 (Lab05S01): [DIVISAO_SPRINT1.md](DIVISAO_SPRINT1
 ## Decisão do grupo
 
 - **Software:** API SGS do Banco Central do Brasil (dados abertos — real, em operação,
-  alto impacto; ver evidências em [docs/decisao_software_caminho.md](docs/decisao_software_caminho.md)).
+  alto impacto; ver evidências com números e fontes em
+  [docs/evidencias_criterios.md](docs/evidencias_criterios.md)).
 - **Caminho:** medir o serviço de fora, coletando a latência de requisições HTTP à API,
   no máximo 1 por segundo.
 - **Pergunta de pesquisa:** o tempo de resposta da API varia entre horário comercial

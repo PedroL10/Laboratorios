@@ -14,21 +14,20 @@ O Sistema Gerenciador de Séries Temporais (SGS) é a API pública oficial do Ba
 para consulta de séries históricas (ex.: taxa de câmbio, índices, indicadores
 macroeconômicos). Endpoint base: `https://api.bcb.gov.br/dados/serie/bcdata.sgs.<codigo>`.
 
-| Critério (seção 2a) | Evidência | Fonte |
+| Critério (seção 2a) | Evidência | Fonte (acesso em 19/11/2026) |
 | --- | --- | --- |
-| Real | API oficial do Banco Central do Brasil, documentada publicamente, mantida pelo próprio BCB | https://dadosabertos.bcb.gov.br/ — `<preencher data de acesso>` |
-| Em operação | API em produção, usada para consultar séries atualizadas diariamente (ex.: série 1 = dólar PTAX, atualizada todo dia útil) | https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados/ultimos/1?formato=json — `<preencher data de acesso>` |
-| Alto impacto | Fonte oficial de câmbio/indicadores usada por bancos, fintechs e sistemas financeiros brasileiros para cálculo de cotação e compliance | `<preencher: exemplos públicos de fintechs/bancos que citam a API do BCB como fonte, com link e data>` |
+| Real | API oficial do Banco Central do Brasil, documentada no Portal de Dados Abertos. O Plano de Dados Abertos do BCB (2025–2027) aponta o SGS como o sistema de publicação das bases do banco. | [Portal de Dados Abertos](https://dadosabertos.bcb.gov.br/dataset/11-taxa-de-juros---selic/resource/b73edc07-bbac-430c-a2cb-b1639e605fa8); [Plano de Dados Abertos](https://www.bcb.gov.br/content/acessoinformacao/acesso_informacao_docs/Plano_Dados_Abertos_BC.pdf) |
+| Em operação | Em 19/11/2026, às 20h47, a API respondeu com HTTP 200 e devolveu o dólar PTAX do próprio dia. O portal tem 4.261 conjuntos de dados, e o BCB mudou as regras de consulta em 26/03/2025, sinal de manutenção ativa. | [Série 1, último valor](https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados/ultimos/1?formato=json); [API do portal](https://dadosabertos.bcb.gov.br/api/3/action/package_search?rows=0) |
+| Alto impacto | As bibliotecas que consomem os dados do BCB somam cerca de 82 mil downloads por mês no PyPI, 78 mil deles da `python-bcb`, e mais de 23 mil por ano no CRAN. A PTAX, série 1, é a referência da B3 para liquidar contratos futuros de moedas. | [pypistats](https://pypistats.org/packages/python-bcb); [cranlogs](https://cranlogs.r-pkg.org/downloads/total/2025-11-01:2026-10-31/rbcb); [Ofício B3 022/2025](https://www.b3.com.br/data/files/AB/B6/22/F5/67F77910AE23A679AC094EA8/OC%20022-2025-VPC%20ALTERACAO%20NOS%20CONTRATOS%20FUTUROS%20DE%20MOEDAS%20ESTRANGEIRAS%20PARES%20EM%20BRL_PORT.pdf) |
 
-> A pendência de cada linha é preencher a data de acesso e, no critério de alto impacto,
-> achar 1–2 exemplos públicos (posts técnicos, documentação de fintech) citando a API do
-> BCB como fonte — responsabilidade de **A (PedroL10)**, dentro da tarefa de comprovar os
-> três critérios (ver DIVISAO_SPRINT1.md).
+Os detalhes de todas as fontes, os números completos e os limites de cada evidência estão em
+[evidencias_criterios.md](evidencias_criterios.md). Downloads não são usuários, e o BCB não
+publica o número de requisições da API.
 
 **Por que não ViaCEP nem BrasilAPI:** ambas têm o caminho da API (`/ws/` e `/api/*`,
 respectivamente) bloqueado no próprio `robots.txt` — usá-las violaria a regra de ética do
 enunciado ("respeite... o robots.txt"). A API `api.bcb.gov.br` não tem `robots.txt`
-restritivo (confirmado em 2026-11-19).
+(o endereço responde HTTP 404, confirmado em 2026-11-19).
 
 ## Caminho (seção 2b): Medir o serviço de fora
 
@@ -95,7 +94,8 @@ dados coletados).
 
 ## Pendências
 
-- [ ] A: preencher data de acesso e exemplos de alto impacto na tabela de critérios.
+- [x] A: preencher data de acesso e exemplos de alto impacto na tabela de critérios (ver
+  [evidencias_criterios.md](evidencias_criterios.md)).
 - [ ] B: confirmar parâmetros finais da coleta completa (nº de dias, nº de amostras por
   período) — coleta piloto já rodada (ver [docs/plano_coleta.md](plano_coleta.md)).
 - [ ] C: validar/ajustar o teste de hipótese e o plano de análise para o tempo de resposta.
