@@ -27,7 +27,7 @@ Detalhes (critérios, GQM, hipóteses, ameaças à validade, ética): [docs/deci
 
 - [x] Software escolhido (com evidências dos 3 critérios da seção 2a)
 - [x] Pergunta de pesquisa e caminho(s) do estudo definidos
-- [ ] 7 categorias de pesquisa (primeira versão) — pendente (A)
+- [x] 7 categorias de pesquisa (primeira versão) (A) — ver [docs/categorias_pesquisa.md](docs/categorias_pesquisa.md)
 - [x] Plano de coleta (B) — ver [docs/plano_coleta.md](docs/plano_coleta.md)
 - [ ] Plano de análise (C) — pendente
 - [x] Coleta piloto (B) — ver [dados/coleta_piloto.csv](dados/coleta_piloto.csv)
