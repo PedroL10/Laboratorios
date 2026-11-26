@@ -66,4 +66,5 @@ expectativa do grupo e as ameaças dos 4 tipos, com mitigação e status.
   [evidencias_criterios.md](evidencias_criterios.md)).
 - [x] B: confirmar parâmetros finais da coleta completa (nº de dias, nº de amostras por
   período) — coleta piloto já rodada (ver [docs/plano_coleta.md](plano_coleta.md)).
-- [ ] C: validar/ajustar o teste de hipótese e o plano de análise para o tempo de resposta.
+- [x] C: validar/ajustar o teste de hipótese e o plano de análise para o tempo de resposta (ver
+  [plano_analise.md](plano_analise.md)).

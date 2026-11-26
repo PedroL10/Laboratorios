@@ -1,0 +1,2 @@
+n,minimo_ms,p25_ms,mediana_ms,media_ms,p75_ms,p95_ms,maximo_ms,desvio_padrao_ms,coef_variacao,assimetria,lognormal_sigma,lognormal_mediana_ms
+10,111.95,117.84,210.265,303.916,434.862,710.447,830.53,244.755,0.805,1.134,0.702,234.302

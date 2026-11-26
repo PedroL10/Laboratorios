@@ -30,7 +30,7 @@ Detalhes: [docs/decisao_software_caminho.md](docs/decisao_software_caminho.md) (
 - [x] Pergunta de pesquisa e caminho(s) do estudo definidos
 - [x] 7 categorias de pesquisa (primeira versão) (A) — ver [docs/categorias_pesquisa.md](docs/categorias_pesquisa.md)
 - [x] Plano de coleta (B) — ver [docs/plano_coleta.md](docs/plano_coleta.md)
-- [ ] Plano de análise (C) — pendente
+- [x] Plano de análise e análise do piloto (C) — ver [docs/plano_analise.md](docs/plano_analise.md)
 - [x] Coleta piloto (B) — ver [dados/coleta_piloto.csv](dados/coleta_piloto.csv)
 - [ ] Coleta completa (B) — agendada de hora em hora no GitHub Actions
   ([lab05-coleta.yml](../.github/workflows/lab05-coleta.yml)); os dados ficam no branch
@@ -41,7 +41,8 @@ Detalhes: [docs/decisao_software_caminho.md](docs/decisao_software_caminho.md) (
 | Caminho | Conteúdo |
 | --- | --- |
 | [docs/](docs/) | Decisões do grupo, plano de coleta, categorias de pesquisa, plano de análise |
-| [scripts/](scripts/) | Código de coleta (`coletar_latencia_bcb.py`) |
+| [scripts/](scripts/) | Coleta (`coletar_latencia_bcb.py`) e análise do piloto com simulação de poder (`analisar_piloto.py`) |
+| [resultados/](resultados/) | Tabelas geradas pela análise |
 | [dados/](dados/) | Dados coletados (piloto e completos) |
 | `apresentacao/` | Slides ou outro material de apresentação (a criar) |
 
