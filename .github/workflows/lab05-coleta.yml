@@ -24,7 +24,7 @@ concurrency:
 env:
   BRANCH_DADOS: lab05-dados
   ARQUIVO: LAB05/dados/coleta.csv
-  ISSUE: "#NN" # troque pelo número da Issue da coleta antes do push
+  ISSUE: "#87" # Issue da coleta: os commits automáticos citam esse número
 
 jobs:
   coletar:

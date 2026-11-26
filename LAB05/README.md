@@ -21,7 +21,8 @@ Divisão de tarefas da Sprint 1 (Lab05S01): [DIVISAO_SPRINT1.md](DIVISAO_SPRINT1
 > 2026-11-19 por falta de Docker/permissão de admin na máquina de coleta — ver o
 > histórico em [docs/decisao_software_caminho.md](docs/decisao_software_caminho.md).
 
-Detalhes (critérios, GQM, hipóteses, ameaças à validade, ética): [docs/decisao_software_caminho.md](docs/decisao_software_caminho.md).
+Detalhes: [docs/decisao_software_caminho.md](docs/decisao_software_caminho.md) (decisão e ética) e
+[docs/gqm_hipoteses_ameacas.md](docs/gqm_hipoteses_ameacas.md) (GQM, hipóteses e ameaças à validade).
 
 ## Status
 

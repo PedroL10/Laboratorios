@@ -98,15 +98,10 @@ divulgação de indicadores.
 - O resultado será formulado assim: "no período estudado, medida a partir da rede X, a
   latência da API foi Y% maior/menor no horário comercial". Não vamos dizer "o horário
   comercial deixa a API mais lenta".
-- A maior ameaça é a **rede do próprio grupo**, que também varia com o horário e pode se
-  confundir com o efeito do servidor. Essa ameaça é interna e está em
-  [decisao_software_caminho.md](decisao_software_caminho.md). Duas mitigações reduzem o
-  problema:
-  - medir sempre a partir da mesma rede estável, por exemplo uma máquina na nuvem com coleta
-    agendada;
-  - registrar as falhas de conexão.
-
-  Nenhuma delas transforma o estudo em experimento.
+- A maior ameaça interna era a **rede do próprio grupo**, que também varia com o horário e se
+  confundiria com o efeito do servidor. A coleta no GitHub Actions resolve essa parte, mas a
+  diferença ainda pode vir de qualquer ponto do caminho até a API. Por isso, o estudo continua
+  observacional. As ameaças estão em [gqm_hipoteses_ameacas.md](gqm_hipoteses_ameacas.md).
 
 ## O que pode mudar na revisão da Sprint 3
 
