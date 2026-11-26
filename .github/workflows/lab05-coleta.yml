@@ -1,0 +1,61 @@
+# Coleta horária da latência da API SGS do Banco Central (LAB05).
+#
+# A cada hora, roda uma rodada de 5 requisições (1 por segundo) e acrescenta as linhas em
+# LAB05/dados/coleta.csv no branch `lab05-dados`. Os dados ficam em um branch separado para
+# que os commits automáticos não atrapalhem os pushes no master. No fim da coleta, o grupo
+# copia o CSV para o master.
+#
+# Para pausar a coleta: aba Actions > lab05-coleta > "Disable workflow".
+name: lab05-coleta
+
+on:
+  schedule:
+    # Minuto 17 de toda hora (UTC). Fugir do minuto 0 reduz atrasos na fila do GitHub.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lab05-coleta
+  cancel-in-progress: false
+
+env:
+  BRANCH_DADOS: lab05-dados
+  ARQUIVO: LAB05/dados/coleta.csv
+  ISSUE: "#NN" # troque pelo número da Issue da coleta antes do push
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Prepara o branch de dados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin "$BRANCH_DADOS"; then
+            git fetch origin "$BRANCH_DADOS"
+            git worktree add -B "$BRANCH_DADOS" "$RUNNER_TEMP/dados" "origin/$BRANCH_DADOS"
+          else
+            git worktree add --orphan -b "$BRANCH_DADOS" "$RUNNER_TEMP/dados"
+          fi
+
+      - name: Coleta uma rodada
+        run: python LAB05/scripts/coletar_latencia_bcb.py --n 5 --saida "$RUNNER_TEMP/dados/$ARQUIVO" --origem github-actions
+
+      - name: Salva no branch de dados
+        run: |
+          cd "$RUNNER_TEMP/dados"
+          git add "$ARQUIVO"
+          git commit -m "$ISSUE Registra rodada de coleta $(TZ=America/Sao_Paulo date +%Y-%m-%dT%H:%M)"
+          git push origin "$BRANCH_DADOS"

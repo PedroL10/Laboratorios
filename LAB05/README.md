@@ -31,6 +31,9 @@ Detalhes (critérios, GQM, hipóteses, ameaças à validade, ética): [docs/deci
 - [x] Plano de coleta (B) — ver [docs/plano_coleta.md](docs/plano_coleta.md)
 - [ ] Plano de análise (C) — pendente
 - [x] Coleta piloto (B) — ver [dados/coleta_piloto.csv](dados/coleta_piloto.csv)
+- [ ] Coleta completa (B) — agendada de hora em hora no GitHub Actions
+  ([lab05-coleta.yml](../.github/workflows/lab05-coleta.yml)); os dados ficam no branch
+  `lab05-dados`, ver [docs/plano_coleta.md](docs/plano_coleta.md)
 
 ## Estrutura
 

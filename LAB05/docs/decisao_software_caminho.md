@@ -96,6 +96,6 @@ dados coletados).
 
 - [x] A: preencher data de acesso e exemplos de alto impacto na tabela de critérios (ver
   [evidencias_criterios.md](evidencias_criterios.md)).
-- [ ] B: confirmar parâmetros finais da coleta completa (nº de dias, nº de amostras por
+- [x] B: confirmar parâmetros finais da coleta completa (nº de dias, nº de amostras por
   período) — coleta piloto já rodada (ver [docs/plano_coleta.md](plano_coleta.md)).
 - [ ] C: validar/ajustar o teste de hipótese e o plano de análise para o tempo de resposta.
