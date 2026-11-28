@@ -19,3 +19,8 @@ rodada,timestamp,data,dia_semana,hora,periodo,latencia_ms,status_http,bytes,erro
 2026-11-27T16:28:17-03:00,2026-11-27T16:28:21-03:00,2026-11-27,4,16,comercial,1630.77,200,40,,github-actions
 2026-11-27T16:28:17-03:00,2026-11-27T16:28:23-03:00,2026-11-27,4,16,comercial,902.32,200,40,,github-actions
 2026-11-27T16:28:17-03:00,2026-11-27T16:28:25-03:00,2026-11-27,4,16,comercial,815.03,200,40,,github-actions
+2026-11-27T23:40:43-03:00,2026-11-27T23:40:43-03:00,2026-11-27,4,23,fora_comercial,756.82,304,,HTTP Error 304: Not Modified,github-actions
+2026-11-27T23:40:43-03:00,2026-11-27T23:40:45-03:00,2026-11-27,4,23,fora_comercial,153.99,304,,HTTP Error 304: Not Modified,github-actions
+2026-11-27T23:40:43-03:00,2026-11-27T23:40:46-03:00,2026-11-27,4,23,fora_comercial,154.0,304,,HTTP Error 304: Not Modified,github-actions
+2026-11-27T23:40:43-03:00,2026-11-27T23:40:47-03:00,2026-11-27,4,23,fora_comercial,516.01,304,,HTTP Error 304: Not Modified,github-actions
+2026-11-27T23:40:43-03:00,2026-11-27T23:40:48-03:00,2026-11-27,4,23,fora_comercial,493.89,304,,HTTP Error 304: Not Modified,github-actions
